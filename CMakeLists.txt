@@ -30,7 +30,7 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
 add_subdirectory(bench)
 
 #install
-INSTALL(DIRECTORY include 
-    DESTINATION ${CMAKE_INSTALL_PATH})
-INSTALL(FILES cmake/FindIPP.cmake cmake/FindIPPPlus.cmake cmake/IPPPlus.cmake
-    DESTINATION ${CMAKE_INSTALL_PATH})
+#INSTALL(DIRECTORY include 
+#    DESTINATION ${CMAKE_INSTALL_PATH})
+#INSTALL(FILES cmake/FindIPP.cmake cmake/FindIPPPlus.cmake cmake/IPPPlus.cmake
+#    DESTINATION ${CMAKE_INSTALL_PATH})

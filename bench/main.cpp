@@ -6,6 +6,10 @@
  * @date 2014-12-19
  */
 
+#include "ipptype.hpp"
+
+#include "ipptype_test.hpp"
+
 
 
 
