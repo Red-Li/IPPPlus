@@ -12,7 +12,7 @@
 
 #include <ippcore.h>
 
-#include "ipptype.h"
+#include "ipptype.hpp"
 
 namespace ipp{
 
