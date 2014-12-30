@@ -44,6 +44,13 @@ static inline void* malloc(int len)
 };
 
 
+
+static inline void free(void *ptr)
+{
+    ippFree(ptr);
+}
+
+
 }
 
 #endif

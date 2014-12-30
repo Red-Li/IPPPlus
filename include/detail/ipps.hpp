@@ -24,7 +24,7 @@ struct copy<T, TYPE_CAT_INT, 1>
 {
     static inline IppStatus do_copy(const T* src, T *dst, int len)
     {
-        return ippsCopy_8u((const ipp8u*)src, (ipp8u*)dst, len);
+        return ippsCopy_8u((const Ipp8u*)src, (Ipp8u*)dst, len);
     };
 };
 
@@ -33,7 +33,7 @@ struct copy<T, TYPE_CAT_INT, 2>
 {
     static inline IppStatus do_copy(const T* src, T *dst, int len)
     {
-        return ippsCopy_16s((const ipp16s*)src, (ipp16s*)dst, len);
+        return ippsCopy_16s((const Ipp16s*)src, (Ipp16s*)dst, len);
     };
 };
 
@@ -42,7 +42,7 @@ struct copy<T, TYPE_CAT_INT, 4>
 {
     static inline IppStatus do_copy(const T* src, T *dst, int len)
     {
-        return ippsCopy_32s((const ipp32s*)src, (ipp32s*)dst, len);
+        return ippsCopy_32s((const Ipp32s*)src, (Ipp32s*)dst, len);
     };
 };
 
@@ -51,7 +51,7 @@ struct copy<T, TYPE_CAT_INT, 8>
 {
     static inline IppStatus do_copy(const T* src, T *dst, int len)
     {
-        return ippsCopy_64s((const ipp64s*)src, (ipp64s*)dst, len);
+        return ippsCopy_64s((const Ipp64s*)src, (Ipp64s*)dst, len);
     };
 };
 
@@ -60,7 +60,7 @@ struct copy<T, TYPE_CAT_FLOAT, 4>
 {
     static inline IppStatus do_copy(const T* src, T *dst, int len)
     {
-        return ippsCopy_32f((const ipp32f*)src, (ipp32f*)dst, len);
+        return ippsCopy_32f((const Ipp32f*)src, (Ipp32f*)dst, len);
     };
 };
 
@@ -69,7 +69,7 @@ struct copy<T, TYPE_CAT_FLOAT, 8>
 {
     static inline IppStatus do_copy(const T* src, T *dst, int len)
     {
-        return ippsCopy_64f((const ipp64f*)src, (ipp64f*)dst, len);
+        return ippsCopy_64f((const Ipp64f*)src, (Ipp64f*)dst, len);
     };
 };
 
@@ -79,7 +79,7 @@ struct copy<T, TYPE_CAT_COMPLEX, 8>
 {
     static inline IppStatus do_copy(const T* src, T *dst, int len)
     {
-        return ippsCopy_32fc((const ipp32fc*)src, (ipp32fc*)dst, len);
+        return ippsCopy_32fc((const Ipp32fc*)src, (Ipp32fc*)dst, len);
     };
 };
 
@@ -88,7 +88,7 @@ struct copy<T, TYPE_CAT_COMPLEX, 16>
 {
     static inline IppStatus do_copy(const T* src, T *dst, int len)
     {
-        return ippsCopy_64fc((const ipp64fc*)src, (ipp64fc*)dst, len);
+        return ippsCopy_64fc((const Ipp64fc*)src, (Ipp64fc*)dst, len);
     };
 };
 
@@ -102,7 +102,7 @@ struct move<T, TYPE_CAT_INT, 1>
 {
     static inline IppStatus do_move(const T* src, T *dst, int len)
     {
-        return ippsMove_8u((const ipp8u*)src, (ipp8u*)dst, len);
+        return ippsMove_8u((const Ipp8u*)src, (Ipp8u*)dst, len);
     };
 };
 
@@ -111,7 +111,7 @@ struct move<T, TYPE_CAT_INT, 2>
 {
     static inline IppStatus do_move(const T* src, T *dst, int len)
     {
-        return ippsMove_16s((const ipp16s*)src, (ipp16s*)dst, len);
+        return ippsMove_16s((const Ipp16s*)src, (Ipp16s*)dst, len);
     };
 };
 
@@ -120,7 +120,7 @@ struct move<T, TYPE_CAT_INT, 4>
 {
     static inline IppStatus do_move(const T* src, T *dst, int len)
     {
-        return ippsMove_32s((const ipp32s*)src, (ipp32s*)dst, len);
+        return ippsMove_32s((const Ipp32s*)src, (Ipp32s*)dst, len);
     };
 };
 
@@ -129,7 +129,7 @@ struct move<T, TYPE_CAT_INT, 8>
 {
     static inline IppStatus do_move(const T* src, T *dst, int len)
     {
-        return ippsMove_64s((const ipp64s*)src, (ipp64s*)dst, len);
+        return ippsMove_64s((const Ipp64s*)src, (Ipp64s*)dst, len);
     };
 };
 
@@ -138,7 +138,7 @@ struct move<T, TYPE_CAT_FLOAT, 4>
 {
     static inline IppStatus do_move(const T* src, T *dst, int len)
     {
-        return ippsMove_32f((const ipp32f*)src, (ipp32f*)dst, len);
+        return ippsMove_32f((const Ipp32f*)src, (Ipp32f*)dst, len);
     };
 };
 
@@ -147,7 +147,7 @@ struct move<T, TYPE_CAT_FLOAT, 8>
 {
     static inline IppStatus do_move(const T* src, T *dst, int len)
     {
-        return ippsMove_64f((const ipp64f*)src, (ipp64f*)dst, len);
+        return ippsMove_64f((const Ipp64f*)src, (Ipp64f*)dst, len);
     };
 };
 
@@ -157,7 +157,7 @@ struct move<T, TYPE_CAT_COMPLEX, 8>
 {
     static inline IppStatus do_move(const T* src, T *dst, int len)
     {
-        return ippsMove_32fc((const ipp32fc*)src, (ipp32fc*)dst, len);
+        return ippsMove_32fc((const Ipp32fc*)src, (Ipp32fc*)dst, len);
     };
 };
 
@@ -166,7 +166,7 @@ struct move<T, TYPE_CAT_COMPLEX, 16>
 {
     static inline IppStatus do_move(const T* src, T *dst, int len)
     {
-        return ippsMove_64fc((const ipp64fc*)src, (ipp64fc*)dst, len);
+        return ippsMove_64fc((const Ipp64fc*)src, (Ipp64fc*)dst, len);
     };
 };
 

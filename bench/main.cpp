@@ -9,20 +9,10 @@
 #include <memory>
 #include <vector>
 
-#include "ipptype.hpp"
-#include "ipps.hpp"
-
-#include "test_utils.hpp"
-#include "ipptype_test.hpp"
-
-
-
-
+#include <gtest/gtest.h>
 
 int main(int argc, char *argv[])
 {
-    test_executor exec;
-    
-
-    return 0;
+    testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }
