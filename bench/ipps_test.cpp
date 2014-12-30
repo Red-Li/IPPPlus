@@ -109,9 +109,10 @@ TYPED_TEST_P(CopyTest, Benchmark)
 //
 REGISTER_TYPED_TEST_CASE_P(CopyTest, 
         SanitCheck, Benchmark);
-typedef testing::Types<char, unsigned char,
+typedef testing::Types<int8_t, uint8_t, char, unsigned char,
                        short, unsigned short,
                        int, unsigned int,
+                       long long, unsigned long long,
                        float, double,
                        std::complex<float>, std::complex<double> > CopyTypes;
 
@@ -201,15 +202,207 @@ TYPED_TEST_P(MoveTest, Benchmark)
 //
 REGISTER_TYPED_TEST_CASE_P(MoveTest, 
         SanitCheck, Benchmark);
-typedef testing::Types<char, unsigned char,
+typedef testing::Types<int8_t, uint8_t, char, unsigned char,
                        short, unsigned short,
                        int, unsigned int,
+                       long long, unsigned long long,
                        float, double,
                        std::complex<float>, std::complex<double> > MoveTypes;
 
 INSTANTIATE_TYPED_TEST_CASE_P(MTPMove, MoveTest, MoveTypes);
 
 
+
+
+//////////// SET ////////
+
+template<typename T>
+class SetTest : public testing::Test
+{
+};
+
+//
+TYPED_TEST_CASE_P(SetTest);
+
+TYPED_TEST_P(SetTest, SanitCheck)
+{
+    TypeParam *buf0 = (TypeParam*)ipp::malloc<TypeParam>(4096);
+
+    memset(buf0, 0, sizeof(TypeParam) * 4096);
+
+    ipp::set(from_int<TypeParam>(0x55), buf0, 4096);
+
+    for(int i = 0; i < 4096; ++i)
+        EXPECT_EQ(buf0[i], from_int<TypeParam>(0x55));
+
+    ipp::free(buf0);
+}
+
+
+REGISTER_TYPED_TEST_CASE_P(SetTest, 
+        SanitCheck);
+typedef testing::Types<int8_t, uint8_t, char, unsigned char,
+                       short, unsigned short,
+                       int, unsigned int,
+                       long long, unsigned long long,
+                       float, double,
+                       std::complex<float>, std::complex<double> > SetTypes;
+
+INSTANTIATE_TYPED_TEST_CASE_P(MTPSet, SetTest, SetTypes);
+
+
+//////////// ZERO ////////
+
+template<typename T>
+class ZeroTest : public testing::Test
+{
+};
+
+//
+TYPED_TEST_CASE_P(ZeroTest);
+
+TYPED_TEST_P(ZeroTest, SanitCheck)
+{
+    TypeParam *buf0 = (TypeParam*)ipp::malloc<TypeParam>(4096);
+
+    ipp::zero(buf0, 4096);
+
+    for(int i = 0; i < 4096; ++i)
+        EXPECT_EQ(buf0[i], from_int<TypeParam>(0));
+
+    ipp::free(buf0);
+}
+
+
+REGISTER_TYPED_TEST_CASE_P(ZeroTest, 
+        SanitCheck);
+typedef testing::Types<int8_t, uint8_t, char, unsigned char,
+                       short, unsigned short,
+                       int, unsigned int,
+                       long long, unsigned long long,
+                       float, double,
+                       std::complex<float>, std::complex<double> > ZeroTypes;
+
+INSTANTIATE_TYPED_TEST_CASE_P(MTPZero, ZeroTest, ZeroTypes);
+
+
+//////////// Rand Uniform ////////
+
+template<typename T>
+class RandUniformTest : public testing::Test
+{
+};
+
+//
+TYPED_TEST_CASE_P(RandUniformTest);
+
+TYPED_TEST_P(RandUniformTest, SanitCheck)
+{
+    ipp::rand_uniform<TypeParam> uni(0, 128, 0);
+
+    TypeParam *buf0 = (TypeParam*)ipp::malloc<TypeParam>(4096);
+    
+    uni.generate(buf0, 4096);
+
+    ipp::free(buf0);
+}
+
+
+REGISTER_TYPED_TEST_CASE_P(RandUniformTest, 
+        SanitCheck);
+typedef testing::Types<uint8_t,unsigned char,
+                       short,
+                       float> RandUniformTypes;
+
+INSTANTIATE_TYPED_TEST_CASE_P(MTPRandUniform, RandUniformTest, RandUniformTypes);
+
+//////////// Rand Gauss ////////
+
+template<typename T>
+class RandGaussTest : public testing::Test
+{
+};
+
+//
+TYPED_TEST_CASE_P(RandGaussTest);
+
+TYPED_TEST_P(RandGaussTest, SanitCheck)
+{
+    ipp::rand_gauss<TypeParam> gas(0, 128, 0);
+
+    TypeParam *buf0 = (TypeParam*)ipp::malloc<TypeParam>(4096);
+    
+    gas.generate(buf0, 4096);
+
+    ipp::free(buf0);
+}
+
+
+REGISTER_TYPED_TEST_CASE_P(RandGaussTest, 
+        SanitCheck);
+typedef testing::Types<uint8_t,unsigned char,
+                       short,
+                       float> RandGaussTypes;
+
+INSTANTIATE_TYPED_TEST_CASE_P(MTPRandGauss, RandGaussTest, RandGaussTypes);
+
+//////////// VECTOR Jaehne ////////
+
+template<typename T>
+class VectorJaehneTest : public testing::Test
+{
+};
+
+//
+TYPED_TEST_CASE_P(VectorJaehneTest);
+
+TYPED_TEST_P(VectorJaehneTest, SanitCheck)
+{
+    TypeParam *buf0 = (TypeParam*)ipp::malloc<TypeParam>(4096);
+    
+    ipp::vector_jaehne(buf0, 4096, (TypeParam)128);
+
+    ipp::free(buf0);
+}
+
+
+REGISTER_TYPED_TEST_CASE_P(VectorJaehneTest, 
+        SanitCheck);
+typedef testing::Types<uint8_t,unsigned char,
+                       short,
+                       int,
+                       float, double> VectorJaehneTypes;
+
+INSTANTIATE_TYPED_TEST_CASE_P(MTPVectorJaehne, VectorJaehneTest, VectorJaehneTypes);
+
+//////////// VECTOR SLOPE ////////
+
+template<typename T>
+class VectorSlopeTest : public testing::Test
+{
+};
+
+//
+TYPED_TEST_CASE_P(VectorSlopeTest);
+
+TYPED_TEST_P(VectorSlopeTest, SanitCheck)
+{
+    TypeParam *buf0 = (TypeParam*)ipp::malloc<TypeParam>(4096);
+    
+    ipp::vector_slope(buf0, 4096, 0, (TypeParam)128);
+
+    ipp::free(buf0);
+}
+
+
+REGISTER_TYPED_TEST_CASE_P(VectorSlopeTest, 
+        SanitCheck);
+typedef testing::Types<uint8_t,unsigned char,
+                       short, unsigned short,
+                       int, unsigned int,
+                       float, double> VectorSlopeTypes;
+
+INSTANTIATE_TYPED_TEST_CASE_P(MTPVectorSlope, VectorSlopeTest, VectorSlopeTypes);
 
 }
 

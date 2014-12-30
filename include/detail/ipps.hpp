@@ -186,6 +186,46 @@ struct set<Ipp##Suffix>\
     }\
 }
 
+template<>
+struct set<Ipp8s>
+{
+    typedef Ipp8s itype;
+    static inline IppStatus do_set(itype val, itype *dst, int len)
+    {
+        return ippsSet_8u(*(Ipp8u*)&val, (Ipp8u*)dst, len);
+    }
+};
+
+template<>
+struct set<Ipp16u>
+{
+    typedef Ipp16u itype;
+    static inline IppStatus do_set(itype val, itype *dst, int len)
+    {
+        return ippsSet_16s(*(Ipp16s*)&val, (Ipp16s*)dst, len);
+    }
+};
+
+template<>
+struct set<Ipp32u>
+{
+    typedef Ipp32u itype;
+    static inline IppStatus do_set(itype val, itype *dst, int len)
+    {
+        return ippsSet_32s(*(Ipp32s*)&val, (Ipp32s*)dst, len);
+    }
+};
+
+template<>
+struct set<Ipp64u>
+{
+    typedef Ipp64u itype;
+    static inline IppStatus do_set(itype val, itype *dst, int len)
+    {
+        return ippsSet_64s(*(Ipp64s*)&val, (Ipp64s*)dst, len);
+    }
+};
+
 SET_ASM(8u);
 SET_ASM(16s);
 SET_ASM(32s);
@@ -211,6 +251,46 @@ struct zero<Ipp##Suffix>\
         return ippsZero_##Suffix(dst, len);\
     }\
 }
+
+template<>
+struct zero<Ipp8s>
+{
+    typedef Ipp8s itype;
+    static inline IppStatus do_zero(itype *dst, int len)
+    {
+        return ippsZero_8u((Ipp8u*)dst, len);
+    }
+};
+
+template<>
+struct zero<Ipp16u>
+{
+    typedef Ipp16u itype;
+    static inline IppStatus do_zero(itype *dst, int len)
+    {
+        return ippsZero_16s((Ipp16s*)dst, len);
+    }
+};
+
+template<>
+struct zero<Ipp32u>
+{
+    typedef Ipp32u itype;
+    static inline IppStatus do_zero(itype *dst, int len)
+    {
+        return ippsZero_32s((Ipp32s*)dst, len);
+    }
+};
+
+template<>
+struct zero<Ipp64u>
+{
+    typedef Ipp64u itype;
+    static inline IppStatus do_zero(itype *dst, int len)
+    {
+        return ippsZero_64s((Ipp64s*)dst, len);
+    }
+};
 
 ZERO_ASM(8u);
 ZERO_ASM(16s);

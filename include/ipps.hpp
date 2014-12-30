@@ -87,7 +87,7 @@ static inline IppStatus set(T val, T *dst, int len)
 {
     typedef get<T>::type itype;
     return detail::set<itype>::do_set(
-            (itype)val, (itype*)dst, len);
+            *((itype*)&val), (itype*)dst, len);
 }
 
 
