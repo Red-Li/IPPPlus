@@ -47,6 +47,9 @@ SAME_TYPE_CHECK(ipp::get<double>::type, Ipp64f);
 
 SAME_TYPE_CHECK(ipp::get<std::complex<float>>::type, Ipp32fc);
 SAME_TYPE_CHECK(ipp::get<std::complex<double>>::type, Ipp64fc);
+SAME_TYPE_CHECK(ipp::get<std::complex<short>>::type, Ipp16sc);
+SAME_TYPE_CHECK(ipp::get<std::complex<int16_t>>::type, Ipp16sc);
+SAME_TYPE_CHECK(ipp::get<std::complex<int>>::type, Ipp32sc);
 
 
 

@@ -276,7 +276,7 @@ static inline IppStatus and_const(const T *src, T val, T *dst, int len)
 {
     static_assert(is_integer<T>::value, "should be integer");
     typedef get_int<sizeof(T), false>::type itype;
-    return detail::and_const<itype>(
+    return detail::and_const(
             (const itype*)src, *(itype*)&val, (itype*)dst, len);
 };
 
@@ -299,7 +299,7 @@ static inline IppStatus or_const(const T *src, T val, T *dst, int len)
 {
     static_assert(is_integer<T>::value, "should be integer");
     typedef get_int<sizeof(T), false>::type itype;
-    return detail::or_const<itype>((const itype*)src, *(itype*)&val,
+    return detail::or_const((const itype*)src, *(itype*)&val,
                              (itype*)dst, len); 
 };
 
@@ -322,7 +322,7 @@ static inline IppStatus xor_const(const T *src, T val, T *dst, int len)
 {
     static_assert(is_integer<T>::value, "should be integer");
     typedef get_int<sizeof(T), false>::type itype;
-    return detail::xor_const<itype>((const itype*)src, *(itype*)&val,
+    return detail::xor_const((const itype*)src, *(itype*)&val,
                              (itype*)dst, len); 
 };
 
@@ -333,7 +333,7 @@ static inline IppStatus and(const T *src1, const T *src2, T *dst, int len)
 {
     static_assert(is_integer<T>::value, "should be integer");
     typedef get_int<sizeof(T), false>::type itype;
-    return detail::and<itype>((const itype*)src1, (const itype*)src2,
+    return detail::and((const itype*)src1, (const itype*)src2,
                               (itype*)dst, len); 
 
 }
@@ -344,7 +344,7 @@ static inline IppStatus or(const T *src1, const T *src2, T *dst, int len)
 {
     static_assert(is_integer<T>::value, "should be integer");
     typedef get_int<sizeof(T), false>::type itype;
-    return detail::or<itype>((const itype*)src1, (const itype*)src2,
+    return detail::or((const itype*)src1, (const itype*)src2,
                               (itype*)dst, len); 
 
 }
@@ -354,7 +354,7 @@ static inline IppStatus xor(const T *src1, const T *src2, T *dst, int len)
 {
     static_assert(is_integer<T>::value, "should be integer");
     typedef get_int<sizeof(T), false>::type itype;
-    return detail::xor<itype>((const itype*)src1, (const itype*)src2,
+    return detail::xor((const itype*)src1, (const itype*)src2,
                               (itype*)dst, len); 
 
 }
@@ -365,7 +365,7 @@ static inline IppStatus not(const T *src, T *dst, int len)
 {
     static_assert(is_integer<T>::value, "should be integer");
     typedef get_int<sizeof(T), false>::type itype;
-    return detail::not<itype>((const itype*)src, (itype*)dst, len); 
+    return detail::not((const itype*)src, (itype*)dst, len); 
 }
 
 
@@ -374,7 +374,7 @@ static inline IppStatus lshift_const(const T *src, int val, T *dst, int len)
 {
     static_assert(is_integer<T>::value, "should be integer");
     typedef get<T>::type itype;
-    return detail::lshift_const<itype>(
+    return detail::lshift_const(
             (const itype*)src, val, (itype*)dst, len); 
 }
 
@@ -383,7 +383,7 @@ static inline IppStatus rshift_const(const T *src, int val, T *dst, int len)
 {
     static_assert(is_integer<T>::value, "should be integer");
     typedef get<T>::type itype;
-    return detail::rshift_const<itype>(
+    return detail::rshift_const(
             (const itype*)src, val, (itype*)dst, len); 
 }
 
@@ -392,7 +392,185 @@ static inline IppStatus rshift_const(const T *src, int val, T *dst, int len)
 /**@}*/
 
 
+/**
+ * @defgroup ArithmeticFunctions Arithmetic Functions
+ * This section describes the Intel IPP signal processing functions that perform vector arithmetic operations on vectors. The arithmetic functions include basic element-wise arithmetic operations between vectors, as well as more complex calculations such as computing absolute values, square and square root, natural logarithm and exponential of vector elements.
+ * @ingroup EssentialFunctions
+ * @{
+ **/
 
+
+template<typename T>
+static inline IppStatus add_const(const T *src, T val, T *dst, int len, int scale = 0)
+{
+    typedef get<T>::type itype;
+    return detail::add_const(
+            (const itype*)src, *(itype*)&val, (itype*)dst, len, scale);
+}
+
+template<typename T>
+static inline IppStatus add_product_const(const T *src, T val, T *dst, int len)
+{
+    typedef get<T>::type itype;
+    return detail::add_product_const(
+            (const itype*)src, *(itype*)&val, (itype*)dst, len);
+}
+
+
+template<typename T>
+static inline IppStatus mul_const(const T *src, T val, T *dst, int len, int scale = 0)
+{
+    typedef get<T>::type itype;
+    return detail::mul_const(
+            (const itype*)src, *(itype*)&val, (itype*)dst, len, scale);
+}
+
+
+template<typename T>
+static inline IppStatus sub_const(const T *src, T val, T *dst, int len, int scale = 0)
+{
+    typedef get<T>::type itype;
+    return detail::sub_const(
+            (const itype*)src, *(itype*)&val, (itype*)dst, len, scale);
+}
+
+template<typename T>
+static inline IppStatus sub_const_rev(const T *src, T val, T *dst, int len, int scale = 0)
+{
+    typedef get<T>::type itype;
+    return detail::sub_const_rev(
+            (const itype*)src, *(itype*)&val, (itype*)dst, len, scale);
+}
+
+
+template<typename T>
+static inline IppStatus div_const(const T *src, T val, T *dst, int len, int scale = 0)
+{
+    typedef get<T>::type itype;
+    return detail::div_const(
+            (const itype*)src, *(itype*)&val, (itype*)dst, len, scale);
+}
+
+template<typename T>
+static inline IppStatus div_const_rev(const T *src, T val, T *dst, int len)
+{
+    typedef get<T>::type itype;
+    return detail::div_const_rev(
+            (const itype*)src, *(itype*)&val, (itype*)dst, len);
+}
+
+
+template<typename T>
+static inline IppStatus add(const T *src1, const T *src2, T *dst, int len, int scale = 0)
+{
+    typedef get<T>::type itype;
+    return detail::add(
+            (const itype*)src1, (const itype*)src2, (itype*)dst, len, scale);
+}
+
+template<typename T>
+static inline IppStatus add_product(const T *src1, const T *src2, T *dst, int len, int scale = 0)
+{
+    typedef get<T>::type itype;
+    return detail::add_product(
+            (const itype*)src1, (const itype*)src2, (itype*)dst, len, scale);
+}
+
+template<typename T>
+static inline IppStatus mul(const T *src1, const T *src2, T *dst, int len, int scale = 0)
+{
+    typedef get<T>::type itype;
+    return detail::mul(
+            (const itype*)src1, (const itype*)src2, (itype*)dst, len, scale);
+}
+
+template<typename T>
+static inline IppStatus sub(const T *src1, const T *src2, T *dst, int len, int scale = 0)
+{
+    typedef get<T>::type itype;
+    return detail::sub(
+            (const itype*)src1, (const itype*)src2, (itype*)dst, len, scale);
+}
+
+template<typename T>
+static inline IppStatus div(const T *src1, const T *src2, T *dst, int len, int scale = 0)
+{
+    typedef get<T>::type itype;
+    return detail::div(
+            (const itype*)src1, (const itype*)src2, (itype*)dst, len, scale);
+}
+
+template<typename T>
+static inline IppStatus abs(const T *src, T *dst, int len)
+{
+    typedef get<T>::type itype;
+    return detail::abs(
+            (const itype*)src, (itype*)dst, len);
+}
+
+template<typename T>
+static inline IppStatus sqr(const T *src, T *dst, int len, int scale = 0)
+{
+    typedef get<T>::type itype;
+    return detail::sqr(
+            (const itype*)src, (itype*)dst, len, scale);
+}
+
+template<typename T>
+static inline IppStatus sqrt(const T *src, T *dst, int len, int scale = 0)
+{
+    typedef get<T>::type itype;
+    return detail::sqrt(
+            (const itype*)src, (itype*)dst, len, scale);
+}
+
+template<typename T>
+static inline IppStatus cubrt(const T *src, T *dst, int len)
+{
+    typedef get<T>::type itype;
+    return detail::cubrt(
+            (const itype*)src, (itype*)dst, len);
+}
+
+
+template<typename T>
+static inline IppStatus exp(const T *src, T *dst, int len)
+{
+    typedef get<T>::type itype;
+    return detail::exp(
+            (const itype*)src, (itype*)dst, len);
+}
+
+template<typename T>
+static inline IppStatus ln(const T *src, T *dst, int len, int scale = 0)
+{
+    typedef get<T>::type itype;
+    return detail::ln(
+            (const itype*)src, (itype*)dst, len, scale);
+}
+
+template<typename T>
+static inline IppStatus arctan(const T *src, T *dst, int len)
+{
+    typedef get<T>::type itype;
+    return detail::arctan(
+            (const itype*)src, (itype*)dst, len);
+}
+
+
+template<typename T>
+static inline IppStatus normalize(const T *src, T *dst, 
+                                  int len, T sub, T div, int scale = 0)
+{
+    typedef get<T>::type itype;
+    typedef get<value_type<T>::type>::type vtype;
+    return detail::normalize(
+            (const itype*)src, (itype*)dst, len, 
+            *(itype*)&sub, *(vtype*)&div, scale);
+}
+
+
+/**@}*/
 
 
 }

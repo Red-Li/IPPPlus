@@ -521,11 +521,13 @@ VECTOR_SLOPE_ASM_D(64f);
 #undef VECTOR_SLOPE_ASM_D
 #undef VECTOR_SLOPE_ASM
 
-
 ///// and const /////////
+template<typename T>
+static inline IppStatus and_const(const T*, T, T*, int);
+
 #define AND_CONST_ASM(Suffix)\
-template<typename T>\
-static inline IppStatus and_const(const Ipp##Suffix *src, \
+template<>\
+static inline IppStatus and_const<Ipp##Suffix>(const Ipp##Suffix *src, \
                                   Ipp##Suffix val,\
                                   Ipp##Suffix* dst,\
                                   int len)\
@@ -543,9 +545,12 @@ AND_CONST_ASM(32u);
 
 
 ///// or const /////////
+template<typename T>
+static inline IppStatus or_const(const T*, T, T*, int);
+
 #define OR_CONST_ASM(Suffix)\
-template<typename T>\
-static inline IppStatus or_const(const Ipp##Suffix *src, \
+template<>\
+static inline IppStatus or_const<Ipp##Suffix>(const Ipp##Suffix *src, \
                                   Ipp##Suffix val,\
                                   Ipp##Suffix* dst,\
                                   int len)\
@@ -564,9 +569,13 @@ OR_CONST_ASM(32u);
 
 
 ///// xor const /////////
+
+template<typename T>
+static inline IppStatus xor_const(const T*, T, T*, int);
+
 #define XOR_CONST_ASM(Suffix)\
-template<typename T>\
-static inline IppStatus xor_const(const Ipp##Suffix *src, \
+template<>\
+static inline IppStatus xor_const<Ipp##Suffix>(const Ipp##Suffix *src, \
                                   Ipp##Suffix val,\
                                   Ipp##Suffix* dst,\
                                   int len)\
@@ -584,9 +593,13 @@ XOR_CONST_ASM(32u);
 
 
 ///// and /////////
+
+template<typename T>
+static inline IppStatus and(const T*, const T*, T*, int);
+
 #define AND_ASM(Suffix)\
-template<typename T>\
-static inline IppStatus and(const Ipp##Suffix *src1, \
+template<>\
+static inline IppStatus and<Ipp##Suffix>(const Ipp##Suffix *src1, \
                             const Ipp##Suffix *src2,\
                                   Ipp##Suffix* dst,\
                                   int len)\
@@ -604,9 +617,13 @@ AND_ASM(32u);
 
 
 ///// or /////////
+
+template<typename T>
+static inline IppStatus or(const T*, const T*, T*, int);
+
 #define OR_ASM(Suffix)\
-template<typename T>\
-static inline IppStatus or(const Ipp##Suffix *src1, \
+template<>\
+static inline IppStatus or<Ipp##Suffix>(const Ipp##Suffix *src1, \
                             const Ipp##Suffix *src2,\
                                   Ipp##Suffix* dst,\
                                   int len)\
@@ -623,9 +640,13 @@ OR_ASM(32u);
 #undef OR_ASM
 
 ///// xor /////////
+
+template<typename T>
+static inline IppStatus xor(const T*, const T*, T*, int);
+
 #define XOR_ASM(Suffix)\
-template<typename T>\
-static inline IppStatus xor(const Ipp##Suffix *src1, \
+template<>\
+static inline IppStatus xor<Ipp##Suffix>(const Ipp##Suffix *src1, \
                             const Ipp##Suffix *src2,\
                                   Ipp##Suffix* dst,\
                                   int len)\
@@ -642,9 +663,13 @@ XOR_ASM(32u);
 #undef XOR_ASM
 
 ///// not /////////
+
+template<typename T>
+static inline IppStatus not(const T*, T*, int);
+
 #define NOT_ASM(Suffix)\
-template<typename T>\
-static inline IppStatus not(const Ipp##Suffix *src, \
+template<>\
+static inline IppStatus not<Ipp##Suffix>(const Ipp##Suffix *src, \
                                   Ipp##Suffix* dst,\
                                   int len)\
 {\
@@ -660,9 +685,13 @@ NOT_ASM(32u);
 
 
 ///// lshift /////////
+
+template<typename T>
+static inline IppStatus lshift_const(const T*, int, T*, int);
+
 #define LSHIFT_ASM(Suffix)\
-template<typename T>\
-static inline IppStatus lshift_const(const Ipp##Suffix *src, \
+template<>\
+static inline IppStatus lshift_const<Ipp##Suffix>(const Ipp##Suffix *src, \
                                   int val,\
                                   Ipp##Suffix* dst,\
                                   int len)\
@@ -679,9 +708,13 @@ LSHIFT_ASM(32s);
 #undef LSHIFT_ASM
 
 ///// rshift /////////
+
+template<typename T>
+static inline IppStatus rshift_const(const T*, int, T*, int);
+
 #define RSHIFT_ASM(Suffix)\
-template<typename T>\
-static inline IppStatus rshift_const(const Ipp##Suffix *src, \
+template<>\
+static inline IppStatus rshift_const<Ipp##Suffix>(const Ipp##Suffix *src, \
                                   int val,\
                                   Ipp##Suffix* dst,\
                                   int len)\
@@ -697,6 +730,765 @@ RSHIFT_ASM(32s);
 
 #undef RSHIFT_ASM
 
+
+/////// add_const /////////
+template<typename T>
+static inline IppStatus add_const(const T *, T, T *, int, int);
+
+
+#define ADD_CONST_ASM(Suffix)\
+template<>\
+static inline IppStatus add_const<Ipp##Suffix>(\
+                                  const Ipp##Suffix *src,\
+                                  Ipp##Suffix val,\
+                                  Ipp##Suffix *dst,\
+                                  int len,\
+                                  int )\
+{\
+    return src == dst ? ippsAddC_##Suffix##_I(val, dst, len)\
+                      : ippsAddC_##Suffix(src, val, dst, len);\
+}
+
+
+#define ADD_CONST_SFS_ASM(Suffix)\
+template<>\
+static inline IppStatus add_const<Ipp##Suffix>(\
+                                  const Ipp##Suffix *src,\
+                                  Ipp##Suffix val,\
+                                  Ipp##Suffix *dst,\
+                                  int len,\
+                                  int scale)\
+{\
+    return src == dst ? ippsAddC_##Suffix##_ISfs(val, dst, len, scale)\
+                      : ippsAddC_##Suffix##_Sfs(src, val, dst, len, scale);\
+}
+
+
+ADD_CONST_ASM(32f);
+ADD_CONST_ASM(64f);
+ADD_CONST_ASM(32fc);
+ADD_CONST_ASM(64fc);
+
+ADD_CONST_SFS_ASM(8u);
+ADD_CONST_SFS_ASM(16u);
+ADD_CONST_SFS_ASM(16s);
+ADD_CONST_SFS_ASM(32s);
+ADD_CONST_SFS_ASM(16sc);
+ADD_CONST_SFS_ASM(32sc);
+
+#undef ADD_CONST_ASM
+#undef ADD_CONST_SFS_ASM
+
+
+template<typename T>
+static inline IppStatus add_product_const(
+        const T*, T, T *, int);
+
+
+template<>
+static inline IppStatus add_product_const<Ipp32f>(
+        const Ipp32f *src, Ipp32f val, Ipp32f *dst, int len)
+{
+    return ippsAddProductC_32f(src, val, dst, len);
+}
+
+
+/////// mul_const /////////
+template<typename T>
+static inline IppStatus mul_const(const T *, T, T *, int, int);
+
+
+#define MUL_CONST_ASM(Suffix)\
+template<>\
+static inline IppStatus mul_const<Ipp##Suffix>(\
+                                  const Ipp##Suffix *src,\
+                                  Ipp##Suffix val,\
+                                  Ipp##Suffix *dst,\
+                                  int len,\
+                                  int )\
+{\
+    return src == dst ? ippsMulC_##Suffix##_I(val, dst, len)\
+                      : ippsMulC_##Suffix(src, val, dst, len);\
+}
+
+
+#define MUL_CONST_SFS_ASM(Suffix)\
+template<>\
+static inline IppStatus mul_const<Ipp##Suffix>(\
+                                  const Ipp##Suffix *src,\
+                                  Ipp##Suffix val,\
+                                  Ipp##Suffix *dst,\
+                                  int len,\
+                                  int scale)\
+{\
+    return src == dst ? ippsMulC_##Suffix##_ISfs(val, dst, len, scale)\
+                      : ippsMulC_##Suffix##_Sfs(src, val, dst, len, scale);\
+}
+
+
+MUL_CONST_ASM(32f);
+MUL_CONST_ASM(64f);
+MUL_CONST_ASM(32fc);
+MUL_CONST_ASM(64fc);
+
+MUL_CONST_SFS_ASM(8u);
+MUL_CONST_SFS_ASM(16u);
+MUL_CONST_SFS_ASM(16s);
+MUL_CONST_SFS_ASM(32s);
+MUL_CONST_SFS_ASM(16sc);
+MUL_CONST_SFS_ASM(32sc);
+
+#undef MUL_CONST_ASM
+#undef MUL_CONST_SFS_ASM
+
+/////// sub_const /////////
+template<typename T>
+static inline IppStatus sub_const(const T *, T, T *, int, int);
+
+
+#define SUB_CONST_ASM(Suffix)\
+template<>\
+static inline IppStatus sub_const<Ipp##Suffix>(\
+                                  const Ipp##Suffix *src,\
+                                  Ipp##Suffix val,\
+                                  Ipp##Suffix *dst,\
+                                  int len,\
+                                  int )\
+{\
+    return src == dst ? ippsSubC_##Suffix##_I(val, dst, len)\
+                      : ippsSubC_##Suffix(src, val, dst, len);\
+}
+
+
+#define SUB_CONST_SFS_ASM(Suffix)\
+template<>\
+static inline IppStatus sub_const<Ipp##Suffix>(\
+                                  const Ipp##Suffix *src,\
+                                  Ipp##Suffix val,\
+                                  Ipp##Suffix *dst,\
+                                  int len,\
+                                  int scale)\
+{\
+    return src == dst ? ippsSubC_##Suffix##_ISfs(val, dst, len, scale)\
+                      : ippsSubC_##Suffix##_Sfs(src, val, dst, len, scale);\
+}
+
+
+SUB_CONST_ASM(32f);
+SUB_CONST_ASM(64f);
+SUB_CONST_ASM(32fc);
+SUB_CONST_ASM(64fc);
+
+SUB_CONST_SFS_ASM(8u);
+SUB_CONST_SFS_ASM(16u);
+SUB_CONST_SFS_ASM(16s);
+SUB_CONST_SFS_ASM(32s);
+SUB_CONST_SFS_ASM(16sc);
+SUB_CONST_SFS_ASM(32sc);
+
+#undef SUB_CONST_ASM
+#undef SUB_CONST_SFS_ASM
+
+/////// sub_const_rev /////////
+template<typename T>
+static inline IppStatus sub_const_rev(const T *, T, T *, int, int);
+
+
+#define SUB_CONST_REV_ASM(Suffix)\
+template<>\
+static inline IppStatus sub_const_rev<Ipp##Suffix>(\
+                                  const Ipp##Suffix *src,\
+                                  Ipp##Suffix val,\
+                                  Ipp##Suffix *dst,\
+                                  int len,\
+                                  int )\
+{\
+    return src == dst ? ippsSubCRev_##Suffix##_I(val, dst, len)\
+                      : ippsSubCRev_##Suffix(src, val, dst, len);\
+}
+
+
+#define SUB_CONST_REV_SFS_ASM(Suffix)\
+template<>\
+static inline IppStatus sub_const_rev<Ipp##Suffix>(\
+                                  const Ipp##Suffix *src,\
+                                  Ipp##Suffix val,\
+                                  Ipp##Suffix *dst,\
+                                  int len,\
+                                  int scale)\
+{\
+    return src == dst ? ippsSubCRev_##Suffix##_ISfs(val, dst, len, scale)\
+                      : ippsSubCRev_##Suffix##_Sfs(src, val, dst, len, scale);\
+}
+
+
+SUB_CONST_REV_ASM(32f);
+SUB_CONST_REV_ASM(64f);
+SUB_CONST_REV_ASM(32fc);
+SUB_CONST_REV_ASM(64fc);
+
+SUB_CONST_REV_SFS_ASM(8u);
+SUB_CONST_REV_SFS_ASM(16u);
+SUB_CONST_REV_SFS_ASM(16s);
+SUB_CONST_REV_SFS_ASM(32s);
+SUB_CONST_REV_SFS_ASM(16sc);
+SUB_CONST_REV_SFS_ASM(32sc);
+
+#undef SUB_CONST_REV_ASM
+#undef SUB_CONST_REV_SFS_ASM
+
+
+/////// div_const /////////
+template<typename T>
+static inline IppStatus div_const(const T *, T, T *, int, int);
+
+
+#define DIV_CONST_ASM(Suffix)\
+template<>\
+static inline IppStatus div_const<Ipp##Suffix>(\
+                                  const Ipp##Suffix *src,\
+                                  Ipp##Suffix val,\
+                                  Ipp##Suffix *dst,\
+                                  int len,\
+                                  int )\
+{\
+    return src == dst ? ippsDivC_##Suffix##_I(val, dst, len)\
+                      : ippsDivC_##Suffix(src, val, dst, len);\
+}
+
+
+#define DIV_CONST_SFS_ASM(Suffix)\
+template<>\
+static inline IppStatus div_const<Ipp##Suffix>(\
+                                  const Ipp##Suffix *src,\
+                                  Ipp##Suffix val,\
+                                  Ipp##Suffix *dst,\
+                                  int len,\
+                                  int scale)\
+{\
+    return src == dst ? ippsDivC_##Suffix##_ISfs(val, dst, len, scale)\
+                      : ippsDivC_##Suffix##_Sfs(src, val, dst, len, scale);\
+}
+
+
+DIV_CONST_ASM(32f);
+DIV_CONST_ASM(64f);
+DIV_CONST_ASM(32fc);
+DIV_CONST_ASM(64fc);
+
+DIV_CONST_SFS_ASM(8u);
+DIV_CONST_SFS_ASM(16u);
+DIV_CONST_SFS_ASM(16s);
+DIV_CONST_SFS_ASM(16sc);
+
+#undef DIV_CONST_ASM
+#undef DIV_CONST_SFS_ASM
+
+
+/////// div_const_rev /////////
+template<typename T>
+static inline IppStatus div_const_rev(const T *, T, T *, int);
+
+
+#define DIV_CONST_REV_ASM(Suffix)\
+template<>\
+static inline IppStatus div_const_rev<Ipp##Suffix>(\
+                                  const Ipp##Suffix *src,\
+                                  Ipp##Suffix val,\
+                                  Ipp##Suffix *dst,\
+                                  int len)\
+{\
+    return src == dst ? ippsDivCRev_##Suffix##_I(val, dst, len)\
+                      : ippsDivCRev_##Suffix(src, val, dst, len);\
+}
+
+
+#define DIV_CONST_REV_SFS_ASM(Suffix)\
+template<>\
+static inline IppStatus div_const_rev<Ipp##Suffix>(\
+                                  const Ipp##Suffix *src,\
+                                  Ipp##Suffix val,\
+                                  Ipp##Suffix *dst,\
+                                  int len)\
+{\
+    return src == dst ? ippsDivCRev_##Suffix##_I(val, dst, len)\
+                      : ippsDivCRev_##Suffix##(src, val, dst, len);\
+}
+
+
+DIV_CONST_REV_ASM(32f);
+
+DIV_CONST_REV_SFS_ASM(16u);
+
+#undef DIV_CONST_REV_ASM
+#undef DIV_CONST_REV_SFS_ASM
+
+
+/////// add /////////
+template<typename T>
+static inline IppStatus add(const T *, const T*, T *, int, int);
+
+
+#define ADD_ASM(Suffix)\
+template<>\
+static inline IppStatus add<Ipp##Suffix>(\
+                                  const Ipp##Suffix *src1,\
+                                  const Ipp##Suffix *src2,\
+                                  Ipp##Suffix *dst,\
+                                  int len,\
+                                  int )\
+{\
+    return src1 == dst ? ippsAdd_##Suffix##_I(src2, dst, len)\
+                      : (src2 == dst ? ippsAdd_##Suffix##_I(src1, dst, len)\
+                                     : ippsAdd_##Suffix(src1, src2, dst, len));\
+}
+
+
+#define ADD_SFS_ASM(Suffix)\
+template<>\
+static inline IppStatus add<Ipp##Suffix>(\
+                                  const Ipp##Suffix *src1,\
+                                  const Ipp##Suffix *src2,\
+                                  Ipp##Suffix *dst,\
+                                  int len,\
+                                  int scale)\
+{\
+    return src1 == dst ? ippsAdd_##Suffix##_ISfs(src2, dst, len, scale)\
+                      : (src2 == dst ? ippsAdd_##Suffix##_ISfs(src1, dst, len, scale)\
+                                     : ippsAdd_##Suffix##_Sfs(src1, src2, dst, len, scale));\
+}
+
+
+ADD_ASM(32f);
+ADD_ASM(64f);
+ADD_ASM(32fc);
+ADD_ASM(64fc);
+
+ADD_SFS_ASM(8u);
+ADD_SFS_ASM(16u);
+ADD_SFS_ASM(16s);
+ADD_SFS_ASM(32s);
+ADD_SFS_ASM(16sc);
+ADD_SFS_ASM(32sc);
+
+#undef ADD_ASM
+#undef ADD_SFS_ASM
+
+
+/////// add product /////////
+template<typename T>
+static inline IppStatus add_product(const T *, const T*, T *, int, int);
+
+
+#define ADD_PRODUCT_ASM(Suffix)\
+template<>\
+static inline IppStatus add_product<Ipp##Suffix>(\
+                                  const Ipp##Suffix *src1,\
+                                  const Ipp##Suffix *src2,\
+                                  Ipp##Suffix *dst,\
+                                  int len,\
+                                  int )\
+{\
+    return ippsAddProduct_##Suffix##(src1, src2, dst, len);\
+}
+
+
+#define ADD_PRODUCT_SFS_ASM(Suffix)\
+template<>\
+static inline IppStatus add_product<Ipp##Suffix>(\
+                                  const Ipp##Suffix *src1,\
+                                  const Ipp##Suffix *src2,\
+                                  Ipp##Suffix *dst,\
+                                  int len,\
+                                  int scale)\
+{\
+    return ippsAddProduct_##Suffix##_Sfs(src1, src2, dst, len, scale);\
+}
+
+
+ADD_PRODUCT_ASM(32f);
+ADD_PRODUCT_ASM(64f);
+ADD_PRODUCT_ASM(32fc);
+ADD_PRODUCT_ASM(64fc);
+
+ADD_PRODUCT_SFS_ASM(16s);
+ADD_PRODUCT_SFS_ASM(32s);
+
+#undef ADD_PRODUCT_ASM
+#undef ADD_PRODUCT_SFS_ASM
+
+
+
+/////// mul /////////
+template<typename T>
+static inline IppStatus mul(const T *, const T*, T *, int, int);
+
+
+#define MUL_ASM(Suffix)\
+template<>\
+static inline IppStatus mul<Ipp##Suffix>(\
+                                  const Ipp##Suffix *src1,\
+                                  const Ipp##Suffix *src2,\
+                                  Ipp##Suffix *dst,\
+                                  int len,\
+                                  int )\
+{\
+    return src1 == dst ? ippsMul_##Suffix##_I(src2, dst, len)\
+                      : (src2 == dst ? ippsMul_##Suffix##_I(src1, dst, len)\
+                                     : ippsMul_##Suffix(src1, src2, dst, len));\
+}
+
+
+#define MUL_SFS_ASM(Suffix)\
+template<>\
+static inline IppStatus mul<Ipp##Suffix>(\
+                                  const Ipp##Suffix *src1,\
+                                  const Ipp##Suffix *src2,\
+                                  Ipp##Suffix *dst,\
+                                  int len,\
+                                  int scale)\
+{\
+    return src1 == dst ? ippsMul_##Suffix##_ISfs(src2, dst, len, scale)\
+                      : (src2 == dst ? ippsMul_##Suffix##_ISfs(src1, dst, len, scale)\
+                                     : ippsMul_##Suffix##_Sfs(src1, src2, dst, len, scale));\
+}
+
+
+MUL_ASM(32f);
+MUL_ASM(64f);
+MUL_ASM(32fc);
+MUL_ASM(64fc);
+
+MUL_SFS_ASM(8u);
+MUL_SFS_ASM(16u);
+MUL_SFS_ASM(16s);
+MUL_SFS_ASM(32s);
+MUL_SFS_ASM(16sc);
+MUL_SFS_ASM(32sc);
+
+#undef MUL_ASM
+#undef MUL_SFS_ASM
+
+/////// sub /////////
+template<typename T>
+static inline IppStatus sub(const T *, const T*, T *, int, int);
+
+
+#define SUB_ASM(Suffix)\
+template<>\
+static inline IppStatus sub<Ipp##Suffix>(\
+                                  const Ipp##Suffix *src1,\
+                                  const Ipp##Suffix *src2,\
+                                  Ipp##Suffix *dst,\
+                                  int len,\
+                                  int )\
+{\
+    return src1 == dst ? ippsSub_##Suffix##_I(src2, dst, len)\
+                      : (src2 == dst ? ippsSub_##Suffix##_I(src1, dst, len)\
+                                     : ippsSub_##Suffix(src1, src2, dst, len));\
+}
+
+
+#define SUB_SFS_ASM(Suffix)\
+template<>\
+static inline IppStatus sub<Ipp##Suffix>(\
+                                  const Ipp##Suffix *src1,\
+                                  const Ipp##Suffix *src2,\
+                                  Ipp##Suffix *dst,\
+                                  int len,\
+                                  int scale)\
+{\
+    return src1 == dst ? ippsSub_##Suffix##_ISfs(src2, dst, len, scale)\
+                      : (src2 == dst ? ippsSub_##Suffix##_ISfs(src1, dst, len, scale)\
+                                     : ippsSub_##Suffix##_Sfs(src1, src2, dst, len, scale));\
+}
+
+
+SUB_ASM(32f);
+SUB_ASM(64f);
+SUB_ASM(32fc);
+SUB_ASM(64fc);
+
+SUB_SFS_ASM(8u);
+SUB_SFS_ASM(16u);
+SUB_SFS_ASM(16s);
+SUB_SFS_ASM(32s);
+SUB_SFS_ASM(16sc);
+SUB_SFS_ASM(32sc);
+
+#undef SUB_ASM
+#undef SUB_SFS_ASM
+
+
+/////// div /////////
+template<typename T>
+static inline IppStatus div(const T *, const T*, T *, int, int);
+
+
+#define DIV_ASM(Suffix)\
+template<>\
+static inline IppStatus div<Ipp##Suffix>(\
+                                  const Ipp##Suffix *src1,\
+                                  const Ipp##Suffix *src2,\
+                                  Ipp##Suffix *dst,\
+                                  int len,\
+                                  int )\
+{\
+    return src1 == dst ? ippsDiv_##Suffix##_I(src2, dst, len)\
+                      : (src2 == dst ? ippsDiv_##Suffix##_I(src1, dst, len)\
+                                     : ippsDiv_##Suffix(src1, src2, dst, len));\
+}
+
+
+#define DIV_SFS_ASM(Suffix)\
+template<>\
+static inline IppStatus div<Ipp##Suffix>(\
+                                  const Ipp##Suffix *src1,\
+                                  const Ipp##Suffix *src2,\
+                                  Ipp##Suffix *dst,\
+                                  int len,\
+                                  int scale)\
+{\
+    return src1 == dst ? ippsDiv_##Suffix##_ISfs(src2, dst, len, scale)\
+                      : (src2 == dst ? ippsDiv_##Suffix##_ISfs(src1, dst, len, scale)\
+                                     : ippsDiv_##Suffix##_Sfs(src1, src2, dst, len, scale));\
+}
+
+
+DIV_ASM(32f);
+DIV_ASM(64f);
+DIV_ASM(32fc);
+DIV_ASM(64fc);
+
+DIV_SFS_ASM(8u);
+DIV_SFS_ASM(16u);
+DIV_SFS_ASM(16s);
+DIV_SFS_ASM(32s);
+DIV_SFS_ASM(16sc);
+
+#undef DIV_ASM
+#undef DIV_SFS_ASM
+
+/////// abs /////////
+template<typename T>
+static inline IppStatus abs(const T *, T *, int);
+
+
+#define ABS_ASM(Suffix)\
+template<>\
+static inline IppStatus abs<Ipp##Suffix>(\
+                                  const Ipp##Suffix *src,\
+                                  Ipp##Suffix *dst,\
+                                  int len)\
+{\
+    return src == dst ? ippsAbs_##Suffix##_I(dst, len)\
+                      : ippsAbs_##Suffix(src, dst, len);\
+}
+
+ABS_ASM(16s);
+ABS_ASM(32s);
+ABS_ASM(32f);
+ABS_ASM(64f);
+
+#undef ABS_ASM
+
+
+/////// sqr /////////
+template<typename T>
+static inline IppStatus sqr(const T *, T *, int, int);
+
+
+#define SQR_ASM(Suffix)\
+template<>\
+static inline IppStatus sqr<Ipp##Suffix>(\
+                                  const Ipp##Suffix *src,\
+                                  Ipp##Suffix *dst,\
+                                  int len, int)\
+{\
+    return src == dst ? ippsSqr_##Suffix##_I(dst, len)\
+                      : ippsSqr_##Suffix(src, dst, len);\
+}
+
+
+#define SQR_SFS_ASM(Suffix)\
+template<>\
+static inline IppStatus sqr<Ipp##Suffix>(\
+                                  const Ipp##Suffix *src,\
+                                  Ipp##Suffix *dst,\
+                                  int len, int scale)\
+{\
+    return src == dst ? ippsSqr_##Suffix##_ISfs(dst, len, scale)\
+                      : ippsSqr_##Suffix##_Sfs(src, dst, len, scale);\
+}
+
+SQR_ASM(32f);
+SQR_ASM(64f);
+SQR_ASM(32fc);
+SQR_ASM(64fc);
+
+SQR_SFS_ASM(8u);
+SQR_SFS_ASM(16u);
+SQR_SFS_ASM(16s);
+SQR_SFS_ASM(16sc);
+
+
+#undef SQR_ASM
+#undef SQR_SFS_ASM
+
+
+/////// sqrt /////////
+template<typename T>
+static inline IppStatus sqrt(const T *, T *, int, int);
+
+
+#define SQRT_ASM(Suffix)\
+template<>\
+static inline IppStatus sqrt<Ipp##Suffix>(\
+                                  const Ipp##Suffix *src,\
+                                  Ipp##Suffix *dst,\
+                                  int len, int)\
+{\
+    return src == dst ? ippsSqrt_##Suffix##_I(dst, len)\
+                      : ippsSqrt_##Suffix(src, dst, len);\
+}
+
+
+#define SQRT_SFS_ASM(Suffix)\
+template<>\
+static inline IppStatus sqrt<Ipp##Suffix>(\
+                                  const Ipp##Suffix *src,\
+                                  Ipp##Suffix *dst,\
+                                  int len, int scale)\
+{\
+    return ippsSqrt_##Suffix##_Sfs(src, dst, len, scale);\
+}
+
+SQRT_ASM(32f);
+SQRT_ASM(64f);
+SQRT_ASM(32fc);
+SQRT_ASM(64fc);
+
+SQRT_SFS_ASM(8u);
+SQRT_SFS_ASM(16u);
+SQRT_SFS_ASM(16s);
+SQRT_SFS_ASM(16sc);
+
+
+#undef SQRT_ASM
+#undef SQRT_SFS_ASM
+
+///// cubrt ////
+template<typename T>
+static inline IppStatus cubrt(const T*, T*, int);
+
+template<>
+static inline IppStatus cubrt<Ipp32f>(
+        const Ipp32f *src, Ipp32f *dst, int len)
+{
+    return ippsCubrt_32f(src, dst, len);
+}
+
+
+///// exp ////
+template<typename T>
+static inline IppStatus exp(const T*, T*, int);
+
+template<>
+static inline IppStatus exp<Ipp32f>(
+        const Ipp32f *src, Ipp32f *dst, int len)
+{
+    return ippsExp_32f(src, dst, len);
+}
+
+template<>
+static inline IppStatus exp<Ipp64f>(
+        const Ipp64f *src, Ipp64f *dst, int len)
+{
+    return ippsExp_64f(src, dst, len);
+}
+
+///// ln ///////
+template<typename T>
+static inline IppStatus ln(const T *, T *, int, int);
+
+
+#define LN_ASM(Suffix)\
+template<>\
+static inline IppStatus ln<Ipp##Suffix>(\
+                                  const Ipp##Suffix *src,\
+                                  Ipp##Suffix *dst,\
+                                  int len, int)\
+{\
+    return src == dst ? ippsLn_##Suffix##_I(dst, len)\
+                      : ippsLn_##Suffix(src, dst, len);\
+}
+
+
+#define LN_SFS_ASM(Suffix)\
+template<>\
+static inline IppStatus ln<Ipp##Suffix>(\
+                                  const Ipp##Suffix *src,\
+                                  Ipp##Suffix *dst,\
+                                  int len, int scale)\
+{\
+    return src == dst ? ippsLn_##Suffix##_ISfs(dst, len, scale)\
+                      : ippsLn_##Suffix##_Sfs(src, dst, len, scale);\
+}
+
+LN_ASM(32f);
+LN_ASM(64f);
+
+LN_SFS_ASM(16s);
+LN_SFS_ASM(32s);
+
+
+#undef LN_ASM
+#undef LN_SFS_ASM
+
+///// arctan /////////////
+template<typename T>
+static inline IppStatus arctan(const T*, T*, int);
+
+template<>
+static inline IppStatus arctan<Ipp32f>(
+        const Ipp32f *src, Ipp32f *dst, int len)
+{
+    return ippsArctan_32f(src, dst, len);
+}
+
+template<>
+static inline IppStatus arctan<Ipp64f>(
+        const Ipp64f *src, Ipp64f *dst, int len)
+{
+    return ippsArctan_64f(src, dst, len);
+}
+
+
+
+//////// normalize /////////
+template<typename T1, typename T2>
+static inline IppStatus normalize(
+        const T1*, T1*, int, T1, T2, int);
+
+#define NORMALIZE_ASM(Suffix1, Suffix2)\
+template<>\
+static inline IppStatus normalize<Ipp##Suffix1, Ipp##Suffix2>(\
+                                  const Ipp##Suffix1 *src,\
+                                  Ipp##Suffix1 *dst,\
+                                  int len, Ipp##Suffix1 sub,\
+                                  Ipp##Suffix2 div, int)\
+{\
+    return ippsNormalize_##Suffix1(src, dst, len, sub, div);\
+}
+
+
+
+NORMALIZE_ASM(32f, 32f);
+NORMALIZE_ASM(64f, 64f);
+NORMALIZE_ASM(32fc, 32f);
+NORMALIZE_ASM(64fc, 64f);
+
+#undef NORMALIZE_ASM
 
 }}
 

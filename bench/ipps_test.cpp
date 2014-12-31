@@ -30,6 +30,17 @@ std::complex<double> from_int<std::complex<double> >(int v)
     return std::complex<double>(v, v);
 }
 
+template<>
+std::complex<short> from_int<std::complex<short> >(int v)
+{
+    return std::complex<short>((short)v, (short)v);
+}
+
+template<>
+std::complex<int> from_int<std::complex<int> >(int v)
+{
+    return std::complex<int>(v, v);
+}
 
 
 //////////// COPY /////////////////
@@ -837,6 +848,692 @@ typedef testing::Types<uint8_t,unsigned char,
                        int> RShiftTypes;
 
 INSTANTIATE_TYPED_TEST_CASE_P(MTPRShift, RShiftTest, RShiftTypes);
+
+
+///// Add Const //////////
+template<typename T>
+class AddConstTest : public testing::Test
+{
+};
+
+//
+TYPED_TEST_CASE_P(AddConstTest);
+
+TYPED_TEST_P(AddConstTest, SanitCheck)
+{
+    TypeParam *buf0 = (TypeParam*)ipp::malloc<TypeParam>(4096);
+    TypeParam *buf1 = (TypeParam*)ipp::malloc<TypeParam>(4096);
+    
+    for(size_t i = 0; i < 4096; ++i){
+        buf0[i] = from_int<TypeParam>(0x4);
+    }
+
+    TypeParam r;
+    if(ipp::is_integer<
+            typename ipp::value_type<TypeParam>::type>::value){
+        ipp::add_const(buf0, from_int<TypeParam>(0x4), buf1, 4096, 1);  
+        ipp::add_const(buf0, from_int<TypeParam>(0x4), buf0, 4096, 1);  
+        r = from_int<TypeParam>(0x2) + from_int<TypeParam>(0x2);
+    }
+    else{
+        ipp::add_const(buf0, from_int<TypeParam>(0x4), buf1, 4096);  
+        ipp::add_const(buf0, from_int<TypeParam>(0x4), buf0, 4096);  
+        r = from_int<TypeParam>(0x4) + from_int<TypeParam>(0x4);
+    }
+
+    size_t ec0 = 0, ec1 = 0;
+    for(size_t i = 0; i < 4096; ++i){
+        ec0 += buf0[i] != r;
+        ec1 += buf1[i] != r;
+    }
+
+    EXPECT_EQ(ec0, 0);
+    EXPECT_EQ(ec1, 0);
+
+    ipp::free(buf0);
+    ipp::free(buf1);
+}
+
+
+REGISTER_TYPED_TEST_CASE_P(AddConstTest, 
+        SanitCheck);
+typedef testing::Types<unsigned char,
+                       short, unsigned short,
+                       int, std::complex<short>, std::complex<int>,
+                       float, double, std::complex<float>, std::complex<double>
+                       > AddConstTypes;
+
+INSTANTIATE_TYPED_TEST_CASE_P(MTPAddConst, AddConstTest, AddConstTypes);
+
+
+///// Mul Const //////////
+template<typename T>
+class MulConstTest : public testing::Test
+{
+};
+
+//
+TYPED_TEST_CASE_P(MulConstTest);
+
+TYPED_TEST_P(MulConstTest, SanitCheck)
+{
+    TypeParam *buf0 = (TypeParam*)ipp::malloc<TypeParam>(4096);
+    TypeParam *buf1 = (TypeParam*)ipp::malloc<TypeParam>(4096);
+    
+    for(size_t i = 0; i < 4096; ++i){
+        buf0[i] = from_int<TypeParam>(0x4);
+    }
+
+    TypeParam r;
+    if(ipp::is_integer<
+            typename ipp::value_type<TypeParam>::type>::value){
+        ipp::mul_const(buf0, from_int<TypeParam>(0x4), buf1, 4096, 1);  
+        ipp::mul_const(buf0, from_int<TypeParam>(0x4), buf0, 4096, 1);  
+        r = from_int<TypeParam>(0x4) * from_int<TypeParam>(0x2);
+    }
+    else{
+        ipp::mul_const(buf0, from_int<TypeParam>(0x4), buf1, 4096);  
+        ipp::mul_const(buf0, from_int<TypeParam>(0x4), buf0, 4096);  
+        r = from_int<TypeParam>(0x4) * from_int<TypeParam>(0x4);
+    }
+
+    size_t ec0 = 0, ec1 = 0;
+    for(size_t i = 0; i < 4096; ++i){
+        ec0 += buf0[i] != r;
+        ec1 += buf1[i] != r;
+    }
+
+    EXPECT_EQ(ec0, 0);
+    EXPECT_EQ(ec1, 0);
+
+    ipp::free(buf0);
+    ipp::free(buf1);
+}
+
+
+REGISTER_TYPED_TEST_CASE_P(MulConstTest, 
+        SanitCheck);
+typedef testing::Types<unsigned char,
+                       short, unsigned short,
+                       int, std::complex<short>, std::complex<int>,
+                       float, double, std::complex<float>, std::complex<double>
+                       > MulConstTypes;
+
+INSTANTIATE_TYPED_TEST_CASE_P(MTPMulConst, MulConstTest, MulConstTypes);
+
+
+///// Sub Const //////////
+template<typename T>
+class SubConstTest : public testing::Test
+{
+};
+
+//
+TYPED_TEST_CASE_P(SubConstTest);
+
+TYPED_TEST_P(SubConstTest, SanitCheck)
+{
+    TypeParam *buf0 = (TypeParam*)ipp::malloc<TypeParam>(4096);
+    TypeParam *buf1 = (TypeParam*)ipp::malloc<TypeParam>(4096);
+    
+    for(size_t i = 0; i < 4096; ++i){
+        buf0[i] = from_int<TypeParam>(0x8);
+    }
+
+    TypeParam r;
+    if(ipp::is_integer<
+            typename ipp::value_type<TypeParam>::type>::value){
+        ipp::sub_const(buf0, from_int<TypeParam>(0x4), buf1, 4096, 1);  
+        ipp::sub_const(buf0, from_int<TypeParam>(0x4), buf0, 4096, 1);  
+        r = from_int<TypeParam>(0x4) - from_int<TypeParam>(0x2);
+    }
+    else{
+        ipp::sub_const(buf0, from_int<TypeParam>(0x4), buf1, 4096);  
+        ipp::sub_const(buf0, from_int<TypeParam>(0x4), buf0, 4096);  
+        r = from_int<TypeParam>(0x8) - from_int<TypeParam>(0x4);
+    }
+
+    size_t ec0 = 0, ec1 = 0;
+    for(size_t i = 0; i < 4096; ++i){
+        ec0 += buf0[i] != r;
+        ec1 += buf1[i] != r;
+    }
+
+    EXPECT_EQ(ec0, 0);
+    EXPECT_EQ(ec1, 0);
+
+    ipp::free(buf0);
+    ipp::free(buf1);
+}
+
+
+REGISTER_TYPED_TEST_CASE_P(SubConstTest, 
+        SanitCheck);
+typedef testing::Types<unsigned char,
+                       short, unsigned short,
+                       int, std::complex<short>, std::complex<int>,
+                       float, double, std::complex<float>, std::complex<double>
+                       > SubConstTypes;
+
+INSTANTIATE_TYPED_TEST_CASE_P(MTPSubConst, SubConstTest, SubConstTypes);
+
+
+///// DIV Const //////////
+template<typename T>
+class DivConstTest : public testing::Test
+{
+};
+
+//
+TYPED_TEST_CASE_P(DivConstTest);
+
+TYPED_TEST_P(DivConstTest, SanitCheck)
+{
+    TypeParam *buf0 = (TypeParam*)ipp::malloc<TypeParam>(4096);
+    TypeParam *buf1 = (TypeParam*)ipp::malloc<TypeParam>(4096);
+    
+    for(size_t i = 0; i < 4096; ++i){
+        buf0[i] = from_int<TypeParam>(0x8);
+    }
+
+    TypeParam r;
+    if(ipp::is_integer<
+            typename ipp::value_type<TypeParam>::type>::value){
+        ipp::div_const(buf0, from_int<TypeParam>(0x4), buf1, 4096, 1);  
+        ipp::div_const(buf0, from_int<TypeParam>(0x4), buf0, 4096, 1);  
+        r = from_int<TypeParam>(0x4) / from_int<TypeParam>(0x4);
+    }
+    else{
+        ipp::div_const(buf0, from_int<TypeParam>(0x4), buf1, 4096);  
+        ipp::div_const(buf0, from_int<TypeParam>(0x4), buf0, 4096);  
+        r = from_int<TypeParam>(0x8) / from_int<TypeParam>(0x4);
+    }
+
+    size_t ec0 = 0, ec1 = 0;
+    for(size_t i = 0; i < 4096; ++i){
+        ec0 += buf0[i] != r;
+        ec1 += buf1[i] != r;
+    }
+
+    EXPECT_EQ(ec0, 0);
+    EXPECT_EQ(ec1, 0);
+
+    ipp::free(buf0);
+    ipp::free(buf1);
+}
+
+
+REGISTER_TYPED_TEST_CASE_P(DivConstTest, 
+        SanitCheck);
+typedef testing::Types<unsigned char,
+                       short, unsigned short,
+                       std::complex<short>, 
+                       float, double, std::complex<float>, std::complex<double>
+                       > DivConstTypes;
+
+INSTANTIATE_TYPED_TEST_CASE_P(MTPDivConst, DivConstTest, DivConstTypes);
+
+///// Add //////////
+template<typename T>
+class AddTest : public testing::Test
+{
+};
+
+//
+TYPED_TEST_CASE_P(AddTest);
+
+TYPED_TEST_P(AddTest, SanitCheck)
+{
+    TypeParam *buf0 = (TypeParam*)ipp::malloc<TypeParam>(4096);
+    TypeParam *buf1 = (TypeParam*)ipp::malloc<TypeParam>(4096);
+    TypeParam *buf2 = (TypeParam*)ipp::malloc<TypeParam>(4096);
+    
+    for(size_t i = 0; i < 4096; ++i){
+        buf0[i] = from_int<TypeParam>(0x4);
+        buf1[i] = from_int<TypeParam>(0x4);
+    }
+
+    TypeParam r;
+    if(ipp::is_integer<
+            typename ipp::value_type<TypeParam>::type>::value){
+        ipp::add(buf0, buf1, buf2, 4096, 1);  
+        ipp::add(buf0, buf1, buf0, 4096, 1);  
+        r = from_int<TypeParam>(0x2) + from_int<TypeParam>(0x2);
+    }
+    else{
+        ipp::add(buf0, buf1, buf2, 4096);  
+        ipp::add(buf0, buf1, buf0, 4096);  
+        r = from_int<TypeParam>(0x4) + from_int<TypeParam>(0x4);
+    }
+
+    size_t ec0 = 0, ec1 = 0;
+    for(size_t i = 0; i < 4096; ++i){
+        ec0 += buf0[i] != r;
+        ec1 += buf2[i] != r;
+    }
+
+    EXPECT_EQ(ec0, 0);
+    EXPECT_EQ(ec1, 0);
+
+    ipp::free(buf0);
+    ipp::free(buf1);
+    ipp::free(buf2);
+}
+
+
+REGISTER_TYPED_TEST_CASE_P(AddTest, 
+        SanitCheck);
+typedef testing::Types<unsigned char,
+                       short, unsigned short,
+                       int, std::complex<short>, std::complex<int>,
+                       float, double, std::complex<float>, std::complex<double>
+                       > AddTypes;
+
+INSTANTIATE_TYPED_TEST_CASE_P(MTPAdd, AddTest, AddTypes);
+
+///// Mul //////////
+template<typename T>
+class MulTest : public testing::Test
+{
+};
+
+//
+TYPED_TEST_CASE_P(MulTest);
+
+TYPED_TEST_P(MulTest, SanitCheck)
+{
+    TypeParam *buf0 = (TypeParam*)ipp::malloc<TypeParam>(4096);
+    TypeParam *buf1 = (TypeParam*)ipp::malloc<TypeParam>(4096);
+    TypeParam *buf2 = (TypeParam*)ipp::malloc<TypeParam>(4096);
+    
+    for(size_t i = 0; i < 4096; ++i){
+        buf0[i] = from_int<TypeParam>(0x4);
+        buf1[i] = from_int<TypeParam>(0x4);
+    }
+
+    TypeParam r;
+    if(ipp::is_integer<
+            typename ipp::value_type<TypeParam>::type>::value){
+        ipp::mul(buf0, buf1, buf2, 4096, 1);  
+        ipp::mul(buf0, buf1, buf0, 4096, 1);  
+        r = from_int<TypeParam>(0x4) * from_int<TypeParam>(0x2);
+    }
+    else{
+        ipp::mul(buf0, buf1, buf2, 4096);  
+        ipp::mul(buf0, buf1, buf0, 4096);  
+        r = from_int<TypeParam>(0x4) * from_int<TypeParam>(0x4);
+    }
+
+    size_t ec0 = 0, ec1 = 0;
+    for(size_t i = 0; i < 4096; ++i){
+        ec0 += buf0[i] != r;
+        ec1 += buf2[i] != r;
+    }
+
+    EXPECT_EQ(ec0, 0);
+    EXPECT_EQ(ec1, 0);
+
+    ipp::free(buf0);
+    ipp::free(buf1);
+    ipp::free(buf2);
+}
+
+
+REGISTER_TYPED_TEST_CASE_P(MulTest, 
+        SanitCheck);
+typedef testing::Types<unsigned char,
+                       short, unsigned short,
+                       int, std::complex<short>, std::complex<int>,
+                       float, double, std::complex<float>, std::complex<double>
+                       > MulTypes;
+
+INSTANTIATE_TYPED_TEST_CASE_P(MTPMul, MulTest, MulTypes);
+
+
+///// Sub //////////
+template<typename T>
+class SubTest : public testing::Test
+{
+};
+
+//
+TYPED_TEST_CASE_P(SubTest);
+
+TYPED_TEST_P(SubTest, SanitCheck)
+{
+    TypeParam *buf0 = (TypeParam*)ipp::malloc<TypeParam>(4096);
+    TypeParam *buf1 = (TypeParam*)ipp::malloc<TypeParam>(4096);
+    TypeParam *buf2 = (TypeParam*)ipp::malloc<TypeParam>(4096);
+    
+    for(size_t i = 0; i < 4096; ++i){
+        buf0[i] = from_int<TypeParam>(0x8);
+        buf1[i] = from_int<TypeParam>(0x4);
+    }
+
+    TypeParam r;
+    if(ipp::is_integer<
+            typename ipp::value_type<TypeParam>::type>::value){
+        ipp::sub(buf1, buf0, buf2, 4096, 1);  
+        ipp::sub(buf1, buf0, buf0, 4096, 1);  
+        r = from_int<TypeParam>(0x4) - from_int<TypeParam>(0x2);
+    }
+    else{
+        ipp::sub(buf1, buf0, buf2, 4096);  
+        ipp::sub(buf1, buf0, buf0, 4096);  
+        r = from_int<TypeParam>(0x8) - from_int<TypeParam>(0x4);
+    }
+
+    size_t ec0 = 0, ec1 = 0;
+    for(size_t i = 0; i < 4096; ++i){
+        ec0 += buf0[i] != r;
+        ec1 += buf2[i] != r;
+    }
+
+    EXPECT_EQ(ec0, 0);
+    EXPECT_EQ(ec1, 0);
+
+    ipp::free(buf0);
+    ipp::free(buf1);
+    ipp::free(buf2);
+}
+
+
+REGISTER_TYPED_TEST_CASE_P(SubTest, 
+        SanitCheck);
+typedef testing::Types<unsigned char,
+                       short, unsigned short,
+                       int, std::complex<short>, std::complex<int>,
+                       float, double, std::complex<float>, std::complex<double>
+                       > SubTypes;
+
+INSTANTIATE_TYPED_TEST_CASE_P(MTPSub, SubTest, SubTypes);
+
+
+///// Div //////////
+template<typename T>
+class DivTest : public testing::Test
+{
+};
+
+//
+TYPED_TEST_CASE_P(DivTest);
+
+TYPED_TEST_P(DivTest, SanitCheck)
+{
+    TypeParam *buf0 = (TypeParam*)ipp::malloc<TypeParam>(4096);
+    TypeParam *buf1 = (TypeParam*)ipp::malloc<TypeParam>(4096);
+    TypeParam *buf2 = (TypeParam*)ipp::malloc<TypeParam>(4096);
+    
+    for(size_t i = 0; i < 4096; ++i){
+        buf0[i] = from_int<TypeParam>(0x8);
+        buf1[i] = from_int<TypeParam>(0x4);
+    }
+
+    TypeParam r;
+    if(ipp::is_integer<
+            typename ipp::value_type<TypeParam>::type>::value){
+        ipp::div(buf1, buf0, buf2, 4096, 1);  
+        ipp::div(buf1, buf0, buf0, 4096, 1);  
+        r = from_int<TypeParam>(0x4) / from_int<TypeParam>(0x4);
+    }
+    else{
+        ipp::div(buf1, buf0, buf2, 4096);  
+        ipp::div(buf1, buf0, buf0, 4096);  
+        r = from_int<TypeParam>(0x8) / from_int<TypeParam>(0x4);
+    }
+
+    size_t ec0 = 0, ec1 = 0;
+    for(size_t i = 0; i < 4096; ++i){
+        ec0 += buf0[i] != r;
+        ec1 += buf2[i] != r;
+    }
+
+    EXPECT_EQ(ec0, 0);
+    EXPECT_EQ(ec1, 0);
+
+    ipp::free(buf0);
+    ipp::free(buf1);
+    ipp::free(buf2);
+}
+
+
+REGISTER_TYPED_TEST_CASE_P(DivTest, 
+        SanitCheck);
+typedef testing::Types<unsigned char,
+                       short, unsigned short,
+                       int, std::complex<short>,  
+                       float, double, std::complex<float>, std::complex<double>
+                       > DivTypes;
+
+INSTANTIATE_TYPED_TEST_CASE_P(MTPDiv, DivTest, DivTypes);
+
+
+
+
+///// Abs //////////
+template<typename T>
+class AbsTest : public testing::Test
+{
+};
+
+//
+TYPED_TEST_CASE_P(AbsTest);
+
+TYPED_TEST_P(AbsTest, SanitCheck)
+{
+    TypeParam *buf0 = (TypeParam*)ipp::malloc<TypeParam>(4096);
+    TypeParam *buf1 = (TypeParam*)ipp::malloc<TypeParam>(4096);
+    
+    for(size_t i = 0; i < 4096; ++i){
+        buf0[i] = from_int<TypeParam>(-1);
+    }
+
+    ipp::abs(buf0, buf1, 4096);
+    ipp::abs(buf0, buf0, 4096);
+    TypeParam r = from_int<TypeParam>(1);
+
+    size_t ec0 = 0, ec1 = 0;
+    for(size_t i = 0; i < 4096; ++i){
+        ec0 += buf0[i] != r;
+        ec1 += buf1[i] != r;
+    }
+
+    EXPECT_EQ(ec0, 0);
+    EXPECT_EQ(ec1, 0);
+
+    ipp::free(buf0);
+    ipp::free(buf1);
+}
+
+
+REGISTER_TYPED_TEST_CASE_P(AbsTest, 
+        SanitCheck);
+typedef testing::Types<
+                       short,
+                       int,  
+                       float, double
+                       > AbsTypes;
+
+INSTANTIATE_TYPED_TEST_CASE_P(MTPAbs, AbsTest, AbsTypes);
+
+
+
+///// Sqr //////////
+template<typename T>
+class SqrTest : public testing::Test
+{
+};
+
+//
+TYPED_TEST_CASE_P(SqrTest);
+
+TYPED_TEST_P(SqrTest, SanitCheck)
+{
+    TypeParam *buf0 = (TypeParam*)ipp::malloc<TypeParam>(4096);
+    TypeParam *buf1 = (TypeParam*)ipp::malloc<TypeParam>(4096);
+    
+    for(size_t i = 0; i < 4096; ++i){
+        buf0[i] = from_int<TypeParam>(0x8);
+    }
+
+    TypeParam r;
+    if(ipp::is_integer<
+            typename ipp::value_type<TypeParam>::type>::value){
+        ipp::sqr(buf0, buf1, 4096, 1);  
+        ipp::sqr(buf0, buf0,  4096, 1);
+        r = from_int<TypeParam>(8) * from_int<TypeParam>(4);
+    }
+    else{
+        ipp::sqr(buf0, buf1, 4096);  
+        ipp::sqr(buf0, buf0, 4096);  
+        r = from_int<TypeParam>(0x8) * from_int<TypeParam>(0x8);
+    }
+
+    size_t ec0 = 0, ec1 = 0;
+    for(size_t i = 0; i < 4096; ++i){
+        ec0 += buf0[i] != r;
+        ec1 += buf1[i] != r;
+    }
+
+    EXPECT_EQ(ec0, 0);
+    EXPECT_EQ(ec1, 0);
+
+    ipp::free(buf0);
+    ipp::free(buf1);
+}
+
+
+REGISTER_TYPED_TEST_CASE_P(SqrTest, 
+        SanitCheck);
+typedef testing::Types<unsigned char,
+                       short, unsigned short,
+                       std::complex<short>,  
+                       float, double, std::complex<float>, std::complex<double>
+                       > SqrTypes;
+
+INSTANTIATE_TYPED_TEST_CASE_P(MTPSqr, SqrTest, SqrTypes);
+
+
+
+
+///// Sqrt //////////
+template<typename T>
+class SqrtTest : public testing::Test
+{
+};
+
+//
+TYPED_TEST_CASE_P(SqrtTest);
+
+TYPED_TEST_P(SqrtTest, SanitCheck)
+{
+    TypeParam *buf0 = (TypeParam*)ipp::malloc<TypeParam>(4096);
+    TypeParam *buf1 = (TypeParam*)ipp::malloc<TypeParam>(4096);
+    
+    for(size_t i = 0; i < 4096; ++i){
+        buf0[i] = from_int<TypeParam>(0x4);
+    }
+
+    TypeParam r;
+    if(ipp::is_integer<
+            typename ipp::value_type<TypeParam>::type>::value){
+        ipp::sqrt(buf0, buf1, 4096, 0);  
+        ipp::sqrt(buf0, buf0,  4096, 0);
+        r = (TypeParam)sqrt(from_int<TypeParam>(4));
+    }
+    else{
+        ipp::sqrt(buf0, buf1, 4096);  
+        ipp::sqrt(buf0, buf0, 4096);  
+        r = (TypeParam)sqrt(from_int<TypeParam>(4));
+    }
+
+    size_t ec0 = 0, ec1 = 0;
+    for(size_t i = 0; i < 4096; ++i){
+        ec0 += buf0[i] != r;
+        ec1 += buf1[i] != r;
+    }
+
+    EXPECT_EQ(ec0, 0);
+    EXPECT_EQ(ec1, 0);
+
+    ipp::free(buf0);
+    ipp::free(buf1);
+}
+
+
+REGISTER_TYPED_TEST_CASE_P(SqrtTest, 
+        SanitCheck);
+typedef testing::Types<unsigned char,
+                       short, unsigned short,
+                       //std::complex<short>,  
+                       float, double, 
+					   //std::complex<float>, 
+					   std::complex<double>
+                       > SqrtTypes;
+
+INSTANTIATE_TYPED_TEST_CASE_P(MTPSqrt, SqrtTest, SqrtTypes);
+
+
+
+///// Ln //////////
+template<typename T>
+class LnTest : public testing::Test
+{
+};
+
+//
+TYPED_TEST_CASE_P(LnTest);
+
+TYPED_TEST_P(LnTest, SanitCheck)
+{
+    TypeParam *buf0 = (TypeParam*)ipp::malloc<TypeParam>(4096);
+    TypeParam *buf1 = (TypeParam*)ipp::malloc<TypeParam>(4096);
+    
+    for(size_t i = 0; i < 4096; ++i){
+        buf0[i] = from_int<TypeParam>(10);
+    }
+
+    TypeParam r;
+    if(ipp::is_integer<
+            typename ipp::value_type<TypeParam>::type>::value){
+        ipp::ln(buf0, buf1, 4096, 1);  
+        ipp::ln(buf0, buf0,  4096, 1);
+        r = (TypeParam)log(10) / 2;
+    }
+    else{
+        ipp::ln(buf0, buf1, 4096);  
+        ipp::ln(buf0, buf0, 4096);  
+        r = (TypeParam)log(10);
+    }
+
+    size_t ec0 = 0, ec1 = 0;
+    for(size_t i = 0; i < 4096; ++i){
+        ec0 += buf0[i] != r;
+        ec1 += buf1[i] != r;
+    }
+
+    EXPECT_EQ(ec0, 0);
+    EXPECT_EQ(ec1, 0);
+
+    ipp::free(buf0);
+    ipp::free(buf1);
+}
+
+
+REGISTER_TYPED_TEST_CASE_P(LnTest, 
+        SanitCheck);
+typedef testing::Types<
+                       short, int,
+                       float, double
+                       > LnTypes;
+
+INSTANTIATE_TYPED_TEST_CASE_P(MTPLn, LnTest, LnTypes);
+
+
+
+
+
+
 
 
 

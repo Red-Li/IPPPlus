@@ -72,11 +72,33 @@ template<>
 struct get_float<double>{ typedef Ipp64f type; };
 
 
+template<size_t Size, bool Signed>
+struct get_int_cplx
+{
+    static_assert(Size == 0, "unsupported integer complex");
+};
+
+template<>
+struct get_int_cplx<2, true>
+{
+    typedef Ipp16sc type;
+};
+
+template<>
+struct get_int_cplx<4, true>
+{
+    typedef Ipp32sc type;
+};
+
 
 template<typename T>
 struct get_cplx
 {
-    static_assert(sizeof(T) == 0, "unsupported complex type");
+    typedef typename value_type<T>::type integer_type;
+    static_assert(is_integer<integer_type>::value, "need integer type");
+    typedef typename get_int_cplx<
+        sizeof(integer_type), 
+        is_signed_integer<integer_type>::value >::type type;
 };
 
 template<>
@@ -86,17 +108,6 @@ struct get_cplx<std::complex<float> >
 };
 template<>
 struct get_cplx<std::complex<double> >
-{
-    typedef Ipp64fc type; 
-};
-
-template<>
-struct get_cplx<Ipp32fc>
-{ 
-    typedef Ipp32fc type;
-};
-template<>
-struct get_cplx<Ipp64fc>
 {
     typedef Ipp64fc type; 
 };

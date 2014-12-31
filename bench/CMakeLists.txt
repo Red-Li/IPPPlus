@@ -15,7 +15,7 @@ target_include_directories(ipp_bench PRIVATE
     )
 
 
-target_link_libraries(ipp_bench gtest gtest_main ${IPP_LIB_S} ${IPP_LIB_CORE}
+target_link_libraries(ipp_bench gtest gtest_main ${IPP_LIB_S} ${IPP_LIB_CORE} ${IPP_LIB_VM}
     )
 
 
