@@ -72,6 +72,7 @@ template<>
 struct get_float<double>{ typedef Ipp64f type; };
 
 
+
 template<typename T>
 struct get_cplx
 {
@@ -79,9 +80,26 @@ struct get_cplx
 };
 
 template<>
-struct get_cplx<float> { typedef Ipp32fc type; };
+struct get_cplx<std::complex<float> >
+{ 
+    typedef Ipp32fc type;
+};
 template<>
-struct get_cplx<double> { typedef Ipp64fc type; };
+struct get_cplx<std::complex<double> >
+{
+    typedef Ipp64fc type; 
+};
+
+template<>
+struct get_cplx<Ipp32fc>
+{ 
+    typedef Ipp32fc type;
+};
+template<>
+struct get_cplx<Ipp64fc>
+{
+    typedef Ipp64fc type; 
+};
 
 
 template<typename T, int Tid>
@@ -96,7 +114,7 @@ struct get<T, TYPE_CAT_INT>
 template<typename T>
 struct get<T, TYPE_CAT_COMPLEX>
 {
-    typedef typename get_cplx<typename value_type<T>::type>::type type;
+    typedef typename get_cplx<T>::type type;
 };
 template<typename T>
 struct get<T, TYPE_CAT_FLOAT>

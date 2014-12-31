@@ -245,6 +245,154 @@ static inline IppStatus vector_slope(
 
 
 
+/**
+ * @defgroup EssentialFunctions  This section describes the Intel IPP signal processing functions that perform logical and shift operations on vectors. Logical and shift functions are only defined for integer arguments. 
+ * */
+
+/**
+ * @defgroup LogicalShiftFunctions Logical and Shift Functions
+ * @ingroup EssentialFunctions
+ * @{
+ **/
+
+
+
+
+/* --------------------------------------------------------------------------*/
+/**
+ * @brief Computes the bitwise AND of a scalar value and each element of a vector.
+ *
+ * @tparam T
+ * @param src
+ * @param val
+ * @param dst
+ * @param len
+ *
+ * @returns   
+ */
+/* ----------------------------------------------------------------------------*/
+template<typename T>
+static inline IppStatus and_const(const T *src, T val, T *dst, int len)
+{
+    static_assert(is_integer<T>::value, "should be integer");
+    typedef get_int<sizeof(T), false>::type itype;
+    return detail::and_const<itype>(
+            (const itype*)src, *(itype*)&val, (itype*)dst, len);
+};
+
+
+/* --------------------------------------------------------------------------*/
+/**
+ * @brief Computes the bitwise OR of a scalar value and each element of a vector.
+ *
+ * @tparam T
+ * @param src
+ * @param val
+ * @param dst
+ * @param len
+ *
+ * @returns   
+ */
+/* ----------------------------------------------------------------------------*/
+template<typename T>
+static inline IppStatus or_const(const T *src, T val, T *dst, int len)
+{
+    static_assert(is_integer<T>::value, "should be integer");
+    typedef get_int<sizeof(T), false>::type itype;
+    return detail::or_const<itype>((const itype*)src, *(itype*)&val,
+                             (itype*)dst, len); 
+};
+
+
+/* --------------------------------------------------------------------------*/
+/**
+ * @brief Computes the bitwise XOR of a scalar value and each element of a vector.
+ *
+ * @tparam T
+ * @param src
+ * @param val
+ * @param dst
+ * @param len
+ *
+ * @returns   
+ */
+/* ----------------------------------------------------------------------------*/
+template<typename T>
+static inline IppStatus xor_const(const T *src, T val, T *dst, int len)
+{
+    static_assert(is_integer<T>::value, "should be integer");
+    typedef get_int<sizeof(T), false>::type itype;
+    return detail::xor_const<itype>((const itype*)src, *(itype*)&val,
+                             (itype*)dst, len); 
+};
+
+
+
+template<typename T>
+static inline IppStatus and(const T *src1, const T *src2, T *dst, int len)
+{
+    static_assert(is_integer<T>::value, "should be integer");
+    typedef get_int<sizeof(T), false>::type itype;
+    return detail::and<itype>((const itype*)src1, (const itype*)src2,
+                              (itype*)dst, len); 
+
+}
+
+
+template<typename T>
+static inline IppStatus or(const T *src1, const T *src2, T *dst, int len)
+{
+    static_assert(is_integer<T>::value, "should be integer");
+    typedef get_int<sizeof(T), false>::type itype;
+    return detail::or<itype>((const itype*)src1, (const itype*)src2,
+                              (itype*)dst, len); 
+
+}
+
+template<typename T>
+static inline IppStatus xor(const T *src1, const T *src2, T *dst, int len)
+{
+    static_assert(is_integer<T>::value, "should be integer");
+    typedef get_int<sizeof(T), false>::type itype;
+    return detail::xor<itype>((const itype*)src1, (const itype*)src2,
+                              (itype*)dst, len); 
+
+}
+
+
+template<typename T>
+static inline IppStatus not(const T *src, T *dst, int len)
+{
+    static_assert(is_integer<T>::value, "should be integer");
+    typedef get_int<sizeof(T), false>::type itype;
+    return detail::not<itype>((const itype*)src, (itype*)dst, len); 
+}
+
+
+template<typename T>
+static inline IppStatus lshift_const(const T *src, int val, T *dst, int len)
+{
+    static_assert(is_integer<T>::value, "should be integer");
+    typedef get<T>::type itype;
+    return detail::lshift_const<itype>(
+            (const itype*)src, val, (itype*)dst, len); 
+}
+
+template<typename T>
+static inline IppStatus rshift_const(const T *src, int val, T *dst, int len)
+{
+    static_assert(is_integer<T>::value, "should be integer");
+    typedef get<T>::type itype;
+    return detail::rshift_const<itype>(
+            (const itype*)src, val, (itype*)dst, len); 
+}
+
+
+
+/**@}*/
+
+
+
 
 
 }

@@ -522,6 +522,181 @@ VECTOR_SLOPE_ASM_D(64f);
 #undef VECTOR_SLOPE_ASM
 
 
+///// and const /////////
+#define AND_CONST_ASM(Suffix)\
+template<typename T>\
+static inline IppStatus and_const(const Ipp##Suffix *src, \
+                                  Ipp##Suffix val,\
+                                  Ipp##Suffix* dst,\
+                                  int len)\
+{\
+    return src == dst ? ippsAndC_##Suffix##_I(val, dst, len)\
+                      : ippsAndC_##Suffix(src, val, dst, len);\
+}
+
+AND_CONST_ASM(8u);
+AND_CONST_ASM(16u);
+AND_CONST_ASM(32u);
+
+
+#undef AND_CONST_ASM
+
+
+///// or const /////////
+#define OR_CONST_ASM(Suffix)\
+template<typename T>\
+static inline IppStatus or_const(const Ipp##Suffix *src, \
+                                  Ipp##Suffix val,\
+                                  Ipp##Suffix* dst,\
+                                  int len)\
+{\
+    return src == dst ? ippsOrC_##Suffix##_I(val, dst, len)\
+                      : ippsOrC_##Suffix(src, val, dst, len);\
+}
+
+OR_CONST_ASM(8u);
+OR_CONST_ASM(16u);
+OR_CONST_ASM(32u);
+
+
+#undef OR_CONST_ASM
+
+
+
+///// xor const /////////
+#define XOR_CONST_ASM(Suffix)\
+template<typename T>\
+static inline IppStatus xor_const(const Ipp##Suffix *src, \
+                                  Ipp##Suffix val,\
+                                  Ipp##Suffix* dst,\
+                                  int len)\
+{\
+    return src == dst ? ippsXorC_##Suffix##_I(val, dst, len)\
+                      : ippsXorC_##Suffix(src, val, dst, len);\
+}
+
+XOR_CONST_ASM(8u);
+XOR_CONST_ASM(16u);
+XOR_CONST_ASM(32u);
+
+
+#undef XOR_CONST_ASM
+
+
+///// and /////////
+#define AND_ASM(Suffix)\
+template<typename T>\
+static inline IppStatus and(const Ipp##Suffix *src1, \
+                            const Ipp##Suffix *src2,\
+                                  Ipp##Suffix* dst,\
+                                  int len)\
+{\
+    return src1 == dst ? ippsAnd_##Suffix##_I(src2, dst, len)\
+                       : (src2 == dst ? ippsAnd_##Suffix##_I(src1, dst, len)\
+                         : ippsAnd_##Suffix(src1, src2, dst, len));\
+}
+
+AND_ASM(8u);
+AND_ASM(16u);
+AND_ASM(32u);
+
+#undef AND_ASM
+
+
+///// or /////////
+#define OR_ASM(Suffix)\
+template<typename T>\
+static inline IppStatus or(const Ipp##Suffix *src1, \
+                            const Ipp##Suffix *src2,\
+                                  Ipp##Suffix* dst,\
+                                  int len)\
+{\
+    return src1 == dst ? ippsOr_##Suffix##_I(src2, dst, len)\
+                       : (src2 == dst ? ippsOr_##Suffix##_I(src1, dst, len)\
+                         : ippsOr_##Suffix(src1, src2, dst, len));\
+}
+
+OR_ASM(8u);
+OR_ASM(16u);
+OR_ASM(32u);
+
+#undef OR_ASM
+
+///// xor /////////
+#define XOR_ASM(Suffix)\
+template<typename T>\
+static inline IppStatus xor(const Ipp##Suffix *src1, \
+                            const Ipp##Suffix *src2,\
+                                  Ipp##Suffix* dst,\
+                                  int len)\
+{\
+    return src1 == dst ? ippsXor_##Suffix##_I(src2, dst, len)\
+                       : (src2 == dst ? ippsXor_##Suffix##_I(src1, dst, len)\
+                         : ippsXor_##Suffix(src1, src2, dst, len));\
+}
+
+XOR_ASM(8u);
+XOR_ASM(16u);
+XOR_ASM(32u);
+
+#undef XOR_ASM
+
+///// not /////////
+#define NOT_ASM(Suffix)\
+template<typename T>\
+static inline IppStatus not(const Ipp##Suffix *src, \
+                                  Ipp##Suffix* dst,\
+                                  int len)\
+{\
+    return src == dst ? ippsNot_##Suffix##_I(dst, len)\
+                      : ippsNot_##Suffix(src, dst, len);\
+}
+
+NOT_ASM(8u);
+NOT_ASM(16u);
+NOT_ASM(32u);
+
+#undef NOT_ASM
+
+
+///// lshift /////////
+#define LSHIFT_ASM(Suffix)\
+template<typename T>\
+static inline IppStatus lshift_const(const Ipp##Suffix *src, \
+                                  int val,\
+                                  Ipp##Suffix* dst,\
+                                  int len)\
+{\
+    return src == dst ? ippsLShiftC_##Suffix##_I(val, dst, len)\
+                      : ippsLShiftC_##Suffix(src, val, dst, len);\
+}
+
+LSHIFT_ASM(8u);
+LSHIFT_ASM(16u);
+LSHIFT_ASM(16s);
+LSHIFT_ASM(32s);
+
+#undef LSHIFT_ASM
+
+///// rshift /////////
+#define RSHIFT_ASM(Suffix)\
+template<typename T>\
+static inline IppStatus rshift_const(const Ipp##Suffix *src, \
+                                  int val,\
+                                  Ipp##Suffix* dst,\
+                                  int len)\
+{\
+    return src == dst ? ippsRShiftC_##Suffix##_I(val, dst, len)\
+                      : ippsRShiftC_##Suffix(src, val, dst, len);\
+}
+
+RSHIFT_ASM(8u);
+RSHIFT_ASM(16u);
+RSHIFT_ASM(16s);
+RSHIFT_ASM(32s);
+
+#undef RSHIFT_ASM
+
 
 }}
 

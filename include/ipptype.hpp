@@ -26,6 +26,56 @@ struct is_complex
     static const bool value = false;
 };
 
+template<>
+struct is_complex<Ipp32fc>
+{
+    static const bool value = true;
+};
+
+template<>
+struct is_complex<Ipp64fc>
+{
+    static const bool value = true;
+};
+
+template<>
+struct is_complex<Ipp32fc&>
+{
+    static const bool value = true;
+};
+
+template<>
+struct is_complex<Ipp64fc&>
+{
+    static const bool value = true;
+};
+
+
+
+template<>
+struct is_complex<const Ipp32fc>
+{
+    static const bool value = true;
+};
+
+template<>
+struct is_complex<const Ipp64fc>
+{
+    static const bool value = true;
+};
+
+template<>
+struct is_complex<const Ipp32fc&>
+{
+    static const bool value = true;
+};
+
+template<>
+struct is_complex<const Ipp64fc&>
+{
+    static const bool value = true;
+};
+
 template<typename T>
 struct is_complex<std::complex<T> >
 {
@@ -86,8 +136,6 @@ struct is_float
         _test_equal<T, true, is_complex<T>::value>::value;
 };
 
-
-
 template<typename T>
 struct value_type
 {
@@ -115,6 +163,10 @@ struct value_type<const std::complex<T>>
     typedef T type;
 };
 
+
+
+
+
 //type category
 enum{
     TYPE_CAT_INT,
@@ -129,6 +181,13 @@ enum{
 
 
 namespace ipp{
+
+template<size_t Size, bool Signed>
+struct get_int
+{
+    typedef typename detail::get_int<Size, Signed>::type type;
+};
+
 
 template<typename T>
 struct type_cat_index
