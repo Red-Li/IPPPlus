@@ -1490,6 +1490,516 @@ NORMALIZE_ASM(64fc, 64f);
 
 #undef NORMALIZE_ASM
 
+
+
+
+//////////sort_ascend /////////
+template<typename T>
+static inline IppStatus sort_ascend(T *, int);
+
+#define SORT_ASCEND(Suffix)\
+template<>\
+static inline IppStatus sort_ascend<Ipp##Suffix>(\
+        Ipp##Suffix *buf, int len)\
+{\
+    return ippsSortAscend_##Suffix##_I(buf, len);\
+}
+
+SORT_ASCEND(8u);
+SORT_ASCEND(16u);
+SORT_ASCEND(16s);
+SORT_ASCEND(32s);
+SORT_ASCEND(32f);
+SORT_ASCEND(64f);
+
+
+#undef SORT_ASCEND
+
+
+
+//////////sort_descend /////////
+template<typename T>
+static inline IppStatus sort_descend(T *, int);
+
+#define SORT_DESCEND(Suffix)\
+template<>\
+static inline IppStatus sort_descend<Ipp##Suffix>(\
+        Ipp##Suffix *buf, int len)\
+{\
+    return ippsSortDescend_##Suffix##_I(buf, len);\
+}
+
+SORT_DESCEND(8u);
+SORT_DESCEND(16u);
+SORT_DESCEND(16s);
+SORT_DESCEND(32s);
+SORT_DESCEND(32f);
+SORT_DESCEND(64f);
+
+#undef SORT_DESCEND
+
+
+
+//////////sort_index_descend /////////
+template<typename T>
+static inline IppStatus sort_index_ascend(T *, int*, int);
+
+#define SORT_INDEX_ASCEND(Suffix)\
+template<>\
+static inline IppStatus sort_index_ascend<Ipp##Suffix>(\
+        Ipp##Suffix *buf, int *idxs, int len)\
+{\
+    return ippsSortIndexAscend_##Suffix##_I(buf, idxs, len);\
+}
+
+SORT_INDEX_ASCEND(8u);
+SORT_INDEX_ASCEND(16u);
+SORT_INDEX_ASCEND(16s);
+SORT_INDEX_ASCEND(32s);
+SORT_INDEX_ASCEND(32f);
+SORT_INDEX_ASCEND(64f);
+
+
+#undef SORT_INDEX_ASCEND
+
+
+//////////sort_index_descend /////////
+template<typename T>
+static inline IppStatus sort_index_descend(T *, int*, int);
+
+#define SORT_INDEX_DESCEND(Suffix)\
+template<>\
+static inline IppStatus sort_index_descend<Ipp##Suffix>(\
+        Ipp##Suffix *buf, int *idxs, int len)\
+{\
+    return ippsSortIndexDescend_##Suffix##_I(buf, idxs, len);\
+}
+
+SORT_INDEX_DESCEND(8u);
+SORT_INDEX_DESCEND(16u);
+SORT_INDEX_DESCEND(16s);
+SORT_INDEX_DESCEND(32s);
+SORT_INDEX_DESCEND(32f);
+SORT_INDEX_DESCEND(64f);
+
+#undef SORT_INDEX_DESCEND
+
+
+//////////sort_radix_ascend /////////
+template<typename T>
+static inline IppStatus sort_radix_ascend(T *, T*, Ipp32s);
+
+#define SORT_RADIX_ASCEND(Suffix)\
+template<>\
+static inline IppStatus sort_radix_ascend<Ipp##Suffix>(\
+        Ipp##Suffix *buf, Ipp##Suffix *tmp, Ipp32s len)\
+{\
+    return ippsSortRadixAscend_##Suffix##_I(buf, tmp, len);\
+}
+
+SORT_RADIX_ASCEND(8u);
+SORT_RADIX_ASCEND(16u);
+SORT_RADIX_ASCEND(16s);
+SORT_RADIX_ASCEND(32s);
+SORT_RADIX_ASCEND(32u);
+SORT_RADIX_ASCEND(32f);
+SORT_RADIX_ASCEND(64f);
+
+#undef SORT_RADIX_ASCEND
+
+//////////sort_radix_descend /////////
+template<typename T>
+static inline IppStatus sort_radix_descend(T *, T*, Ipp32s);
+
+#define SORT_RADIX_DESCEND(Suffix)\
+template<>\
+static inline IppStatus sort_radix_descend<Ipp##Suffix>(\
+        Ipp##Suffix *buf, Ipp##Suffix *tmp, Ipp32s len)\
+{\
+    return ippsSortRadixDescend_##Suffix##_I(buf, tmp, len);\
+}
+
+SORT_RADIX_DESCEND(8u);
+SORT_RADIX_DESCEND(16u);
+SORT_RADIX_DESCEND(16s);
+SORT_RADIX_DESCEND(32s);
+SORT_RADIX_DESCEND(32u);
+SORT_RADIX_DESCEND(32f);
+SORT_RADIX_DESCEND(64f);
+
+#undef SORT_RADIX_DESCEND
+
+
+//////////sort_radix_index_ascend /////////
+template<typename T>
+static inline IppStatus sort_radix_index_ascend(const T * const,
+                                                 Ipp32s, Ipp32s*,
+                                                 Ipp32s*, Ipp32s);
+
+#define SORT_RADIX_INDEX_ASCEND(Suffix)\
+template<>\
+static inline IppStatus sort_radix_index_ascend<Ipp##Suffix>(\
+        const Ipp##Suffix * const buf, Ipp32s stride, Ipp32s *idxs,\
+        Ipp32s *tmp_idxs, Ipp32s len)\
+{\
+    return ippsSortRadixIndexAscend_##Suffix(\
+            buf, stride, idxs, tmp_idxs, len);\
+}
+
+SORT_RADIX_INDEX_ASCEND(8u);
+SORT_RADIX_INDEX_ASCEND(16u);
+SORT_RADIX_INDEX_ASCEND(16s);
+SORT_RADIX_INDEX_ASCEND(32s);
+SORT_RADIX_INDEX_ASCEND(32u);
+SORT_RADIX_INDEX_ASCEND(32f);
+
+#undef SORT_RADIX_INDEX_ASCEND
+
+
+//////////sort_radix_index_descend /////////
+template<typename T>
+static inline IppStatus sort_radix_index_descend(const T * const,
+                                                 Ipp32s, Ipp32s*,
+                                                 Ipp32s*, Ipp32s);
+#define SORT_RADIX_INDEX_DESCEND(Suffix)\
+template<>\
+static inline IppStatus sort_radix_index_descend<Ipp##Suffix>(\
+        const Ipp##Suffix * const buf, Ipp32s stride, Ipp32s *idxs,\
+        Ipp32s *tmp_idxs, Ipp32s len)\
+{\
+    return ippsSortRadixIndexDescend_##Suffix(\
+            buf, stride, idxs, tmp_idxs, len);\
+}
+
+SORT_RADIX_INDEX_DESCEND(8u);
+SORT_RADIX_INDEX_DESCEND(16u);
+SORT_RADIX_INDEX_DESCEND(16s);
+SORT_RADIX_INDEX_DESCEND(32s);
+SORT_RADIX_INDEX_DESCEND(32u);
+SORT_RADIX_INDEX_DESCEND(32f);
+
+#undef SORT_RADIX_INDEX_DESCEND
+
+
+//////////swap_bytes/////////
+template<typename T>
+static inline IppStatus swap_bytes(const T *,
+                                   T *, int);
+
+#define SWAP_BYTES(Suffix)\
+template<>\
+static inline IppStatus swap_bytes<Ipp##Suffix>(\
+        const Ipp##Suffix *src, Ipp##Suffix *dst, int len)\
+{\
+    return src == dst ? ippsSwapBytes_##Suffix##_I(dst, len)\
+                      : ippsSwapBytes_##Suffix(src, dst, len);\
+}
+
+template<>
+static inline IppStatus swap_bytes<Ipp8u>(
+        const Ipp8u *src, Ipp8u *dst, int len)
+{
+    return src == dst ? ippsSwapBytes_24u_I(dst, len)
+                      : ippsSwapBytes_24u(src, dst, len);
+}
+
+
+SWAP_BYTES(16u);
+SWAP_BYTES(32u);
+SWAP_BYTES(64u);
+
+#undef SWAP_BYTES
+
+
+//////////swap_bytes/////////
+template<typename T1, typename T2>
+static inline IppStatus convert(const T1 *,
+                                   T2 *, int);
+
+#define CONVERT(Suffix1, Suffix2)\
+template<>\
+static inline IppStatus convert<Ipp##Suffix1, Ipp##Suffix2>(\
+        const Ipp##Suffix1 *src, Ipp##Suffix2 *dst, int len)\
+{\
+    return ippsConvert_##Suffix1##Suffix2(src, dst, len);\
+}
+
+
+template<typename T1, typename T2>
+static inline IppStatus convert_sfs(const T1 *,
+                                   T2 *, int, int);
+
+#define CONVERT_SFS(Suffix1, Suffix2)\
+template<>\
+static inline IppStatus convert_sfs<Ipp##Suffix1, Ipp##Suffix2>(\
+        const Ipp##Suffix1 *src, Ipp##Suffix2 *dst, int len, int scale)\
+{\
+    return ippsConvert_##Suffix1##Suffix2##_Sfs(src, dst, len, scale);\
+}
+
+template<typename T1, typename T2>
+static inline IppStatus convert_sfs(const T1 *,
+                                   T2 *, int,  IppRoundMode, int);
+
+#define CONVERT_SFS_RND(Suffix1, Suffix2)\
+template<>\
+static inline IppStatus convert_sfs<Ipp##Suffix1, Ipp##Suffix2>(\
+        const Ipp##Suffix1 *src, Ipp##Suffix2 *dst, int len, IppRoundMode rnd, int scale)\
+{\
+    return ippsConvert_##Suffix1##Suffix2##_Sfs(src, dst, len, rnd, scale);\
+}
+
+
+CONVERT(8s, 16s);
+CONVERT(8s, 32f);
+CONVERT(8u, 32f);
+CONVERT(16s, 32s);
+CONVERT(16s, 32f);
+CONVERT(16u, 32f);
+CONVERT(32s, 16s);
+CONVERT(32s, 32f);
+CONVERT(32s, 64f);
+CONVERT(32f, 64f);
+CONVERT(64s, 64f);
+CONVERT(64f, 32f);
+
+
+CONVERT_SFS_RND(16s, 8s);
+CONVERT_SFS(16s, 32f);
+CONVERT_SFS(16s, 64f);
+CONVERT_SFS(32s, 16s);
+CONVERT_SFS(32s, 32f);
+CONVERT_SFS(32s, 64f);
+CONVERT_SFS_RND(32f, 8s);
+CONVERT_SFS_RND(32f, 8u);
+CONVERT_SFS_RND(32f, 16s);
+CONVERT_SFS_RND(32f, 16u);
+CONVERT_SFS_RND(32f, 32s);
+CONVERT_SFS_RND(64s, 32s);
+CONVERT_SFS_RND(64f, 16s);
+CONVERT_SFS_RND(64f, 32s);
+CONVERT_SFS_RND(64f, 64s);
+
+#undef CONVERT
+#undef CONVERT_SFS
+#undef CONVERT_SFS_RND
+
+
+//////////conj/////////
+template<typename T>
+static inline IppStatus conj(const T *,
+                                   T *, int);
+
+#define CONJ(Suffix)\
+template<>\
+static inline IppStatus conj<Ipp##Suffix>(\
+        const Ipp##Suffix *src, Ipp##Suffix *dst, int len)\
+{\
+    return src == dst ? ippsConj_##Suffix##_I(dst, len)\
+                      : ippsConj_##Suffix(src, dst, len);\
+}
+
+CONJ(16sc);
+CONJ(32fc);
+CONJ(64fc);
+
+#undef CONJ
+
+
+//////////magnitude/////////
+template<typename T>
+static inline IppStatus magnitude(const T *, const T*,
+                                   T *, int, int);
+
+template<>
+static inline IppStatus magnitude<Ipp32f>(const Ipp32f *re, 
+                                          const Ipp32f *im,
+										  Ipp32f *dst,
+                                          int len,
+                                          int)
+{
+    return ippsMagnitude_32f(re, im, dst, len);
+}
+
+template<>
+static inline IppStatus magnitude<Ipp64f>(const Ipp64f *re, 
+                                          const Ipp64f *im,
+                                          Ipp64f *dst,
+                                          int len,
+                                          int)
+{
+    return ippsMagnitude_64f(re, im, dst, len);
+}
+
+template<>
+static inline IppStatus magnitude<Ipp16s>(const Ipp16s *re, 
+                                          const Ipp16s *im,
+                                          Ipp16s *dst,
+                                          int len,
+                                          int scale)
+{
+    return ippsMagnitude_16s_Sfs(re, im, dst, len, scale);
+}
+
+//
+template<typename T1, typename T2>
+static inline IppStatus magnitude(const T1 *, const T1*,
+                                   T2 *, int, int);
+
+template<>
+static inline IppStatus magnitude<Ipp16s, Ipp32f>(const Ipp16s *re, const Ipp16s* im,
+                                   Ipp32f *dst, int len, int)
+{
+    return ippsMagnitude_16s32f(re, im, dst, len);
+}
+
+//
+template<typename T1, typename T2>
+static inline IppStatus magnitude(const T1 *,
+                                   T2 *, int, int);
+
+template<>
+static inline IppStatus magnitude<Ipp32fc, Ipp32f>(const Ipp32fc *src,
+                                   Ipp32f *dst, int len, int)
+{
+    return ippsMagnitude_32fc(src, dst, len);
+}
+
+template<>
+static inline IppStatus magnitude<Ipp64fc, Ipp64f>(const Ipp64fc *src,
+                                   Ipp64f *dst, int len, int)
+{
+    return ippsMagnitude_64fc(src, dst, len);
+}
+
+template<>
+static inline IppStatus magnitude<Ipp16sc, Ipp32f>(const Ipp16sc *src,
+                                   Ipp32f *dst, int len, int)
+{
+    return ippsMagnitude_16sc32f(src, dst, len);
+}
+
+template<>
+static inline IppStatus magnitude<Ipp16sc, Ipp16s>(const Ipp16sc *src,
+                                   Ipp16s *dst, int len, int scale)
+{
+    return ippsMagnitude_16sc_Sfs(src, dst, len, scale);
+}
+
+template<>
+static inline IppStatus magnitude<Ipp32sc, Ipp32s>(const Ipp32sc *src,
+                                   Ipp32s *dst, int len, int scale)
+{
+    return ippsMagnitude_32sc_Sfs(src, dst, len, scale);
+}
+
+
+
+//////////phase/////////
+template<typename T1, typename T2>
+static inline IppStatus phase(const T1 *, T2*, int);
+
+template<>
+static inline IppStatus phase<Ipp64fc, Ipp64f>(
+        const Ipp64fc *src, Ipp64f *dst, int len)
+{
+    return ippsPhase_64fc(src, dst, len);
+}
+
+template<>
+static inline IppStatus phase<Ipp32fc, Ipp32f>(
+        const Ipp32fc *src, Ipp32f *dst, int len)
+{
+    return ippsPhase_32fc(src, dst, len);
+}
+
+template<>
+static inline IppStatus phase<Ipp16sc, Ipp32f>(
+        const Ipp16sc *src, Ipp32f *dst, int len)
+{
+    return ippsPhase_16sc32f(src, dst, len);
+}
+
+
+template<typename T1, typename T2>
+static inline IppStatus phase(const T1 *, const T1*, T2*, int);
+
+
+template<>
+static inline IppStatus phase<Ipp64f, Ipp64f>(
+        const Ipp64f *re, const Ipp64f *im, Ipp64f *dst, int len)
+{
+    return ippsPhase_64f(re, im, dst, len);
+}
+
+template<>
+static inline IppStatus phase<Ipp32f, Ipp32f>(
+        const Ipp32f *re, const Ipp32f *im, Ipp32f *dst, int len)
+{
+    return ippsPhase_32f(re, im, dst, len);
+}
+
+template<>
+static inline IppStatus phase<Ipp16s, Ipp32f>(
+        const Ipp16s *re, const Ipp16s *im, Ipp32f *dst, int len)
+{
+    return ippsPhase_16s32f(re, im, dst, len);
+}
+
+
+//////////power_spectr/////////
+template<typename T1, typename T2>
+static inline IppStatus power_spectr(const T1 *, T2*, int, int);
+
+template<>
+static inline IppStatus power_spectr<Ipp64fc, Ipp64f>(
+        const  Ipp64fc* src, Ipp64f* dst, int len, int)
+{
+    return ippsPowerSpectr_64fc(src, dst, len);
+}
+
+template<>
+static inline IppStatus power_spectr<Ipp32fc, Ipp32f>(
+        const  Ipp32fc* src, Ipp32f* dst, int len, int)
+{
+    return ippsPowerSpectr_32fc(src, dst, len);
+}
+
+template<>
+static inline IppStatus power_spectr<Ipp16sc, Ipp16s>(
+        const  Ipp16sc* src, Ipp16s* dst, int len, int scale)
+{
+    return ippsPowerSpectr_16sc_Sfs(src, dst, len, scale);
+}
+
+
+template<typename T1, typename T2>
+static inline IppStatus power_spectr(const T1 *, const T1*, T2*, int, int);
+
+
+template<>
+static inline IppStatus power_spectr<Ipp64f, Ipp64f>(
+        const  Ipp64f* re, const Ipp64f *im, Ipp64f* dst, int len, int)
+{
+    return ippsPowerSpectr_64f(re, im, dst, len);
+}
+
+template<>
+static inline IppStatus power_spectr<Ipp32f, Ipp32f>(
+        const  Ipp32f* re, const Ipp32f *im, Ipp32f* dst, int len, int)
+{
+    return ippsPowerSpectr_32f(re, im, dst, len);
+}
+
+template<>
+static inline IppStatus power_spectr<Ipp16s, Ipp16s>(
+        const  Ipp16s* re, const Ipp16s *im, Ipp16s* dst, int len, int scale)
+{
+    return ippsPowerSpectr_16s_Sfs(re, im, dst, len, scale);
+}
+
+
+
 }}
 
 #endif

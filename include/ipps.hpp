@@ -573,6 +573,297 @@ static inline IppStatus normalize(const T *src, T *dst,
 /**@}*/
 
 
+
+/**
+ * @defgroup ConversionFunctions Conversion Functions
+The functions described in this section perform the following conversion operations for vectors:
+•Sorting all elements of a vector
+•Data type conversion (including floating-point to integer and integer to floating-point)
+•Joining several vectors
+•Extracting components from a complex vector and constructing a complex vector
+•Computing the complex conjugates of vectors
+•Cartesian to polar and polar to Cartesian coordinate conversion.
+ * Note: remove join*, split*,
+ *
+ * @ingroup EssentialFunctions
+ * @{
+ **/
+
+template<typename T>
+static inline IppStatus sort_ascend(T *buf, int len)
+{
+    typedef get<T>::type itype;
+    return detail::sort_ascend((itype*)buf, len);
+}
+
+template<typename T>
+static inline IppStatus sort_descend(T *buf, int len)
+{
+    typedef get<T>::type itype;
+    return detail::sort_descend((itype*)buf, len);
+}
+
+
+template<typename T>
+static inline IppStatus sort_index_ascend(T *buf, int *idxs, int len)
+{
+    typedef get<T>::type itype;
+    return detail::sort_index_ascend((itype*)buf, idxs, len);
+}
+
+
+template<typename T>
+static inline IppStatus sort_index_descend(T *buf, int *idxs, int len)
+{
+    typedef get<T>::type itype;
+    return detail::sort_index_descend((itype*)buf, idxs, len);
+}
+
+
+
+template<typename T>
+static inline IppStatus sort_radix_ascend(T *buf, T *tmp, int len)
+{
+    typedef get<T>::type itype;
+    static_assert(std::is_same<get<int>::type, Ipp32s>::value,
+            "type int is not same as Ipp32s");
+    return detail::sort_radix_ascend(
+            (itype*)buf, (itype*)tmp, (Ipp32s)len);
+}
+
+
+template<typename T>
+static inline IppStatus sort_radix_index_ascend(const T* const src, 
+                                                int stride,
+                                                int *idxs,
+                                                int *tmp_idxs,
+                                                int len)
+{
+    typedef get<T>::type itype;
+    static_assert(std::is_same<get<int>::type, Ipp32s>::value,
+            "type int is not same as Ipp32s");
+    return detail::sort_radix_index_ascend(
+            (itype*)src, (Ipp32s)stride, (Ipp32s*)idxs,
+            (Ipp32s*)tmp_idxs, (Ipp32s)len);
+}
+
+template<typename T>
+static inline IppStatus sort_radix_index_descend(const T* const src, 
+                                                int stride,
+                                                int *idxs,
+                                                int *tmp_idxs,
+                                                int len)
+{
+    typedef get<T>::type itype;
+    static_assert(std::is_same<get<int>::type, Ipp32s>::value,
+            "type int is not same as Ipp32s");
+    return detail::sort_radix_index_descend(
+            (itype*)src, (Ipp32s)stride, (Ipp32s*)idxs,
+            (Ipp32s*)tmp_idxs, (Ipp32s)len);
+}
+
+
+/* --------------------------------------------------------------------------*/
+/**
+ * @brief  Reverses the byte order of a vector.
+ *  Note: extend to support signed integer
+ * @tparam T
+ * @param src
+ * @param dst
+ * @param len
+ *
+ * @returns   
+ */
+/* ----------------------------------------------------------------------------*/
+template<typename T>
+static inline IppStatus swap_bytes(const T *src, T *dst, int len)
+{
+    static_assert(is_integer<T>::value, "only support integer type");
+    typedef get_int<sizeof(T), false>::type itype;
+    return detail::swap_bytes(
+            (const itype*)src, (itype*)dst, len);
+}
+
+
+
+/* --------------------------------------------------------------------------*/
+/**
+ * @brief Converts the data type of a vector and stores the results in a second vector.
+ * Note: deprecate 24u, 24s, 16f related functions
+ * @tparam T1
+ * @tparam T2
+ * @param src
+ * @param dst
+ * @param len
+ *
+ * @returns   
+ */
+/* ----------------------------------------------------------------------------*/
+template<typename T1, typename T2>
+static inline IppStatus convert(const T1 *src, T2 *dst, int len)
+{
+    typedef get<T1>::type itype1;
+    typedef get<T2>::type itype2;
+    return detail::convert(
+            (const itype1*)src, (itype2*)dst, len);
+}
+
+
+/* --------------------------------------------------------------------------*/
+/**
+ * @brief Converts the data type of a vector and stores the results in a second vector.
+ * Note: deprecate 24u, 24s, 16f related functions
+ * @tparam T1
+ * @tparam T2
+ * @param src
+ * @param dst
+ * @param len
+ * @param scale
+ *
+ * @returns   
+ */
+/* ----------------------------------------------------------------------------*/
+template<typename T1, typename T2>
+static inline IppStatus convert(const T1 *src, T2 *dst, int len, int scale)
+{
+    typedef get<T1>::type itype1;
+    typedef get<T2>::type itype2;
+    return detail::convert_sfs(
+            (const itype1*)src, (itype2*)dst, len, scale);
+}
+
+/* --------------------------------------------------------------------------*/
+/**
+ * @brief Converts the data type of a vector and stores the results in a second vector.
+ * Note: deprecate 24u, 24s, 16f related functions
+ * @tparam T1
+ * @tparam T2
+ * @param src
+ * @param dst
+ * @param len
+ * @param rnd
+ * @param scale
+ *
+ * @returns   
+ */
+/* ----------------------------------------------------------------------------*/
+template<typename T1, typename T2>
+static inline IppStatus convert(const T1 *src, T2 *dst, int len, IppRoundMode rnd, int scale)
+{
+    typedef get<T1>::type itype1;
+    typedef get<T2>::type itype2;
+    return detail::convert_sfs(
+            (const itype1*)src, (itype2*)dst, len, rnd, scale);
+}
+
+
+
+template<typename T>
+static inline IppStatus conj(const T *src, T *dst, int len)
+{
+    static_assert(is_complex<T>::value, "need complex type");
+    typedef get<T>::type itype;
+
+    return detail::conj(
+            (const itype*)src, (itype*)dst, len);
+}
+
+
+template<typename T>
+static inline IppStatus magnitude(const T *re, const T*im, T*dst, int len, int scale = 0)
+{
+    typedef get<T>::type itype;
+
+    return detail::magnitude(
+            (const itype*)re, (const itype*)im, (itype*)dst, len, scale);
+}
+
+template<typename T1, typename T2>
+static inline IppStatus magnitude(const T1 *re, const T1* im, T2* dst, int len, int scale = 0)
+{
+    typedef get<T1>::type itype;
+    typedef get<T2>::type vtype;
+
+    return detail::magnitude(
+            (const itype*)re, (const itype*)im, (vtype*)dst, len, scale);
+}
+
+/* --------------------------------------------------------------------------*/
+/**
+ * @brief 
+ *
+ * @tparam T1
+ * @tparam T2
+ * @param src
+ * @param dst
+ * @param len
+ *
+ * @returns   
+ */
+/* ----------------------------------------------------------------------------*/
+template<typename T1, typename T2>
+static inline IppStatus magnitude(const T1 *src, T2 *dst, int len, int scale = 0)
+{
+    typedef get<T1>::type itype;
+    typedef get<T2>::type vtype;
+
+    return detail::magnitude(
+            (const itype*)src, (vtype*)dst, len, scale);
+}
+
+
+
+
+template<typename T1, typename T2>
+static inline IppStatus phase(const T1 *src, T2 *dst, int len)
+{
+    typedef get<T1>::type itype;
+    typedef get<T2>::type vtype;
+
+    return detail::phase(
+            (const itype*)src, (vtype*)dst, len);
+
+}
+
+template<typename T1, typename T2>
+static inline IppStatus phase(const T1 *re, const T1 *im, T2 *dst, int len)
+{
+    typedef get<T1>::type itype;
+    typedef get<T2>::type vtype;
+
+    return detail::phase(
+            (const itype*)re, (const itype*)im, (vtype*)dst, len);
+}
+
+
+template<typename T1, typename T2>
+static inline IppStatus power_spectr(const T1 *src, T2 *dst, int len, int scale = 0)
+{
+    typedef get<T1>::type itype;
+    typedef get<T2>::type vtype;
+
+    return detail::power_spectr(
+            (const itype*)src, (vtype*)dst, len, scale);
+}
+
+template<typename T1, typename T2>
+static inline IppStatus power_spectr(const T1 *re, const T1 *im, T2 *dst, int len, int scale = 0)
+{
+    typedef get<T1>::type itype;
+    typedef get<T2>::type vtype;
+
+    return detail::power_spectr(
+            (const itype*)re, (const itype*)im, (vtype*)dst, len, scale);
+}
+
+
+
+
+
+
+/**@}*/
+
+
 }
 
 #endif
