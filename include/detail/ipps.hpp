@@ -1999,6 +1999,359 @@ static inline IppStatus power_spectr<Ipp16s, Ipp16s>(
 }
 
 
+////// real, imag/////////
+template<typename T1, typename T2>
+static inline IppStatus real(const T1*, T2*, int);
+
+template<typename T1, typename T2>
+static inline IppStatus imag(const T1*, T2*, int);
+
+#define REAL_ASM(Suffix1, Suffix2)\
+template<>\
+static inline IppStatus real<Ipp##Suffix1, Ipp##Suffix2>(\
+        const Ipp##Suffix1 *src, Ipp##Suffix2 *re, int len)\
+{ return ippsReal_##Suffix1(src, re, len); }
+
+#define IMAG_ASM(Suffix1, Suffix2)\
+template<>\
+static inline IppStatus imag<Ipp##Suffix1, Ipp##Suffix2>(\
+        const Ipp##Suffix1 *src, Ipp##Suffix2 *im, int len)\
+{ return ippsImag_##Suffix1(src, im, len); }
+
+
+REAL_ASM(16sc, 16s);
+REAL_ASM(32fc, 32f);
+REAL_ASM(64fc, 64f);
+
+IMAG_ASM(16sc, 16s);
+IMAG_ASM(32fc, 32f);
+IMAG_ASM(64fc, 64f);
+
+#undef REAL_ASM
+#undef IMAG_ASM
+
+///// cplx_to_real, real_to_cplx
+
+template<typename T1, typename T2>
+static inline IppStatus cplx_to_real(const T1*, T2*, T2*, int);
+
+template<typename T1, typename T2>
+static inline IppStatus real_to_cplx(const T1*, const T1*, T2*, int);
+
+#define CPLX2REAL_ASM(Suffix1, Suffix2)\
+template<>\
+static inline IppStatus cplx_to_real<Ipp##Suffix1, Ipp##Suffix2>(\
+        const Ipp##Suffix1 *src, Ipp##Suffix2 *re,\
+        Ipp##Suffix2 *im, int len)\
+{ return ippsCplxToReal_##Suffix1(src, re, im, len); }
+
+#define REAL2CPLX_ASM(Suffix1, Suffix2)\
+template<>\
+static inline IppStatus real_to_cplx<Ipp##Suffix1, Ipp##Suffix2>(\
+        const Ipp##Suffix1 *re, const Ipp##Suffix1 *im,\
+        Ipp##Suffix2 *dst, int len)\
+{ return ippsRealToCplx_##Suffix1(im, re, dst, len); }
+
+
+CPLX2REAL_ASM(16sc, 16s);
+CPLX2REAL_ASM(32fc, 32f);
+CPLX2REAL_ASM(64fc, 64f);
+
+REAL2CPLX_ASM(16s, 16sc);
+REAL2CPLX_ASM(32f, 32fc);
+REAL2CPLX_ASM(64f, 64fc);
+
+#undef CPLX2REAL_ASM
+#undef REAL2CPLX_ASM
+
+
+////// threshold_lt, threshold_gt ////////////
+template<typename T1, typename T2>
+static inline IppStatus threshold_lt(const T1*, T1*, int, T2);
+
+template<typename T1, typename T2>
+static inline IppStatus threshold_gt(const T1*, T1*, int, T2);
+
+
+#define THRESHOLD_LT_ASM(Suffix1, Suffix2)\
+template<>\
+static inline IppStatus threshold_lt<Ipp##Suffix1, Ipp##Suffix2>(\
+        const Ipp##Suffix1 *src, Ipp##Suffix1 *dst,\
+        int len, Ipp##Suffix2 level)\
+{ return src == dst ? ippsThreshold_LT_##Suffix1##_I(dst, len, level)\
+                    : ippsThreshold_LT_##Suffix1(src, dst, len, level); }
+
+#define THRESHOLD_GT_ASM(Suffix1, Suffix2)\
+template<>\
+static inline IppStatus threshold_gt<Ipp##Suffix1, Ipp##Suffix2>(\
+        const Ipp##Suffix1 *src, Ipp##Suffix1 *dst,\
+        int len, Ipp##Suffix2 level)\
+{ return src == dst ? ippsThreshold_GT_##Suffix1##_I(dst, len, level)\
+                    : ippsThreshold_GT_##Suffix1(src, dst, len, level); }
+
+
+THRESHOLD_LT_ASM(16s, 16s);
+THRESHOLD_LT_ASM(32s, 32s);
+THRESHOLD_LT_ASM(32f, 32f);
+THRESHOLD_LT_ASM(64f, 64f);
+THRESHOLD_LT_ASM(32fc, 32f);
+THRESHOLD_LT_ASM(64fc, 64f);
+
+
+THRESHOLD_GT_ASM(16s, 16s);
+THRESHOLD_GT_ASM(32s, 32s);
+THRESHOLD_GT_ASM(32f, 32f);
+THRESHOLD_GT_ASM(64f, 64f);
+THRESHOLD_GT_ASM(32fc, 32f);
+THRESHOLD_GT_ASM(64fc, 64f);
+
+#undef THRESHOLD_LT_ASM
+#undef THRESHOLD_GT_ASM
+
+
+
+////// threshold_lt_abs, threshold_gt_abs ////////////
+template<typename T1, typename T2>
+static inline IppStatus threshold_lt_abs(const T1*, T1*, int, T2);
+
+template<typename T1, typename T2>
+static inline IppStatus threshold_gt_abs(const T1*, T1*, int, T2);
+
+
+#define THRESHOLD_LT_ABS_ASM(Suffix1, Suffix2)\
+template<>\
+static inline IppStatus threshold_lt_abs<Ipp##Suffix1, Ipp##Suffix2>(\
+        const Ipp##Suffix1 *src, Ipp##Suffix1 *dst,\
+        int len, Ipp##Suffix2 level)\
+{ return src == dst ? ippsThreshold_LTAbs_##Suffix1##_I(dst, len, level)\
+                    : ippsThreshold_LTAbs_##Suffix1(src, dst, len, level); }
+
+#define THRESHOLD_GT_ABS_ASM(Suffix1, Suffix2)\
+template<>\
+static inline IppStatus threshold_gt_abs<Ipp##Suffix1, Ipp##Suffix2>(\
+        const Ipp##Suffix1 *src, Ipp##Suffix1 *dst,\
+        int len, Ipp##Suffix2 level)\
+{ return src == dst ? ippsThreshold_GTAbs_##Suffix1##_I(dst, len, level)\
+                    : ippsThreshold_GTAbs_##Suffix1(src, dst, len, level); }
+
+
+THRESHOLD_LT_ABS_ASM(16s, 16s);
+THRESHOLD_LT_ABS_ASM(32s, 32s);
+THRESHOLD_LT_ABS_ASM(32f, 32f);
+THRESHOLD_LT_ABS_ASM(64f, 64f);
+
+
+THRESHOLD_GT_ABS_ASM(16s, 16s);
+THRESHOLD_GT_ABS_ASM(32s, 32s);
+THRESHOLD_GT_ABS_ASM(32f, 32f);
+THRESHOLD_GT_ABS_ASM(64f, 64f);
+
+#undef THRESHOLD_LT_ABS_ASM
+#undef THRESHOLD_GT_ABS_ASM
+
+
+////// threshold_lt_val, threshold_gt_val, threshold_lt_val_gt_val ////////////
+template<typename T1, typename T2>
+static inline IppStatus threshold_lt_val(const T1*, T1*, int, T2, T1);
+
+template<typename T1, typename T2>
+static inline IppStatus threshold_gt_val(const T1*, T1*, int, T2, T1);
+
+template<typename T1, typename T2>
+static inline IppStatus threshold_lt_val_gt_val(
+        const T1*, T1*, int, T2, T1, T2, T1);
+
+#define THRESHOLD_LT_VAL_ASM(Suffix1, Suffix2)\
+template<>\
+static inline IppStatus threshold_lt_val<Ipp##Suffix1, Ipp##Suffix2>(\
+        const Ipp##Suffix1 *src, Ipp##Suffix1 *dst,\
+        int len, Ipp##Suffix2 level, Ipp##Suffix1 value)\
+{ return src == dst ? ippsThreshold_LTVal_##Suffix1##_I(dst, len, level, value)\
+                    : ippsThreshold_LTVal_##Suffix1(src, dst, len, level, value); }
+
+#define THRESHOLD_GT_VAL_ASM(Suffix1, Suffix2)\
+template<>\
+static inline IppStatus threshold_gt_val<Ipp##Suffix1, Ipp##Suffix2>(\
+        const Ipp##Suffix1 *src, Ipp##Suffix1 *dst,\
+        int len, Ipp##Suffix2 level, Ipp##Suffix1 value)\
+{ return src == dst ? ippsThreshold_GTVal_##Suffix1##_I(dst, len, level, value)\
+                    : ippsThreshold_GTVal_##Suffix1(src, dst, len, level, value); }
+
+#define THRESHOLD_LT_VAL_GT_VAL_ASM(Suffix1, Suffix2)\
+template<>\
+static inline IppStatus threshold_lt_val_gt_val<Ipp##Suffix1, Ipp##Suffix2>(\
+        const Ipp##Suffix1 *src, Ipp##Suffix1 *dst,\
+        int len, Ipp##Suffix2 lt_level, Ipp##Suffix1 lt_value,\
+        Ipp##Suffix2 gt_level, Ipp##Suffix1 gt_value)\
+{ return src == dst ? ippsThreshold_LTValGTVal_##Suffix1##_I(\
+                      dst, len, lt_level, lt_value, gt_level, gt_value)\
+                    : ippsThreshold_LTValGTVal_##Suffix1(\
+                      src, dst, len, lt_level, lt_value, gt_level, gt_value); }
+
+
+THRESHOLD_LT_VAL_ASM(16s, 16s);
+THRESHOLD_LT_VAL_ASM(32f, 32f);
+THRESHOLD_LT_VAL_ASM(64f, 64f);
+THRESHOLD_LT_VAL_ASM(32fc, 32f);
+THRESHOLD_LT_VAL_ASM(64fc, 64f);
+
+
+THRESHOLD_GT_VAL_ASM(16s, 16s);
+THRESHOLD_GT_VAL_ASM(32f, 32f);
+THRESHOLD_GT_VAL_ASM(64f, 64f);
+THRESHOLD_GT_VAL_ASM(32fc, 32f);
+THRESHOLD_GT_VAL_ASM(64fc, 64f);
+
+THRESHOLD_LT_VAL_GT_VAL_ASM(16s, 16s);
+THRESHOLD_LT_VAL_GT_VAL_ASM(32s, 32s);
+THRESHOLD_LT_VAL_GT_VAL_ASM(32f, 32f);
+THRESHOLD_LT_VAL_GT_VAL_ASM(64f, 64f);
+
+#undef THRESHOLD_LT_VAL_ASM
+#undef THRESHOLD_GT_VAL_ASM
+#undef THRESHOLD_LT_VAL_GT_VAL_ASM
+
+
+////// threshold_lt_inv ////////////
+template<typename T1, typename T2>
+static inline IppStatus threshold_lt_inv(const T1*, T1*, int, T2);
+
+
+#define THRESHOLD_LT_INV_ASM(Suffix1, Suffix2)\
+template<>\
+static inline IppStatus threshold_lt_inv<Ipp##Suffix1, Ipp##Suffix2>(\
+        const Ipp##Suffix1 *src, Ipp##Suffix1 *dst,\
+        int len, Ipp##Suffix2 level)\
+{ return src == dst ? ippsThreshold_LTInv_##Suffix1##_I(dst, len, level)\
+                    : ippsThreshold_LTInv_##Suffix1(src, dst, len, level); }
+
+THRESHOLD_LT_INV_ASM(32f, 32f);
+THRESHOLD_LT_INV_ASM(64f, 64f);
+THRESHOLD_LT_INV_ASM(32fc, 32f);
+THRESHOLD_LT_INV_ASM(64fc, 64f);
+
+#undef THRESHOLD_LT_INV_ASM
+
+
+////// cart_to_polar, polar_to_cart ////////
+static inline IppStatus cart_to_polar(
+        const Ipp32f *re, const Ipp32f *im, Ipp32f *magn, Ipp32f *phase, int len)
+{
+    return ippsCartToPolar_32f(re, im, magn, phase, len);
+}
+static inline IppStatus cart_to_polar(
+        const Ipp64f *re, const Ipp64f *im, Ipp64f *magn, Ipp64f *phase, int len)
+{
+    return ippsCartToPolar_64f(re, im, magn, phase, len);
+}
+
+static inline IppStatus cart_to_polar(
+        const Ipp32fc *src, Ipp32f *magn, Ipp32f *phase, int len)
+{
+    return ippsCartToPolar_32fc(src, magn, phase, len);
+}
+
+static inline IppStatus cart_to_polar(
+        const Ipp64fc *src, Ipp64f *magn, Ipp64f *phase, int len)
+{
+    return ippsCartToPolar_64fc(src, magn, phase, len);
+}
+
+static inline IppStatus cart_to_polar(
+        const Ipp16sc *src, Ipp16s *magn, Ipp16s *phase, int len, 
+        int magn_scale, int phase_scale)
+{
+    return ippsCartToPolar_16sc_Sfs(src, magn, phase, len, magn_scale, phase_scale);
+}
+
+
+
+static inline IppStatus polar_to_cart(
+        const Ipp32f *magn, const Ipp32f *phase, Ipp32f *re, Ipp32f *im, int len)
+{
+    return ippsPolarToCart_32f(magn, phase, re, im, len);
+}
+static inline IppStatus polar_to_cart(
+        const Ipp64f *magn, const Ipp64f *phase, Ipp64f *re, Ipp64f *im, int len)
+{
+    return ippsPolarToCart_64f(magn, phase, re, im, len);
+}
+
+static inline IppStatus polar_to_cart(
+        const Ipp32f *magn, const Ipp32f *phase, Ipp32fc *dst, int len)
+{
+    return ippsPolarToCart_32fc(magn, phase, dst, len);
+}
+
+static inline IppStatus polar_to_cart(
+        const Ipp64f *magn, const Ipp64f *phase, Ipp64fc *dst, int len)
+{
+    return ippsPolarToCart_64fc(magn, phase, dst, len);
+}
+
+static inline IppStatus polar_to_cart(
+        Ipp16s *magn, Ipp16s *phase, Ipp16sc *dst, int len, 
+        int magn_scale, int phase_scale)
+{
+    return ippsPolarToCart_16sc_Sfs(magn, phase, dst, len, magn_scale, phase_scale);
+}
+
+////// max_order ///////
+template<typename T>
+static inline IppStatus max_order(const T*, int, int*);
+
+
+#define MAX_ORDER_ASM(Suffix)\
+template<>\
+static inline IppStatus max_order<Ipp##Suffix>(\
+        const Ipp##Suffix *src, int len, int *order)\
+{\
+    return ippsMaxOrder_##Suffix(src, len, order);\
+}
+
+MAX_ORDER_ASM(16s);
+MAX_ORDER_ASM(32s);
+MAX_ORDER_ASM(32f);
+MAX_ORDER_ASM(64f);
+
+#undef MAX_ORDER_ASM
+
+////// flip //////////
+template<typename T>
+static inline IppStatus flip(const T*, T*, int);
+
+#define FLIP_ASM(Suffix)\
+template<>\
+static inline IppStatus flip<Ipp##Suffix>(\
+        const Ipp##Suffix *src, Ipp##Suffix *dst, int len)\
+{ return src == dst ? ippsFlip_##Suffix##_I(dst, len)\
+                    : ippsFlip_##Suffix(src, dst, len); }
+
+FLIP_ASM(8u);
+FLIP_ASM(16u);
+FLIP_ASM(32f);
+FLIP_ASM(64f);
+FLIP_ASM(32fc);
+FLIP_ASM(64fc);
+
+#undef FLIP_ASM
+
+
+//////// find_nearest_one, find_nearest /////////
+static inline IppStatus find_nearest_one(
+        Ipp16u in_val, Ipp16u *out_val, int *out_idx, const Ipp16u *src, int len)
+{
+    return ippsFindNearestOne_16u(in_val, out_val, out_idx, src, len);
+}
+
+static inline IppStatus find_nearest(
+        const Ipp16u *in_val, Ipp16u *out_val, int *out_idx,
+        int len, const Ipp16u *src, int slen)
+{
+    return ippsFindNearest_16u(
+            in_val, out_val, out_idx, len, src, slen);
+}
+
 
 }}
 

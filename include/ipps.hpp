@@ -857,6 +857,235 @@ static inline IppStatus power_spectr(const T1 *re, const T1 *im, T2 *dst, int le
 }
 
 
+template<typename T1, typename T2>
+static inline IppStatus real(const T1 *src, T2* re, int len)
+{
+    typedef get<T1>::type itype;
+    typedef get<T2>::type vtype;
+    return detail::real(
+            (const itype*)src, (vtype*)re, len);
+}
+
+
+template<typename T1, typename T2>
+static inline IppStatus imag(const T1 *src, T2* im, int len)
+{
+    typedef get<T1>::type itype;
+    typedef get<T2>::type vtype;
+    return detail::imag(
+            (const itype*)src, (vtype*)im, len);
+}
+
+
+template<typename T1, typename T2>
+static inline IppStatus cplx_to_real(const T1 *src, T2* re, T2 *im, int len)
+{
+    typedef get<T1>::type itype;
+    typedef get<T2>::type vtype;
+    return detail::cplx_to_real(
+            (const itype*)src, (vtype*)re, (vtype*)im, len);
+}
+
+template<typename T1, typename T2>
+static inline IppStatus real_to_cplx(const T1 *re, const T1 *im, T2* dst, int len)
+{
+    typedef get<T1>::type itype;
+    typedef get<T2>::type vtype;
+    return detail::real_to_cplx(
+            (const itype*)re, (const itype*)im, (vtype*)dst, len);
+}
+
+
+template<typename T1, typename T2>
+static inline IppStatus threshold_lt(const T1 *src, T1 *dst, int len, T2 level)
+{
+    typedef get<T1>::type itype1;
+    typedef get<T2>::type itype2;
+
+    return detail::threshold_lt(
+            (const itype1*)src, (itype1*)dst, len, (itype2)level);
+    
+}
+
+template<typename T1, typename T2>
+static inline IppStatus threshold_gt(const T1 *src, T1 *dst, int len, T2 level)
+{
+    typedef get<T1>::type itype1;
+    typedef get<T2>::type itype2;
+
+    return detail::threshold_gt(
+            (const itype1*)src, (itype1*)dst, len, (itype2)level);
+}
+
+template<typename T1, typename T2>
+static inline IppStatus threshold_lt_abs(const T1 *src, T1 *dst, int len, T2 level)
+{
+    typedef get<T1>::type itype1;
+    typedef get<T2>::type itype2;
+
+    return detail::threshold_lt_abs(
+            (const itype1*)src, (itype1*)dst, len, (itype2)level);
+}
+
+
+template<typename T1, typename T2>
+static inline IppStatus threshold_gt_abs(const T1 *src, T1 *dst, int len, T2 level)
+{
+    typedef get<T1>::type itype1;
+    typedef get<T2>::type itype2;
+
+    return detail::threshold_gt_abs(
+            (const itype1*)src, (itype1*)dst, len, (itype2)level);
+}
+
+template<typename T1, typename T2>
+static inline IppStatus threshold_lt_val(const T1 *src, T1 *dst, int len, T2 level, T1 value)
+{
+    typedef get<T1>::type itype1;
+    typedef get<T2>::type itype2;
+
+    return detail::threshold_lt_val(
+            (const itype1*)src, (itype1*)dst, len, (itype2)level, *(itype1*)&value);
+}
+
+
+template<typename T1, typename T2>
+static inline IppStatus threshold_gt_val(const T1 *src, T1 *dst, int len, T2 level, T1 value)
+{
+    typedef get<T1>::type itype1;
+    typedef get<T2>::type itype2;
+
+    return detail::threshold_gt_val(
+            (const itype1*)src, (itype1*)dst, len, (itype2)level, *(itype1*)&value);
+}
+
+template<typename T1, typename T2>
+static inline IppStatus threshold_lt_val_gt_val(const T1 *src, T1 *dst, int len,
+        T2 lt_level, T1 lt_value, T2 gt_level, T1 gt_value)
+{
+    typedef get<T1>::type itype1;
+    typedef get<T2>::type itype2;
+
+    return detail::threshold_lt_val(
+            (const itype1*)src, (itype1*)dst, len, 
+            (itype2)lt_level, *(itype1*)&lt_value,
+            (itype2)gt_level, *(itype1*)&gt_value);
+}
+
+///
+template<typename T1, typename T2>
+static inline IppStatus cart_to_polar(const T1 *src, T2 *magn, T2 *phase, int len)
+{
+    typedef get<T1>::type itype1;
+    typedef get<T2>::type itype2;
+
+    return detail::cart_to_polar(
+            (const itype1*)src, (itype2*)magn, (itype2*)phase, len);
+}
+
+template<typename T1, typename T2>
+static inline IppStatus cart_to_polar(
+        const T1 *re, const T1 *im, T2 *magn, T2 *phase, int len)
+{
+    typedef get<T1>::type itype1;
+    typedef get<T2>::type itype2;
+
+    return detail::cart_to_polar(
+            (const itype1*)re, (const itype1*)im,
+            (itype2*)magn, (itype2*)phase, len);
+}
+
+template<typename T1, typename T2>
+static inline IppStatus cart_to_polar(
+        const T1 *re, const T1 *im, T2 *magn, T2 *phase,
+        int len, int magn_scale, int phase_scale)
+{
+    typedef get<T1>::type itype1;
+    typedef get<T2>::type itype2;
+
+    return detail::cart_to_polar(
+            (const itype1*)re, (const itype1*)im, (itype2*)magn,
+            (itype2*)phase, len, magn_scale, phase_scale);
+}
+
+//
+template<typename T1, typename T2>
+static inline IppStatus polar_to_cart(
+        const T1 *magn, const T1 *phase, T2 *dst, int len)
+{
+    typedef get<T1>::type itype1;
+    typedef get<T2>::type itype2;
+
+    return detail::cart_to_polar(
+            (const itype1*)magn, (const itype1*)phase, (itype2*)dst, len);
+}
+
+template<typename T1, typename T2>
+static inline IppStatus polar_to_cart(
+        const T1 *magn, const T1 *phase, T2 *re, T2 *im, int len)
+{
+    typedef get<T1>::type itype1;
+    typedef get<T2>::type itype2;
+
+    return detail::cart_to_polar(
+            (const itype1*)magn, (const itype1*)phase,
+            (itype2*)re, (itype2*)im, len);
+}
+
+
+template<typename T1, typename T2>
+static inline IppStatus polar_to_cart(
+        const T1 *magn, const T1 *phase, T2 *re, T2 *im, int len,
+        int magn_scale, int phase_scale)
+{
+    typedef get<T1>::type itype1;
+    typedef get<T2>::type itype2;
+
+    return detail::cart_to_polar(
+            (const itype1*)magn, (const itype1*)phase,
+            (itype2*)re, (itype2*)im, len, 
+            magn_scale, phase_scale);
+}
+
+
+template<typename T>
+static inline IppStatus max_order(const T *src, int len, int *order)
+{
+    typedef get<T>::type itype;
+    return detail::max_order(
+            (const itype*)src, len, order);
+}
+
+
+template<typename T>
+static inline IppStatus flip(const T *src, T *dst, int len)
+{
+    typedef get<T>::type itype;
+    return detail::flip(
+            (const itype*)src, dst, len);
+}
+
+
+template<typename T>
+static inline IppStatus find_nearest_one(
+        T in_val, T *out_val, int *out_idx, const T* src, int len)
+{
+    typedef get<T>::type itype;
+
+    return detail::find_nearest_one(
+            *(itype*)&in_val, (itype*)out_val, out_idx, (const itype*)src, len);
+}
+
+template<typename T>
+static inline IppStatus find_nearest(
+        const T *in_val, T *out_val, int *out_idx, int len, const T* src, int slen)
+{
+    typedef get<T>::type itype;
+
+    return detail::find_nearest(
+            (const itype*)in_val, (itype*)out_val, out_idx, 
+            len, (const itype*)src, slen);
+}
 
 
 
