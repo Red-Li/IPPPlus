@@ -36,6 +36,10 @@ Support Features
     > float *buf = ipp::malloc<float>(1024);      
     > gas.generate(buf, 1024);      
 
+    > typedef ipp::win<float> win;
+    > win w(win::HAMMING, 1024);
+    > w.mul(src, dst, 1024);
+
 
 Tutorial
 --------
