@@ -1087,6 +1087,184 @@ static inline IppStatus find_nearest(
             len, (const itype*)src, slen);
 }
 
+/**@}*/
+
+
+
+/**
+ * @defgroup WindowingFunction Windowing Functions
+ * This chapter describes several of the windowing functions commonly used in signal processing. A window is a mathematical function by which a signal is multiplied to improve the characteristics of some subsequent analysis. Windows are commonly used in FFT-based spectral analysis. 
+ * @ingroup EssentialFunctions
+ * @{
+ **/
+
+
+template<typename T>
+static inline IppStatus win_bartlett(const T *src, T *dst, int len)
+{
+    typedef get<T>::type itype;
+
+    return detail::win_bartlett(
+            (const itype*)src, (itype*)dst, len);
+}
+
+template<typename T1, typename T2>
+static inline IppStatus win_blackman(const T1 *src, T1 *dst, int len, T2 alpha)
+{
+    typedef get<T1>::type itype;
+
+    return detail::win_blackman(
+            (const itype*)src, (itype*)dst, len, alpha);
+}
+
+
+template<typename T>
+static inline IppStatus win_blackman_std(const T *src, T *dst, int len)
+{
+    typedef get<T>::type itype;
+
+    return detail::win_blackman_std(
+            (const itype*)src, (itype*)dst, len);
+}
+
+
+template<typename T>
+static inline IppStatus win_blackman_opt(const T *src, T *dst, int len)
+{
+    typedef get<T>::type itype;
+
+    return detail::win_blackman_opt(
+            (const itype*)src, (itype*)dst, len);
+}
+
+template<typename T>
+static inline IppStatus win_hamming(const T *src, T *dst, int len)
+{
+    typedef get<T>::type itype;
+
+    return detail::win_hamming(
+            (const itype*)src, (itype*)dst, len);
+}
+
+template<typename T>
+static inline IppStatus win_hann(const T *src, T *dst, int len)
+{
+    typedef get<T>::type itype;
+
+    return detail::win_hann(
+            (const itype*)src, (itype*)dst, len);
+}
+
+template<typename T1, typename T2>
+static inline IppStatus win_kaiser(const T1 *src, T1 *dst, int len, T2 alpha)
+{
+    typedef get<T1>::type itype;
+
+    return detail::win_kaiser(
+            (const itype*)src, (itype*)dst, len, alpha);
+}
+
+
+template<typename T>
+class win
+{
+    win();
+    win(const win &);
+
+    int w_;
+    int len_;
+    T *wdata_;
+
+    template<typename VT>
+    struct get_alpha_type
+    {
+        typedef float type;
+    };
+
+    template<>
+    struct get_alpha_type<double>
+    {
+        typedef double type;
+    };
+public:
+    typedef enum{
+        BARTLETT,
+        BLACKMAN,
+        BLACKMAN_STD,
+        BLACKMAN_OPT,
+        HAMMING,
+        HANN,
+        KAISER,
+
+        //unused
+        END_MAKRER,
+    }win_type;
+
+    typedef typename get_alpha_type<
+        typename value_type<T>::type>::type alpha_type;
+
+
+    win(win_type w, int len, alpha_type alpha = 0)
+       : w_(w), len_(len)
+    { 
+        wdata_ = (T*)ipp::malloc<T>(len);
+        if(!wdata_)
+            return;
+
+        set<T>(1, wdata_, len); 
+        
+        switch(w){
+            case BARTLETT:
+                win_bartlett(wdata_, wdata_, len);
+                break;
+
+            case BLACKMAN:
+                win_blackman(wdata_, wdata_, len, alpha);
+                break;
+
+            case BLACKMAN_STD:
+                win_blackman_std(wdata_, wdata_, len);
+                break;
+
+            case BLACKMAN_OPT:
+                win_blackman_opt(wdata_, wdata_, len);
+                break;
+
+            case HAMMING:
+                win_hamming(wdata_, wdata_, len);
+                break;
+
+            case HANN:
+                win_hann(wdata_, wdata_, len);
+                break;
+
+            case KAISER:
+                win_kaiser(wdata_, wdata_, len, alpha);
+                break;
+
+            default:
+                //no window
+                break;
+        }
+    }
+    ~win()
+    {
+        if(wdata_) ipp::free(wdata_);
+    }
+
+    IppStatus mul(const T *src, T* dst, int len)
+    {
+        if(!wdata_)
+            return ippStsMemAllocErr;
+        else if(len > len_)
+            return ippStsLengthErr;
+        else
+            return ipp::mul(src, wdata_, dst, len);
+    }
+
+
+};
+
 
 
 

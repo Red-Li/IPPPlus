@@ -232,6 +232,9 @@ SET_ASM(32s);
 SET_ASM(64s);
 SET_ASM(32f);
 SET_ASM(64f);
+SET_ASM(16sc);
+SET_ASM(32sc);
+SET_ASM(64sc);
 SET_ASM(32fc);
 SET_ASM(64fc);
 
@@ -2352,6 +2355,150 @@ static inline IppStatus find_nearest(
             in_val, out_val, out_idx, len, src, slen);
 }
 
+
+/////// win_bartlett /////////
+template<typename T>
+static inline IppStatus win_bartlett(const T*, T*, int);
+
+#define WIN_BARTLETT_ASM(Suffix)\
+template<>\
+static inline IppStatus win_bartlett<Ipp##Suffix>(\
+        const Ipp##Suffix *src, Ipp##Suffix *dst, int len)\
+{ return src == dst ? ippsWinBartlett_##Suffix##_I(dst, len)\
+                    : ippsWinBartlett_##Suffix(src, dst, len); }
+
+WIN_BARTLETT_ASM(16s);
+WIN_BARTLETT_ASM(32f);
+WIN_BARTLETT_ASM(64f);
+WIN_BARTLETT_ASM(16sc);
+WIN_BARTLETT_ASM(32fc);
+WIN_BARTLETT_ASM(64fc);
+
+#undef WIN_BARTLETT_ASM
+
+
+////// win_blackman, win_blackman_std, win_blackman_opt ////
+template<typename T1, typename T2>
+static inline IppStatus win_blackman(const T1*, T1*, int, T2);
+
+template<typename T>
+static inline IppStatus win_blackman_std(const T*, T*, int);
+
+template<typename T>
+static inline IppStatus win_blackman_opt(const T*, T*, int);
+
+#define WIN_BLACKMAN_ASM(Suffix, T2)\
+template<>\
+static inline IppStatus win_blackman<Ipp##Suffix, T2>(\
+        const Ipp##Suffix *src, Ipp##Suffix *dst, int len, T2 alpha)\
+{ return src == dst ? ippsWinBlackman_##Suffix##_I(dst, len, alpha)\
+                    : ippsWinBlackman_##Suffix(src, dst, len, alpha); }
+
+#define WIN_BLACKMAN_STD_ASM(Suffix)\
+template<>\
+static inline IppStatus win_blackman_std<Ipp##Suffix>(\
+        const Ipp##Suffix *src, Ipp##Suffix *dst, int len)\
+{ return src == dst ? ippsWinBlackmanStd_##Suffix##_I(dst, len)\
+                    : ippsWinBlackmanStd_##Suffix(src, dst, len); }
+
+#define WIN_BLACKMAN_OPT_ASM(Suffix)\
+template<>\
+static inline IppStatus win_blackman_opt<Ipp##Suffix>(\
+        const Ipp##Suffix *src, Ipp##Suffix *dst, int len)\
+{ return src == dst ? ippsWinBlackmanOpt_##Suffix##_I(dst, len)\
+                    : ippsWinBlackmanOpt_##Suffix(src, dst, len); }
+
+
+WIN_BLACKMAN_ASM(16s, float);
+WIN_BLACKMAN_ASM(32f, float);
+WIN_BLACKMAN_ASM(64f, double);
+WIN_BLACKMAN_ASM(16sc, float);
+WIN_BLACKMAN_ASM(32fc, float);
+WIN_BLACKMAN_ASM(64fc, double);
+
+
+WIN_BLACKMAN_STD_ASM(16s);
+WIN_BLACKMAN_STD_ASM(32f);
+WIN_BLACKMAN_STD_ASM(64f);
+WIN_BLACKMAN_STD_ASM(16sc);
+WIN_BLACKMAN_STD_ASM(32fc);
+WIN_BLACKMAN_STD_ASM(64fc);
+
+WIN_BLACKMAN_OPT_ASM(16s);
+WIN_BLACKMAN_OPT_ASM(32f);
+WIN_BLACKMAN_OPT_ASM(64f);
+WIN_BLACKMAN_OPT_ASM(16sc);
+WIN_BLACKMAN_OPT_ASM(32fc);
+WIN_BLACKMAN_OPT_ASM(64fc);
+
+#undef WIN_BLACKMAN_ASM
+#undef WIN_BLACKMAN_STD_ASM
+#undef WIN_BLACKMAN_OPT_ASM
+
+
+/////// win_hamming /////////
+template<typename T>
+static inline IppStatus win_hamming(const T*, T*, int);
+
+#define WIN_HAMMING_ASM(Suffix)\
+template<>\
+static inline IppStatus win_hamming<Ipp##Suffix>(\
+        const Ipp##Suffix *src, Ipp##Suffix *dst, int len)\
+{ return src == dst ? ippsWinHamming_##Suffix##_I(dst, len)\
+                    : ippsWinHamming_##Suffix(src, dst, len); }
+
+WIN_HAMMING_ASM(16s);
+WIN_HAMMING_ASM(32f);
+WIN_HAMMING_ASM(64f);
+WIN_HAMMING_ASM(16sc);
+WIN_HAMMING_ASM(32fc);
+WIN_HAMMING_ASM(64fc);
+
+#undef WIN_HAMMING_ASM
+
+
+/////// win_hann /////////
+template<typename T>
+static inline IppStatus win_hann(const T*, T*, int);
+
+#define WIN_HANN_ASM(Suffix)\
+template<>\
+static inline IppStatus win_hann<Ipp##Suffix>(\
+        const Ipp##Suffix *src, Ipp##Suffix *dst, int len)\
+{ return src == dst ? ippsWinHann_##Suffix##_I(dst, len)\
+                    : ippsWinHann_##Suffix(src, dst, len); }
+
+WIN_HANN_ASM(16s);
+WIN_HANN_ASM(32f);
+WIN_HANN_ASM(64f);
+WIN_HANN_ASM(16sc);
+WIN_HANN_ASM(32fc);
+WIN_HANN_ASM(64fc);
+
+#undef WIN_HANN_ASM
+
+
+
+////// win_kaiser //////
+template<typename T1, typename T2>
+static inline IppStatus win_kaiser(const T1*, T1*, int, T2);
+
+
+#define WIN_KAISER_ASM(Suffix, T2)\
+template<>\
+static inline IppStatus win_kaiser<Ipp##Suffix, T2>(\
+        const Ipp##Suffix *src, Ipp##Suffix *dst, int len, T2 alpha)\
+{ return src == dst ? ippsWinKaiser_##Suffix##_I(dst, len, alpha)\
+                    : ippsWinKaiser_##Suffix(src, dst, len, alpha); }
+
+WIN_KAISER_ASM(16s, float);
+WIN_KAISER_ASM(32f, float);
+WIN_KAISER_ASM(64f, double);
+WIN_KAISER_ASM(16sc, float);
+WIN_KAISER_ASM(32fc, float);
+WIN_KAISER_ASM(64fc, double);
+
+#undef WIN_KAISER_ASM
 
 }}
 

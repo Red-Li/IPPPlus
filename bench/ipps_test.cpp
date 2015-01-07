@@ -1531,8 +1531,48 @@ INSTANTIATE_TYPED_TEST_CASE_P(MTPLn, LnTest, LnTypes);
 
 
 
+///////win////
 
 
+
+template<typename T>
+class WinTest : public testing::Test
+{
+};
+
+//
+TYPED_TEST_CASE_P(WinTest);
+
+TYPED_TEST_P(WinTest, SanitCheck)
+{
+    TypeParam *buf0 = (TypeParam*)ipp::malloc<TypeParam>(4096);
+    typedef ipp::win<TypeParam> win_type;
+
+    for(int tp = 0; tp < win_type::END_MAKRER; ++tp){
+        win_type w((win_type::win_type)tp, 4096);
+
+        for(size_t i = 0; i < 4096; ++i){
+            buf0[i] = from_int<TypeParam>(10);
+        }
+
+        EXPECT_EQ(w.mul(buf0, buf0, 4096), ippStsNoErr);
+    }
+
+    ipp::free(buf0);
+}
+
+
+REGISTER_TYPED_TEST_CASE_P(WinTest, 
+        SanitCheck);
+typedef testing::Types<
+                       short,
+                       float, double,
+                       std::complex<short>,
+                       std::complex<float>,
+                       std::complex<double>
+                       >WinTestTypes;
+
+INSTANTIATE_TYPED_TEST_CASE_P(MTPWinTest, WinTest, WinTestTypes);
 
 
 
