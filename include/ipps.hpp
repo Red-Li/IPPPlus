@@ -1267,8 +1267,363 @@ public:
 
 
 
+/**@}*/
+
+/**
+ * @defgroup StatisticalFunction Statistical Functions
+ * This section describes the Intel IPP functions that compute the vector measure values: maximum, minimum, mean, and standard deviation.
+ *
+ * Note: ZeroCrossing not implemented
+ *
+ * @ingroup EssentialFunctions
+ * @{
+ **/
+
+template<typename T>
+static inline IppStatus sum(const T *src, int len, T *sum_, IppHintAlgorithm hint)
+{
+    typedef get<T>::type itype;
+    return detail::sum(
+            (const itype*)src, len, (itype*)sum_, hint);
+}
+
+template<typename T1, typename T2>
+static inline IppStatus sum(const T1 *src, int len, T2 *sum_, int scale = 0)
+{
+    typedef get<T1>::type itype1;
+    typedef get<T2>::type itype2;
+    return detail::sum(
+            (const itype1*)src, len, (itype2*)sum_, scale);
+}
+
+
+
+template<typename T>
+static inline IppStatus max(const T *src, int len, T *max_)
+{
+    typedef get<T>::type itype;
+    return detail::max(
+            (const itype*)src, len, (itype*)max_);
+}
+
+
+template<typename T>
+static inline IppStatus max_indx(const T *src, int len, T *max_, int *indx)
+{
+    typedef get<T>::type itype;
+    return detail::max_indx(
+            (const itype*)src, len, (itype*)max_, indx);
+}
+
+template<typename T>
+static inline IppStatus max_abs(const T *src, int len, T *max_)
+{
+    typedef get<T>::type itype;
+    return detail::max_abs(
+            (const itype*)src, len, (itype*)max_);
+}
+
+template<typename T>
+static inline IppStatus max_abs_indx(const T *src, int len, T *max_, int *indx)
+{
+    typedef get<T>::type itype;
+    return detail::max_abs_indx(
+            (const itype*)src, len, (itype*)max_, indx);
+}
+
+template<typename T>
+static inline IppStatus min(const T *src, int len, T *min_)
+{
+    typedef get<T>::type itype;
+    return detail::min(
+            (const itype*)src, len, (itype*)min_);
+}
+
+
+template<typename T>
+static inline IppStatus min_indx(const T *src, int len, T *min_, int *indx)
+{
+    typedef get<T>::type itype;
+    return detail::min_indx(
+            (const itype*)src, len, (itype*)min_, indx);
+}
+
+template<typename T>
+static inline IppStatus min_abs(const T *src, int len, T *min_)
+{
+    typedef get<T>::type itype;
+    return detail::min_abs(
+            (const itype*)src, len, (itype*)min_);
+}
+
+template<typename T>
+static inline IppStatus min_abs_indx(const T *src, int len, T *min_, int *indx)
+{
+    typedef get<T>::type itype;
+    return detail::min_abs_indx(
+            (const itype*)src, len, (itype*)min_, indx);
+}
+
+
+template<typename T>
+static inline IppStatus min_max(const T* src, int len, T *min_, T *max_)
+{
+    typedef get<T>::type itype;
+    return detail::min_max(
+            (const itype*)src, len, (itype*)min_, (itype*)max_);
+}
+
+
+template<typename T>
+static inline IppStatus min_max_indx(
+        const T* src, int len, T *min_, int *min_indx,  T *max_, int *max_indx)
+{
+    typedef get<T>::type itype;
+    return detail::min_max(
+            (const itype*)src, len, (itype*)min_, min_indx, (itype*)max_, max_indx);
+}
+
+
+template<typename T>
+static inline IppStatus mean(const T *src, int len, T *mean_, IppHintAlgorithm hint)
+{
+    typedef get<T>::type itype;
+    return detail::mean(
+            (const itype*)src, len, (itype*)mean_, hint);
+}
+
+template<typename T>
+static inline IppStatus mean(const T *src, int len, T *mean_, int scale = 0)
+{
+    typedef get<T>::type itype;
+    return detail::mean(
+            (const itype*)src, len, (itype*)mean_, scale);
+}
+
+
+template<typename T>
+static inline IppStatus std_dev(const T *src, int len, T *std_dev_, IppHintAlgorithm hint)
+{
+    typedef get<T>::type itype;
+    return detail::std_dev(
+            (const itype*)src, len, (itype*)std_dev_, hint);
+}
+
+template<typename T>
+static inline IppStatus std_dev(const T *src, int len, T *std_dev_, int scale = 0)
+{
+    typedef get<T>::type itype;
+    return detail::std_dev(
+            (const itype*)src, len, (itype*)std_dev_, scale);
+}
+
+
+template<typename T>
+static inline IppStatus mean_std_dev(
+        const T *src, int len, T* mean_, T *std_dev_, IppHintAlgorithm hint)
+{
+    typedef get<T>::type itype;
+    return detail::mean_std_dev(
+            (const itype*)src, len, (itype*)mean_, (itype*)std_dev_, hint);
+}
+
+template<typename T>
+static inline IppStatus mean_std_dev(
+        const T *src, int len, T* mean_, T *std_dev_, int scale = 0)
+{
+    typedef get<T>::type itype;
+    return detail::mean_std_dev(
+            (const itype*)src, len, (itype*)mean_, (itype*)std_dev_, scale);
+}
+
+
+template<typename T1, typename T2>
+static inline IppStatus norm_inf(
+        const T1* src, int len, T2 *norm_)
+{
+    typedef get<T1>::type itype1;
+    typedef get<T2>::type itype2;
+    return detail::norm_inf(
+            (const itype1*)src, len, (itype2*)norm_);
+}
+
+template<typename T1, typename T2>
+static inline IppStatus norm_l1(
+        const T1* src, int len, T2 *norm_)
+{
+    typedef get<T1>::type itype1;
+    typedef get<T2>::type itype2;
+    return detail::norm_l1(
+            (const itype1*)src, len, (itype2*)norm_);
+}
+
+template<typename T1, typename T2>
+static inline IppStatus norm_l2(
+        const T1* src, int len, T2 *norm_)
+{
+    typedef get<T1>::type itype1;
+    typedef get<T2>::type itype2;
+    return detail::norm_l2(
+            (const itype1*)src, len, (itype2*)norm_);
+}
+
+template<typename T1, typename T2>
+static inline IppStatus norm_l2_sqr(
+        const T1* src, int len, T2 *norm_, int scale)
+{
+    typedef get<T1>::type itype1;
+    typedef get<T2>::type itype2;
+    return detail::norm_l2_sqr(
+            (const itype1*)src, len, (itype2*)norm_, scale);
+}
+
+
+template<typename T1, typename T2>
+static inline IppStatus norm_diff_inf(
+        const T1* src1, const T1* src2, int len, T2 *norm_)
+{
+    typedef get<T1>::type itype1;
+    typedef get<T2>::type itype2;
+    return detail::norm_diff_inf(
+            (const itype1*)src1, (const itype1*)src2, len, (itype2*)norm_);
+}
+
+template<typename T1, typename T2>
+static inline IppStatus norm_diff_l1(
+        const T1* src1, const T1* src2, int len, T2 *norm_)
+{
+    typedef get<T1>::type itype1;
+    typedef get<T2>::type itype2;
+    return detail::norm_diff_l1(
+            (const itype1*)src1, (const itype1*)src2, len, (itype2*)norm_);
+}
+
+template<typename T1, typename T2>
+static inline IppStatus norm_diff_l2(
+        const T1* src1, const T1* src2, int len, T2 *norm_)
+{
+    typedef get<T1>::type itype1;
+    typedef get<T2>::type itype2;
+    return detail::norm_diff_l2(
+            (const itype1*)src1, (const itype1*)src2, len, (itype2*)norm_);
+}
+
+template<typename T1, typename T2>
+static inline IppStatus norm_diff_l2_sqr(
+        const T1* src1, const T1 *src2, int len, T2 *norm_, int scale)
+{
+    typedef get<T1>::type itype1;
+    typedef get<T2>::type itype2;
+    return detail::norm_diff_l2_sqr(
+            (const itype1*)src1, (const itype1*)src2, len, (itype2*)norm_);
+}
+
+
+template<typename T1, typename T2, typename T3>
+static inline IppStatus dot_prod(
+        const T1* src1, const T2* src2, int len, T3 *dp)
+{
+    typedef get<T1>::type itype1;
+    typedef get<T2>::type itype2;
+    typedef get<T3>::type itype3;
+
+    return detail::dot_prod(
+            (const itype1*)src1, (const itype2*)src2,
+            len, (itype3*)dp);
+}
+
+
+
+/* --------------------------------------------------------------------------*/
+/**
+ * @brief in-place and out-place operation 
+ *
+ * @tparam T
+ * @Param src
+ * @Param dst
+ * @Param len
+ */
+/* ----------------------------------------------------------------------------*/
+template<typename T>
+static inline IppStatus max_every(const T* src1, const T* src2, T *dst, int len)
+{
+    typedef get<T>::type itype;
+
+    return detail::max_every(
+            (const itype*)src1, (const itype*)src2, (itype*)dst, len);
+}
+
+/* --------------------------------------------------------------------------*/
+/**
+ * @brief in-place operation 
+ *
+ * @tparam T
+ * @Param src
+ * @Param dst
+ * @Param len
+ */
+/* ----------------------------------------------------------------------------*/
+template<typename T>
+static inline IppStatus max_every(const T* src, T *srcdst, int len)
+{
+    typedef get<T>::type itype;
+
+    return detail::max_every(
+            (const itype*)src, (itype*)srcdst, len);
+}
+
+
+/* --------------------------------------------------------------------------*/
+/**
+ * @brief in-place and out-place operation 
+ *
+ * @tparam T
+ * @Param src
+ * @Param dst
+ * @Param len
+ */
+/* ----------------------------------------------------------------------------*/
+template<typename T>
+static inline IppStatus min_every(const T* src1, const T* src2, T *dst, int len)
+{
+    typedef get<T>::type itype;
+
+    return detail::min_every(
+            (const itype*)src1, (const itype*)src2, (itype*)dst, len);
+}
+
+/* --------------------------------------------------------------------------*/
+/**
+ * @brief in-place operation 
+ *
+ * @tparam T
+ * @Param src
+ * @Param dst
+ * @Param len
+ */
+/* ----------------------------------------------------------------------------*/
+template<typename T>
+static inline IppStatus min_every(const T* src, T *srcdst, int len)
+{
+    typedef get<T>::type itype;
+
+    return detail::min_every(
+            (const itype*)src, (itype*)srcdst, len);
+}
+
+
+
+template<typename T>
+static inline IppStatus count_in_range(const T* src, int len, int *count, T lower, T upper)
+{
+    typedef get<T>::type itype;
+    return detail::count_in_range(
+            (const itype*)src, len, count, (itype)lower, (itype)upper);
+}
 
 /**@}*/
+
+
 
 
 }

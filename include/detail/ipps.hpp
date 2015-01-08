@@ -2500,6 +2500,522 @@ WIN_KAISER_ASM(64fc, double);
 
 #undef WIN_KAISER_ASM
 
+
+////// sum /////////
+template<typename T>
+static inline IppStatus sum(const T*, int, T*, IppHintAlgorithm);
+
+template<typename T1, typename T2>
+static inline IppStatus sum(const T1*, int, T2*, int);
+
+
+template<>
+static inline IppStatus sum<Ipp32f>(
+        const Ipp32f *src, int len, Ipp32f *sum_, IppHintAlgorithm hint)
+{ return ippsSum_32f(src, len, sum_, hint); }
+
+template<>
+static inline IppStatus sum<Ipp32fc>(
+        const Ipp32fc *src, int len, Ipp32fc *sum_, IppHintAlgorithm hint)
+{ return ippsSum_32fc(src, len, sum_, hint); }
+
+
+#define SUM_ASM1(Suffix)\
+template<>\
+static inline IppStatus sum<Ipp##Suffix, Ipp##Suffix>(\
+        const Ipp##Suffix *src, int len, Ipp##Suffix *sum_, int scale)\
+{ return ippsSum_##Suffix##_Sfs(src, len, sum_, scale); }
+
+#define SUM_ASM2(Suffix)\
+template<>\
+static inline IppStatus sum<Ipp##Suffix, Ipp##Suffix>(\
+        const Ipp##Suffix *src, int len, Ipp##Suffix *sum_, int scale)\
+{ return ippsSum_##Suffix(src, len, sum_); }
+
+template<>
+static inline IppStatus sum<Ipp16s, Ipp32s>(
+        const Ipp16s *src, int len, Ipp32s *sum_, int scale)
+{ return ippsSum_16s32s_Sfs(src, len, sum_, scale); }
+
+SUM_ASM1(16s);
+SUM_ASM1(32s);
+SUM_ASM1(16sc);
+SUM_ASM2(64f);
+SUM_ASM2(64fc);
+
+#undef SUM_ASM1
+#undef SUM_ASM2
+
+///// max, max_indx, max_abs, max_abs_indx /////
+template<typename T>
+static inline IppStatus max(const T*, int, T*);
+template<typename T>
+static inline IppStatus max_indx(const T*, int, T*, int*);
+template<typename T>
+static inline IppStatus max_abs(const T*, int, T*);
+template<typename T>
+static inline IppStatus max_abs_indx(const T*, int, T*, int*);
+
+
+#define MAX_ASM(Suffix)\
+template<>\
+static inline IppStatus max(\
+        const Ipp##Suffix *src, int len, Ipp##Suffix *max_)\
+{ return ippsMax_##Suffix(src, len, max_); }
+
+
+#define MAX_INDX_ASM(Suffix)\
+template<>\
+static inline IppStatus max_indx(\
+        const Ipp##Suffix *src, int len, Ipp##Suffix *max_, int *indx)\
+{ return ippsMaxIndx_##Suffix(src, len, max_, indx); }
+
+
+#define MAX_ABS_ASM(Suffix)\
+template<>\
+static inline IppStatus max_abs(\
+        const Ipp##Suffix *src, int len, Ipp##Suffix *max_)\
+{ return ippsMaxAbs_##Suffix(src, len, max_); }
+
+
+#define MAX_ABS_INDX_ASM(Suffix)\
+template<>\
+static inline IppStatus max_abs_indx(\
+        const Ipp##Suffix *src, int len, Ipp##Suffix *max_, int *indx)\
+{ return ippsMaxAbsIndx_##Suffix(src, len, max_, indx); }
+
+
+MAX_ASM(16s);
+MAX_ASM(32s);
+MAX_ASM(32f);
+MAX_ASM(64f);
+
+MAX_INDX_ASM(16s);
+MAX_INDX_ASM(32s);
+MAX_INDX_ASM(32f);
+MAX_INDX_ASM(64f);
+
+
+MAX_ABS_ASM(16s);
+MAX_ABS_ASM(32s);
+
+MAX_ABS_INDX_ASM(16s);
+MAX_ABS_INDX_ASM(32s);
+
+#undef MAX_ASM
+#undef MAX_INDX_ASM
+#undef MAX_ABS_ASM
+#undef MAX_ABS_INDX_ASM
+
+///// min, min_indx, min_abs, min_abs_indx /////
+template<typename T>
+static inline IppStatus min(const T*, int, T*);
+template<typename T>
+static inline IppStatus min_indx(const T*, int, T*, int*);
+template<typename T>
+static inline IppStatus min_abs(const T*, int, T*);
+template<typename T>
+static inline IppStatus min_abs_indx(const T*, int, T*, int*);
+
+
+#define MIN_ASM(Suffix)\
+template<>\
+static inline IppStatus min(\
+        const Ipp##Suffix *src, int len, Ipp##Suffix *min_)\
+{ return ippsMin_##Suffix(src, len, min_); }
+
+
+#define MIN_INDX_ASM(Suffix)\
+template<>\
+static inline IppStatus min_indx(\
+        const Ipp##Suffix *src, int len, Ipp##Suffix *min_, int *indx)\
+{ return ippsMinIndx_##Suffix(src, len, min_, indx); }
+
+
+#define MIN_ABS_ASM(Suffix)\
+template<>\
+static inline IppStatus min_abs(\
+        const Ipp##Suffix *src, int len, Ipp##Suffix *min_)\
+{ return ippsMinAbs_##Suffix(src, len, min_); }
+
+
+#define MIN_ABS_INDX_ASM(Suffix)\
+template<>\
+static inline IppStatus min_abs_indx(\
+        const Ipp##Suffix *src, int len, Ipp##Suffix *min_, int *indx)\
+{ return ippsMinAbsIndx_##Suffix(src, len, min_, indx); }
+
+
+MIN_ASM(16s);
+MIN_ASM(32s);
+MIN_ASM(32f);
+MIN_ASM(64f);
+
+MIN_INDX_ASM(16s);
+MIN_INDX_ASM(32s);
+MIN_INDX_ASM(32f);
+MIN_INDX_ASM(64f);
+
+
+MIN_ABS_ASM(16s);
+MIN_ABS_ASM(32s);
+
+MIN_ABS_INDX_ASM(16s);
+MIN_ABS_INDX_ASM(32s);
+
+#undef MIN_ASM
+#undef MIN_INDX_ASM
+#undef MIN_ABS_ASM
+#undef MIN_ABS_INDX_ASM
+
+
+////// min_max, min_max_indx ////////
+template<typename T>
+static inline IppStatus min_max(const T*, int, T*, T*);
+
+template<typename T>
+static inline IppStatus min_max_indx(const T*, int, T*, int*, T*, int*);
+
+#define MIN_MAX_ASM(Suffix)\
+template<>\
+static inline IppStatus min_max<Ipp##Suffix>(\
+        const Ipp##Suffix *src, int len, Ipp##Suffix *min_, Ipp##Suffix *max_)\
+{ return ippsMinMax_##Suffix(src, len, min_, max_); }
+
+
+#define MIN_MAX_INDX_ASM(Suffix)\
+template<>\
+static inline IppStatus min_max_indx<Ipp##Suffix>(\
+        const Ipp##Suffix *src, int len,\
+        Ipp##Suffix *min_, int *min_indx,\
+        Ipp##Suffix *max_, int *max_indx)\
+{ return ippsMinMaxIndx_##Suffix(\
+        src, len, min_, min_indx, max_, max_indx); }
+
+
+MIN_MAX_ASM(8u);
+MIN_MAX_ASM(16u);
+MIN_MAX_ASM(16s);
+MIN_MAX_ASM(32u);
+MIN_MAX_ASM(32s);
+MIN_MAX_ASM(32f);
+MIN_MAX_ASM(64f);
+
+MIN_MAX_INDX_ASM(8u);
+MIN_MAX_INDX_ASM(16u);
+MIN_MAX_INDX_ASM(16s);
+MIN_MAX_INDX_ASM(32u);
+MIN_MAX_INDX_ASM(32s);
+MIN_MAX_INDX_ASM(32f);
+MIN_MAX_INDX_ASM(64f);
+
+#undef MIN_MAX_ASM
+#undef MIN_MAX_INDX_ASM
+
+
+////// mean /////////
+template<typename T>
+static inline IppStatus mean(const T*, int, T*, IppHintAlgorithm);
+
+template<typename T>
+static inline IppStatus mean(const T*, int, T*, int);
+
+
+template<>
+static inline IppStatus mean<Ipp32f>(
+        const Ipp32f *src, int len, Ipp32f *mean_, IppHintAlgorithm hint)
+{ return ippsMean_32f(src, len, mean_, hint); }
+
+template<>
+static inline IppStatus mean<Ipp32fc>(
+        const Ipp32fc *src, int len, Ipp32fc *mean_, IppHintAlgorithm hint)
+{ return ippsMean_32fc(src, len, mean_, hint); }
+
+
+#define MEAN_ASM1(Suffix)\
+template<>\
+static inline IppStatus mean<Ipp##Suffix>(\
+        const Ipp##Suffix *src, int len, Ipp##Suffix *mean_, int scale)\
+{ return ippsMean_##Suffix##_Sfs(src, len, mean_, scale); }
+
+#define MEAN_ASM2(Suffix)\
+template<>\
+static inline IppStatus mean<Ipp##Suffix>(\
+        const Ipp##Suffix *src, int len, Ipp##Suffix *mean_, int scale)\
+{ return ippsMean_##Suffix(src, len, mean_); }
+
+
+MEAN_ASM1(16s);
+MEAN_ASM1(32s);
+MEAN_ASM1(16sc);
+MEAN_ASM2(64f);
+MEAN_ASM2(64fc);
+
+#undef MEAN_ASM1
+#undef MEAN_ASM2
+
+////// std_dev /////////
+template<typename T>
+static inline IppStatus std_dev(const T*, int, T*, IppHintAlgorithm);
+
+template<typename T>
+static inline IppStatus std_dev(const T*, int, T*, int);
+
+
+template<>
+static inline IppStatus std_dev<Ipp32f>(
+        const Ipp32f *src, int len, Ipp32f *std_dev_, IppHintAlgorithm hint)
+{ return ippsStdDev_32f(src, len, std_dev_, hint); }
+
+
+#define STD_DEV_ASM1(Suffix)\
+template<>\
+static inline IppStatus std_dev<Ipp##Suffix>(\
+        const Ipp##Suffix *src, int len, Ipp##Suffix *std_dev_, int scale)\
+{ return ippsStdDev_##Suffix##_Sfs(src, len, std_dev_, scale); }
+
+#define STD_DEV_ASM2(Suffix)\
+template<>\
+static inline IppStatus std_dev<Ipp##Suffix>(\
+        const Ipp##Suffix *src, int len, Ipp##Suffix *std_dev_, int scale)\
+{ return ippsStdDev_##Suffix(src, len, std_dev_); }
+
+
+STD_DEV_ASM1(16s);
+STD_DEV_ASM2(64f);
+
+#undef STD_DEV_ASM1
+#undef STD_DEV_ASM2
+
+
+////// mean_std_dev /////////
+template<typename T>
+static inline IppStatus mean_std_dev(const T*, int, T*, T*, IppHintAlgorithm);
+
+template<typename T>
+static inline IppStatus mean_std_dev(const T*, int, T*, T*, int);
+
+
+template<>
+static inline IppStatus mean_std_dev<Ipp32f>(
+        const Ipp32f *src, int len, Ipp32f *mean_, Ipp32f *std_dev_, IppHintAlgorithm hint)
+{ return ippsMeanStdDev_32f(src, len, mean_, std_dev_, hint); }
+
+
+#define MEAN_STD_DEV_ASM1(Suffix)\
+template<>\
+static inline IppStatus mean_std_dev<Ipp##Suffix>(\
+        const Ipp##Suffix *src, int len, Ipp##Suffix *mean_, Ipp##Suffix *std_dev_, int scale)\
+{ return ippsMeanStdDev_##Suffix##_Sfs(src, len, mean_, std_dev_, scale); }
+
+#define MEAN_STD_DEV_ASM2(Suffix)\
+template<>\
+static inline IppStatus mean_std_dev<Ipp##Suffix>(\
+        const Ipp##Suffix *src, int len, Ipp##Suffix *mean_, Ipp##Suffix* std_dev_, int scale)\
+{ return ippsMeanStdDev_##Suffix(src, len, mean_, std_dev_); }
+
+
+MEAN_STD_DEV_ASM1(16s);
+MEAN_STD_DEV_ASM2(64f);
+
+#undef MEAN_STD_DEV_ASM1
+#undef MEAN_STD_DEV_ASM2
+
+///// norm_inf, norm_l1, norm_l2, norm_l2_sqr //////
+template<typename T1, typename T2>
+static inline IppStatus norm_inf(const T1*, int, T2 *);
+template<typename T1, typename T2>
+static inline IppStatus norm_l1(const T1*, int, T2 *);
+template<typename T1, typename T2>
+static inline IppStatus norm_l2(const T1*, int, T2 *);
+template<typename T1, typename T2>
+static inline IppStatus norm_l2_sqr(const T1*, int, T2 *, int);
+
+#define NORM_ASM1(Suffix, Which1, Which2)\
+template<>\
+static inline IppStatus norm_##Which2<Ipp##Suffix, Ipp##Suffix>(\
+        const Ipp##Suffix *src, int len, Ipp##Suffix *norm_)\
+{ return ippsNorm_##Which1##_##Suffix(src, len, norm_); }
+
+#define NORM_ASM2(Suffix1, Suffix2, Which1, Which2)\
+template<>\
+static inline IppStatus norm_##Which2<Ipp##Suffix1, Ipp##Suffix2>(\
+        const Ipp##Suffix1 *src, int len, Ipp##Suffix2 *norm_)\
+{ return ippsNorm_##Which1##_##Suffix1##Suffix2(src, len, norm_); }
+
+template<>
+static inline IppStatus norm_l2_sqr<Ipp16s, Ipp64s>(
+        const Ipp16s* src, int len, Ipp64s *norm_, int scale)
+{ return ippsNorm_L2Sqr_16s64s_Sfs(src, len, norm_, scale); }
+
+
+NORM_ASM1(32f, Inf, inf);
+NORM_ASM1(64f, Inf, inf);
+NORM_ASM2(16s, 32f, Inf, inf);
+NORM_ASM2(32fc, 32f, Inf, inf);
+NORM_ASM2(64fc, 64f, Inf, inf);
+
+NORM_ASM1(32f, L2, l2);
+NORM_ASM1(64f, L2, l2);
+NORM_ASM2(16s, 32f, L2, l2);
+NORM_ASM2(32fc, 64f, L2, l2);
+NORM_ASM2(64fc, 64f, L2, l2);
+
+NORM_ASM1(32f, L1, l1);
+NORM_ASM1(64f, L1, l1);
+NORM_ASM2(16s, 32f, L1, l1);
+NORM_ASM2(32fc, 64f, L1, l1);
+NORM_ASM2(64fc, 64f, L1, l1);
+
+
+#undef NORM_ASM1
+#undef NORM_ASM2
+
+
+///// norm_diff_inf, norm_diff_l1, norm_diff_l2, norm_diff_l2_sqr //////
+template<typename T1, typename T2>
+static inline IppStatus norm_diff_inf(const T1*, const T1*, int, T2 *);
+template<typename T1, typename T2>
+static inline IppStatus norm_diff_l1(const T1*, const T1*, int, T2 *);
+template<typename T1, typename T2>
+static inline IppStatus norm_diff_l2(const T1*, const T1*, int, T2 *);
+template<typename T1, typename T2>
+static inline IppStatus norm_diff_l2_sqr(const T1*, const T1*, int, T2 *, int);
+
+#define NORM_DIFF_ASM1(Suffix, Which1, Which2)\
+template<>\
+static inline IppStatus norm_diff_##Which2<Ipp##Suffix, Ipp##Suffix>(\
+        const Ipp##Suffix *src1, const Ipp##Suffix *src2, int len, Ipp##Suffix *norm_)\
+{ return ippsNormDiff_##Which1##_##Suffix(src1, src2, len, norm_); }
+
+#define NORM_DIFF_ASM2(Suffix1, Suffix2, Which1, Which2)\
+template<>\
+static inline IppStatus norm_diff_##Which2<Ipp##Suffix1, Ipp##Suffix2>(\
+        const Ipp##Suffix1 *src1, const Ipp##Suffix1 *src2, int len, Ipp##Suffix2 *norm_)\
+{ return ippsNormDiff_##Which1##_##Suffix1##Suffix2(src1, src2, len, norm_); }
+
+template<>
+static inline IppStatus norm_diff_l2_sqr<Ipp16s, Ipp64s>(
+        const Ipp16s* src1, const Ipp16s *src2, int len, Ipp64s *norm_, int scale)
+{ return ippsNormDiff_L2Sqr_16s64s_Sfs(src1, src2, len, norm_, scale); }
+
+
+NORM_DIFF_ASM1(32f, Inf, inf);
+NORM_DIFF_ASM1(64f, Inf, inf);
+NORM_DIFF_ASM2(16s, 32f, Inf, inf);
+NORM_DIFF_ASM2(32fc, 32f, Inf, inf);
+NORM_DIFF_ASM2(64fc, 64f, Inf, inf);
+
+NORM_DIFF_ASM1(32f, L2, l2);
+NORM_DIFF_ASM1(64f, L2, l2);
+NORM_DIFF_ASM2(16s, 32f, L2, l2);
+NORM_DIFF_ASM2(32fc, 64f, L2, l2);
+NORM_DIFF_ASM2(64fc, 64f, L2, l2);
+
+NORM_DIFF_ASM1(32f, L1, l1);
+NORM_DIFF_ASM1(64f, L1, l1);
+NORM_DIFF_ASM2(16s, 32f, L1, l1);
+NORM_DIFF_ASM2(32fc, 64f, L1, l1);
+NORM_DIFF_ASM2(64fc, 64f, L1, l1);
+
+
+#undef NORM_DIFF_ASM1
+#undef NORM_DIFF_ASM2
+
+
+
+//// dot_prod ////////
+template<typename T1, typename T2, typename T3>
+static inline IppStatus dot_prod(const T1*, const T2*, int, T3*);
+
+#define DOT_PROD_ASM(Suffix1, Suffix2, Suffix3, FSuffix)\
+template<>\
+static inline IppStatus dot_prod<Ipp##Suffix1, Ipp##Suffix2, Ipp##Suffix3>(\
+        const Ipp##Suffix1 *src1, const Ipp##Suffix2 *src2, int len, Ipp##Suffix3 *dp)\
+{ return ippsDotProd_##FSuffix(src1, src2, len, dp); }
+
+DOT_PROD_ASM(32f, 32f, 32f, 32f);
+DOT_PROD_ASM(32fc, 32fc, 32fc, 32fc);
+DOT_PROD_ASM(32f, 32fc, 32fc, 32f32fc);
+DOT_PROD_ASM(32f, 32f, 64f, 32f64f);
+DOT_PROD_ASM(32fc, 32fc, 64fc, 32fc64fc);
+DOT_PROD_ASM(32f, 32fc, 64fc, 32f32fc64fc);
+DOT_PROD_ASM(64f, 64f, 64f, 64f);
+DOT_PROD_ASM(64fc, 64fc, 64fc, 64fc);
+DOT_PROD_ASM(64f, 64fc, 64fc, 64f64fc);
+DOT_PROD_ASM(16s, 16s, 64s, 16s64s);
+DOT_PROD_ASM(16sc, 16sc, 64sc, 16sc64sc);
+DOT_PROD_ASM(16s, 16sc, 64sc, 16s16sc64sc);
+DOT_PROD_ASM(16s, 16s, 32f, 16s32f);
+
+#undef DOT_PROD_ASM
+
+
+///// max_every, min_every /////////
+template<typename T>
+static inline IppStatus max_every(const T*, const T*, T *, int);
+template<typename T>
+static inline IppStatus min_every(const T*, const T*, T *, int);
+template<typename T>
+static inline IppStatus max_every(const T*, T *, int);
+template<typename T>
+static inline IppStatus min_every(const T*, T *, int);
+
+#define MAX_EVERY_ASM(Suffix)\
+template<>\
+static inline IppStatus max_every<Ipp##Suffix>(\
+        const Ipp##Suffix *src1, const Ipp##Suffix *src2, Ipp##Suffix *dst, int len)\
+{ return src1 == dst ? ippsMaxEvery_##Suffix##_I(src2, dst, len)\
+                     : (src2 == dst ? ippsMaxEvery_##Suffix##_I(src1, dst, len)\
+                                    : ippsMaxEvery_##Suffix(src1, src2, dst, len)); }
+
+
+template<>
+static inline IppStatus max_every<Ipp16s>(const Ipp16s *src, Ipp16s *srcdst, int len)
+{ return ippsMaxEvery_16s_I(src, srcdst, len); }
+template<>
+static inline IppStatus max_every<Ipp32s>(const Ipp32s *src, Ipp32s *srcdst, int len)
+{ return ippsMaxEvery_32s_I(src, srcdst, len); }
+
+#define MIN_EVERY_ASM(Suffix)\
+template<>\
+static inline IppStatus min_every<Ipp##Suffix>(\
+        const Ipp##Suffix *src1, const Ipp##Suffix *src2, Ipp##Suffix *dst, int len)\
+{ return src1 == dst ? ippsMinEvery_##Suffix##_I(src2, dst, len)\
+                     : (src2 == dst ? ippsMinEvery_##Suffix##_I(src1, dst, len)\
+                                    : ippsMinEvery_##Suffix(src1, src2, dst, len)); }
+
+template<>
+static inline IppStatus min_every<Ipp16s>(const Ipp16s *src, Ipp16s *srcdst, int len)
+{ return ippsMinEvery_16s_I(src, srcdst, len); }
+template<>
+static inline IppStatus min_every<Ipp32s>(const Ipp32s *src, Ipp32s *srcdst, int len)
+{ return ippsMinEvery_32s_I(src, srcdst, len); }
+
+MAX_EVERY_ASM(8u);
+MAX_EVERY_ASM(16u);
+MAX_EVERY_ASM(32f);
+MAX_EVERY_ASM(64f);
+MIN_EVERY_ASM(8u);
+MIN_EVERY_ASM(16u);
+MIN_EVERY_ASM(32f);
+MIN_EVERY_ASM(64f);
+
+#undef MAX_EVERY_ASM
+#undef MIN_EVERY_ASM
+
+
+
+////// count_in_range ////////
+template<typename T>
+static inline IppStatus count_in_range(const T*, int, int*, T, T);
+
+template<>
+static inline IppStatus count_in_range<Ipp32s>(
+        const Ipp32s* src, int len, int* count, Ipp32s lower, Ipp32s upper)
+{ return ippsCountInRange_32s(src, len, count, lower, upper); }
+
+
 }}
 
 #endif
