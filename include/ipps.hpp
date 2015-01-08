@@ -1624,7 +1624,40 @@ static inline IppStatus count_in_range(const T* src, int len, int *count, T lowe
 /**@}*/
 
 
+/**
+ * @defgroup SamplingFunctions Sampling Functions
+ * The functions described in this section manipulate signal samples. Sampling functions are used to change the sampling rate of the input signal and thus to obtain the signal vector of a required length. The functions perform the following operations:
+Insert zero-valued samples between neighboring samples of a signal (up-sample).
+Remove samples from between neighboring samples of a signal (down-sample).
+ *
+ * @ingroup EssentialFunctions
+ * @{
+ **/
 
+template<typename T>
+static inline IppStatus sample_up(
+        const T* src, int src_len, T *dst, int *dst_len, int factor, int *phase)
+{
+    typedef get<T>::type itype;
+
+    return detail::sample_up(
+            (const itype*)src, src_len, (itype*)dst, dst_len, factor, phase);
+}
+
+
+template<typename T>
+static inline IppStatus sample_down(
+        const T* src, int src_len, T *dst, int *dst_len, int factor, int *phase)
+{
+    typedef get<T>::type itype;
+
+    return detail::sample_down(
+            (const itype*)src, src_len, (itype*)dst, dst_len, factor, phase);
+}
+
+
+
+/**@}*/
 
 }
 

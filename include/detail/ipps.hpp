@@ -3016,6 +3016,48 @@ static inline IppStatus count_in_range<Ipp32s>(
 { return ippsCountInRange_32s(src, len, count, lower, upper); }
 
 
+
+
+///// sample_up, sample_down //////////
+template<typename T>
+static inline IppStatus sample_up(const T*, int, T*, int*, int, int *);
+template<typename T>
+static inline IppStatus sample_down(const T*, int, T*, int*, int, int *);
+
+#define SAMPLE_UP_ASM(Suffix)\
+template<>\
+static inline IppStatus sample_up<Ipp##Suffix>(\
+        const Ipp##Suffix *src, int src_len, Ipp##Suffix* dst, int *dst_len, int factor, int *phase)\
+{ return ippsSampleUp_##Suffix(src, src_len, dst, dst_len, factor, phase); }
+
+#define SAMPLE_DOWN_ASM(Suffix)\
+template<>\
+static inline IppStatus sample_down<Ipp##Suffix>(\
+        const Ipp##Suffix *src, int src_len, Ipp##Suffix* dst, int *dst_len, int factor, int *phase)\
+{ return ippsSampleDown_##Suffix(src, src_len, dst, dst_len, factor, phase); }
+
+
+SAMPLE_UP_ASM(16s);
+SAMPLE_UP_ASM(32f);
+SAMPLE_UP_ASM(64f);
+SAMPLE_UP_ASM(16sc);
+SAMPLE_UP_ASM(32fc);
+SAMPLE_UP_ASM(64fc);
+
+SAMPLE_DOWN_ASM(16s);
+SAMPLE_DOWN_ASM(32f);
+SAMPLE_DOWN_ASM(64f);
+SAMPLE_DOWN_ASM(16sc);
+SAMPLE_DOWN_ASM(32fc);
+SAMPLE_DOWN_ASM(64fc);
+
+
+#undef SAMPLE_UP_ASM
+#undef SAMPLE_DOWN_ASM
+
+
+
+
 }}
 
 #endif
