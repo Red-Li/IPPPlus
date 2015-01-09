@@ -135,6 +135,40 @@ struct get<T, TYPE_CAT_FLOAT>
 
 
 
+template<typename T>
+struct type_value;
+
+#define TYPE_VALUE_ASM(Suffix)\
+template<>\
+struct type_value<Ipp##Suffix>\
+{ static const IppDataType value = ipp##Suffix; }
+
+TYPE_VALUE_ASM(8s);
+TYPE_VALUE_ASM(8u);
+TYPE_VALUE_ASM(16s);
+TYPE_VALUE_ASM(16u);
+TYPE_VALUE_ASM(32s);
+TYPE_VALUE_ASM(32u);
+TYPE_VALUE_ASM(64s);
+TYPE_VALUE_ASM(64u);
+TYPE_VALUE_ASM(32f);
+TYPE_VALUE_ASM(64f);
+TYPE_VALUE_ASM(16sc);
+TYPE_VALUE_ASM(32sc);
+TYPE_VALUE_ASM(32fc);
+TYPE_VALUE_ASM(64fc);
+
+
+#undef TYPE_VALUE_ASM
+
+
+
+
+
+
+
+
+
 
 }}
 #endif

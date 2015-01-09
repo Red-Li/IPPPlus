@@ -1532,9 +1532,6 @@ INSTANTIATE_TYPED_TEST_CASE_P(MTPLn, LnTest, LnTypes);
 
 
 ///////win////
-
-
-
 template<typename T>
 class WinTest : public testing::Test
 {
@@ -1576,9 +1573,116 @@ INSTANTIATE_TYPED_TEST_CASE_P(MTPWinTest, WinTest, WinTestTypes);
 
 
 
+///////auto_corr_norm////
+template<typename T>
+class AutoCorrNormTest : public testing::Test
+{
+};
+
+//
+TYPED_TEST_CASE_P(AutoCorrNormTest);
+
+TYPED_TEST_P(AutoCorrNormTest, SanitCheck)
+{
+    TypeParam *buf0 = (TypeParam*)ipp::malloc<TypeParam>(4096);
+    TypeParam *buf1 = (TypeParam*)ipp::malloc<TypeParam>(2048);
+    typedef ipp::auto_corr_norm<TypeParam> corr_type;
+    IppEnum funCfg = (IppEnum)(ippAlgAuto|ippsNormB);
+
+    corr_type corr(4096, 2048, funCfg);
+
+    corr.do_corr(buf0, 4096, buf1, 2048);
+
+    ipp::free(buf0);
+    ipp::free(buf1);
+}
 
 
+REGISTER_TYPED_TEST_CASE_P(AutoCorrNormTest, 
+        SanitCheck);
+typedef testing::Types<
+                       float,
+                       double,
+                       std::complex<float>,
+                       std::complex<double>
+                       >AutoCorrNormTestTypes;
 
+INSTANTIATE_TYPED_TEST_CASE_P(MTPAutoCorrNormTest, AutoCorrNormTest, AutoCorrNormTestTypes);
+
+
+///////cross_corr_norm////
+template<typename T>
+class CrossCorrNormTest : public testing::Test
+{
+};
+
+//
+TYPED_TEST_CASE_P(CrossCorrNormTest);
+
+TYPED_TEST_P(CrossCorrNormTest, SanitCheck)
+{
+    TypeParam *buf0 = (TypeParam*)ipp::malloc<TypeParam>(4096);
+    TypeParam *buf1 = (TypeParam*)ipp::malloc<TypeParam>(4096);
+    TypeParam *buf2 = (TypeParam*)ipp::malloc<TypeParam>(4096);
+    typedef ipp::cross_corr_norm<TypeParam> corr_type;
+    IppEnum funCfg = (IppEnum)(ippAlgAuto|ippsNormB);
+
+    corr_type corr(4096, 4096, 4096, 0, funCfg);
+
+    corr.do_corr(buf0, 4096, buf1, 4096, buf2, 4096);
+
+    ipp::free(buf0);
+    ipp::free(buf1);
+    ipp::free(buf2);
+}
+
+
+REGISTER_TYPED_TEST_CASE_P(CrossCorrNormTest, 
+        SanitCheck);
+typedef testing::Types<
+                       float,
+                       double,
+                       std::complex<float>,
+                       std::complex<double>
+                       >CrossCorrNormTestTypes;
+
+INSTANTIATE_TYPED_TEST_CASE_P(MTPCrossCorrNormTest, CrossCorrNormTest, CrossCorrNormTestTypes);
+
+
+///////cross_corr_norm////
+template<typename T>
+class ConvolveTest : public testing::Test
+{
+};
+
+//
+TYPED_TEST_CASE_P(ConvolveTest);
+
+TYPED_TEST_P(ConvolveTest, SanitCheck)
+{
+    TypeParam *buf0 = (TypeParam*)ipp::malloc<TypeParam>(4096);
+    TypeParam *buf1 = (TypeParam*)ipp::malloc<TypeParam>(16);
+    TypeParam *buf2 = (TypeParam*)ipp::malloc<TypeParam>(4096 + 16 - 1);
+    IppEnum funCfg = (IppEnum)(ippAlgAuto|ippsNormB);
+
+    ipp::convolve<TypeParam> conv(4096, 16, funCfg);
+
+    conv.do_convolve(buf0, 4096, buf1, 16, buf2);
+
+    ipp::free(buf0);
+    ipp::free(buf1);
+    ipp::free(buf2);
+}
+
+
+REGISTER_TYPED_TEST_CASE_P(ConvolveTest, 
+        SanitCheck);
+typedef testing::Types<
+                       float,
+                       double
+                       >ConvolveTestTypes;
+
+INSTANTIATE_TYPED_TEST_CASE_P(MTPConvolveTest, ConvolveTest, ConvolveTestTypes);
 }
 
 

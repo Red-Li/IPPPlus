@@ -1659,6 +1659,183 @@ static inline IppStatus sample_down(
 
 /**@}*/
 
+
+/**
+ * @defgroup FilteringFunctions This chapter describes the Intel® IPP functions that perform convolution and correlation operations, as well as linear and non-linear filtering. 
+ * */
+
+
+
+/**
+ * @defgroup ConvolutionAndCorrelationFunctions Convolution and Correlation Functions
+ * Note: CrossCorr is not implemented
+ * @ingroup FilteringFunctions Convolution is an operation used to define an output signal from any linear time-invariant (LTI) processor in response to any input signal. 
+ * @{
+ **/
+
+template<typename T>
+class auto_corr_norm
+{
+    uint8_t *buffer_;
+    int slen_, dlen_;
+    IppEnum alg_;
+
+    auto_corr_norm();
+    auto_corr_norm(const auto_corr_norm&);
+public:
+    typedef typename get<T>::type itype;
+
+    auto_corr_norm(int slen, int dlen, IppEnum alg)
+    {
+        int bsize = 0;
+        buffer_ = 0;
+        slen_ = slen; dlen_ = dlen;
+        alg_ = alg;
+
+        IppStatus status = detail::auto_corr_norm_get_buffer_size(
+                slen, dlen, type_value<T>::value, alg, &bsize);
+        if(status != ippStsNoErr)
+            return;
+        
+        buffer_ = ipp::malloc<uint8_t>(bsize);
+    }
+
+    ~auto_corr_norm()
+    {
+        if(buffer_) ipp::free(buffer_);
+    }
+
+    IppStatus do_corr(const T* src, int slen, T *dst, int dlen)
+    {
+        if(slen != slen_ || dlen != dlen_)
+            return ippStsSizeErr;
+        else if(!buffer_)
+            return ippStsMemAllocErr;
+        else
+            return detail::do_auto_corr_norm(
+                    (const itype*)src, slen, (itype*)dst, dlen, alg_, (Ipp8u*)buffer_);
+    }
+};
+
+
+template<typename T>
+class cross_corr_norm
+{
+    uint8_t *buffer_;
+    int s1len_, s2len_, dlen_;
+    IppEnum alg_;
+    int low_lag_;
+
+    cross_corr_norm();
+    cross_corr_norm(const cross_corr_norm&);
+public:
+    typedef typename get<T>::type itype;
+
+    cross_corr_norm(int s1len, int s2len, int dlen, int low_lag, IppEnum alg)
+    {
+        int bsize = 0;
+        buffer_ = 0;
+        s1len_ = s1len; s2len_ = s2len;
+        dlen_ = dlen; alg_ = alg;
+        low_lag_ = low_lag;
+
+        IppStatus status = detail::cross_corr_norm_get_buffer_size(
+                s1len, s2len, dlen, low_lag, type_value<T>::value, alg, &bsize);
+        if(status != ippStsNoErr)
+            return;
+        
+        buffer_ = ipp::malloc<uint8_t>(bsize);
+    }
+
+    ~cross_corr_norm()
+    {
+        if(buffer_) ipp::free(buffer_);
+    }
+
+    IppStatus do_corr(
+            const T* src1, int s1len, const T* src2, int s2len, T *dst, int dlen)
+    {
+        if(s1len != s1len_ || s2len != s2len_ || dlen != dlen_)
+            return ippStsSizeErr;
+        else if(!buffer_)
+            return ippStsMemAllocErr;
+        else
+            return detail::do_cross_corr_norm(
+                    (const itype*)src1, s1len, (const itype*)src2, s2len,
+                    (itype*)dst, dlen, low_lag_, alg_, (Ipp8u*)buffer_);
+    }
+};
+
+
+template<typename T>
+class convolve
+{
+    uint8_t *buffer_;
+    int s1len_, s2len_;
+    IppEnum alg_;
+
+    convolve();
+    convolve(const convolve&);
+public:
+    typedef typename get<T>::type itype;
+
+    convolve(int s1len, int s2len, IppEnum alg)
+    {
+        int bsize = 0;
+        buffer_ = 0;
+        s1len_ = s1len; s2len_ = s2len;
+        alg_ = alg;
+
+        IppStatus status = detail::convolve_get_buffer_size(
+                s1len, s2len, type_value<T>::value, alg, &bsize);
+        if(status != ippStsNoErr)
+            return;
+        
+        buffer_ = ipp::malloc<uint8_t>(bsize);
+    }
+
+    ~convolve()
+    {
+        if(buffer_) ipp::free(buffer_);
+    }
+
+    IppStatus do_convolve(
+            const T* src1, int s1len, const T* src2, int s2len, T *dst)
+    {
+        if(s1len != s1len_ || s2len != s2len_)
+            return ippStsSizeErr;
+        else if(!buffer_)
+            return ippStsMemAllocErr;
+        else
+            return detail::do_convolve(
+                    (const itype*)src1, s1len, (const itype*)src2, s2len,
+                    (itype*)dst, alg_, (Ipp8u*)buffer_);
+    }
+};
+
+
+
+template<typename T>
+static inline IppStatus conv_biased(
+        const T* src1, int s1len, const T* src2, int s2len, T* dst, int dlen, int bias)
+{
+    typedef get<T>::type itype;
+
+    return detail::conv_biased(
+            (const itype*)src1, s1len, (const itype*)src2, s2len, (itype*)dst, dlen, bias);
+}
+
+
+
+
+
+
+
+
+
+
+/**@}*/
+
 }
 
 #endif

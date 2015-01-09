@@ -205,6 +205,13 @@ struct get
 };
 
 
+template<typename T>
+struct type_value
+{
+    static const IppDataType value = 
+        detail::type_value<get<T>::type>::value;
+};
+
 
 
 }

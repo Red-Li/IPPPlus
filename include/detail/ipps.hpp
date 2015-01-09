@@ -3056,6 +3056,98 @@ SAMPLE_DOWN_ASM(64fc);
 #undef SAMPLE_DOWN_ASM
 
 
+///// auto_corr_norm //////////
+static inline IppStatus auto_corr_norm_get_buffer_size(
+        int slen, int dlen, IppDataType type, IppEnum alg, int *bsize)
+{ return ippsAutoCorrNormGetBufferSize(slen, dlen, type, alg, bsize); }
+
+template<typename T>
+static inline IppStatus do_auto_corr_norm(
+        const T*, int, T*, int, IppEnum, Ipp8u*);
+
+#define AUTO_CORR_NORM_ASM(Suffix)\
+template<>\
+static inline IppStatus do_auto_corr_norm<Ipp##Suffix>(\
+        const Ipp##Suffix *src, int slen, Ipp##Suffix *dst, int dlen, IppEnum alg, Ipp8u *buffer)\
+{ return ippsAutoCorrNorm_##Suffix(src, slen, dst, dlen, alg, buffer); }
+
+AUTO_CORR_NORM_ASM(32f);
+AUTO_CORR_NORM_ASM(64f);
+AUTO_CORR_NORM_ASM(32fc);
+AUTO_CORR_NORM_ASM(64fc);
+
+#undef AUTO_CORR_NORM_ASM
+
+
+
+
+///// cross_corr_norm //////////
+static inline IppStatus cross_corr_norm_get_buffer_size(
+        int s1len, int s2len, int dlen, int low_lag, IppDataType type, IppEnum alg, int *bsize)
+{
+	return ippsCrossCorrNormGetBufferSize(s1len, s2len, dlen, low_lag, type, alg, bsize);
+}
+
+template<typename T>
+static inline IppStatus do_cross_corr_norm(
+        const T*, int, const T*, int, T*, int, int, IppEnum, Ipp8u*);
+
+#define CROSS_CORR_NORM_ASM(Suffix)\
+template<>\
+static inline IppStatus do_cross_corr_norm<Ipp##Suffix>(\
+        const Ipp##Suffix *src1, int s1len, const Ipp##Suffix *src2, int s2len,\
+        Ipp##Suffix *dst, int dlen, int low_lag, IppEnum alg, Ipp8u *buffer)\
+{ return ippsCrossCorrNorm_##Suffix(src1, s1len, src2, s2len, dst, dlen, low_lag, alg, buffer); }
+
+CROSS_CORR_NORM_ASM(32f);
+CROSS_CORR_NORM_ASM(64f);
+CROSS_CORR_NORM_ASM(32fc);
+CROSS_CORR_NORM_ASM(64fc);
+
+#undef CROSS_CORR_NORM_ASM
+
+
+
+///// convolve //////////
+static inline IppStatus convolve_get_buffer_size(
+        int s1len, int s2len, IppDataType type, IppEnum alg, int *bsize)
+{
+	return ippsConvolveGetBufferSize(s1len, s2len, type, alg, bsize);
+}
+
+template<typename T>
+static inline IppStatus do_convolve(
+        const T*, int, const T*, int, T*, IppEnum, Ipp8u*);
+
+#define CONVOLVE_ASM(Suffix)\
+template<>\
+static inline IppStatus do_convolve<Ipp##Suffix>(\
+        const Ipp##Suffix *src1, int s1len, const Ipp##Suffix *src2, int s2len,\
+        Ipp##Suffix *dst, IppEnum alg, Ipp8u *buffer)\
+{ return ippsConvolve_##Suffix(src1, s1len, src2, s2len, dst, alg, buffer); }
+
+CONVOLVE_ASM(32f);
+CONVOLVE_ASM(64f);
+
+#undef CONVOLVE_ASM
+
+
+
+///// conv_biased /////
+template<typename T>
+static inline IppStatus conv_biased(
+        const T*, int, const T*, int, T*, int, int);
+
+
+template<>
+static inline IppStatus conv_biased<Ipp32f>(
+        const Ipp32f *src1, int s1len, const Ipp32f *src2, int s2len,
+        Ipp32f *dst, int dlen, int bias)
+{ return ippsConvBiased_32f(src1, s1len, src2, s2len, dst, dlen, bias); }
+
+
+
+
 
 
 }}

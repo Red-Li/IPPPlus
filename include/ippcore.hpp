@@ -38,9 +38,9 @@ static inline IppStatus init()
  */
 /* ----------------------------------------------------------------------------*/
 template<typename T>
-static inline void* malloc(int len)
+static inline T* malloc(int len)
 {
-    return ippMalloc(sizeof(get<T>::type) * len);
+    return (T*)ippMalloc(sizeof(get<T>::type) * len);
 };
 
 
