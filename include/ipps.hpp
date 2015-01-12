@@ -1825,16 +1825,266 @@ static inline IppStatus conv_biased(
             (const itype*)src1, s1len, (const itype*)src2, s2len, (itype*)dst, dlen, bias);
 }
 
+/**@}*/
+
+
+/**
+ * @defgroup TransformFunctions This chapter describes the Intel® IPP functions that perform Fourier and discrete cosine transforms (DCT), as well as Hartley, Hilbert, Walsh-Hadamard and wavelet transforms of signals. 
+ **/
+
+
+/**
+ * @defgroup FourierTransformFunctions  The functions described in this section perform the fast Fourier transform (FFT), the discrete Fourier transform (DFT) of signal samples. It also includes variations of the basic functions to support different application requirements.
+ * @ingroup TransformFunctions 
+ * @{
+ **/
+
+
+template<typename T, bool IsCplx>
+struct fft_sepc
+{
+    typedef typename get<T>::type itype;
+    typedef typename detail::fft_spec<itype, IsCplx>::type type;
+};
+
+
+template<typename T, bool IsCplx>
+static inline IppStatus fft_get_size(
+        int order, int flag, IppHintAlgorithm hint, 
+        int *spec_size, int *spec_buf_size, int *buf_size)
+{
+    typedef get<T>::type itype;
+    return detail::fft_get_size<itype, IsCplx>(
+            order, flag, hint, spec_size, spec_buf_size, buf_size);
+}
+
+
+template<typename T, bool IsCplx>
+static inline IppStatus fft_init(
+        void **spec, int order, int flag,
+        IppHintAlgorithm hint, uint8_t *p_spec, uint8_t *spec_buf)
+{
+    typedef get<T>::type itype;
+    typedef detail::fft_spec<itype, IsCplx>::type spec_type;
+    return detail::fft_init<itype, spec_type>(
+            (spec_type**)spec, order, flag, hint, (Ipp8u*)p_spec, (Ipp8u*)spec_buf);
+}
+
+
+template<typename T, bool IsCplx = true>
+static inline IppStatus fft_forward(
+        const T *sre, const T* sim, T *dre, T* dim, void *spec, uint8_t *buf)
+{
+    static_assert(IsCplx, "Only support complex type config");
+    typedef get<T>::type itype;
+    typedef detail::fft_spec<itype, IsCplx>::type spec_type;
+    return detail::fft_forward<itype, spec_type, IsCplx>(
+            (const itype*)sre, (const itype*)sim, (itype*)dre, (itype*)dim, 
+            (spec_type*)spec, (Ipp8u*)buf);
+}
+
+
+/* --------------------------------------------------------------------------*/
+/**
+ * @brief only support perm format for real type
+ *
+ * @tparam T
+ * @tparam IsCplx
+ * @Param src
+ * @Param dst
+ * @Param spec
+ * @Param buf
+ *
+ * @Returns   
+ */
+/* ----------------------------------------------------------------------------*/
+template<typename T, bool IsCplx>
+static inline IppStatus fft_forward(
+        const T *src, T* dst, void *spec, uint8_t *buf)
+{
+    typedef get<T>::type itype;
+    typedef detail::fft_spec<itype, IsCplx>::type spec_type;
+    return detail::fft_forward<itype, spec_type, IsCplx>(
+            (const itype*)src, (itype*)dst, 
+            (spec_type*)spec, (Ipp8u*)buf);
+}
+
+
+template<typename T, bool IsCplx = true>
+static inline IppStatus fft_inverse(
+        const T *sre, const T* sim, T *dre, T* dim, void *spec, uint8_t *buf)
+{
+    static_assert(IsCplx, "Only support complex type config");
+    typedef get<T>::type itype;
+    typedef detail::fft_spec<itype, IsCplx>::type spec_type;
+    return detail::fft_forward<itype, spec_type, IsCplx>(
+            (const itype*)sre, (const itype*)sim, (itype*)dre, (itype*)dim, 
+            (spec_type*)spec, (Ipp8u*)buf);
+}
+
+
+/* --------------------------------------------------------------------------*/
+/**
+ * @brief only support perm format for real type
+ *
+ * @tparam T
+ * @tparam IsCplx
+ * @param src
+ * @param dst
+ * @param spec
+ * @param buf
+ *
+ * @returns   
+ */
+/* ----------------------------------------------------------------------------*/
+template<typename T, bool IsCplx>
+static inline IppStatus fft_inverse(
+        const T *src, T* dst, void *spec, uint8_t *buf)
+{
+    typedef get<T>::type itype;
+    typedef detail::fft_spec<itype, IsCplx>::type spec_type;
+    return detail::fft_forward<itype, spec_type, IsCplx>(
+            (const itype*)src, (itype*)dst, 
+            (spec_type*)spec, (Ipp8u*)buf);
+}
 
 
 
+/* --------------------------------------------------------------------------*/
+/**
+ * @brief only support perm format for real type
+ *
+ * @tparam T
+ * @tparam IsCplx
+ */
+/* ----------------------------------------------------------------------------*/
+template<typename T, bool IsCplx>
+class fft
+{
+    void *spec_;
+    uint8_t *spec_buf_,
+            *work_buf_;
+
+    int flag_, order_;
+    IppHintAlgorithm hint_;
+
+    fft();
+    fft(const fft&);
+public:
+    typedef T value_type;
+    //ipp types
+    typedef typename get<T>::type itype;
+
+    fft(int order, 
+        int flag = IPP_FFT_NODIV_BY_ANY,
+        IppHintAlgorithm hint = ippAlgHintFast)
+        : spec_(0), spec_buf_(0), work_buf_(0),
+          flag_(flag), hint_(hint), order_(order)
+    {
+        void *spec = 0;
+        uint8_t *spec_buf, 
+                *init_buf,
+                *work_buf;
+        int spec_size, init_size, work_size;
+        if(fft_get_size<T, IsCplx>(order, flag, hint,
+                    &spec_size, &init_size, &work_size) != ippStsNoErr)
+            return;
+        
+        spec_buf = ipp::malloc<uint8_t>(spec_size);
+        init_buf = ipp::malloc<uint8_t>(init_size);
+        work_buf = ipp::malloc<uint8_t>(work_size);
+
+        if(!spec_buf || !init_buf || !work_buf)
+            goto FAILED;
+
+        if(fft_init<T, IsCplx>(
+                    &spec, order, flag, hint, spec_buf, init_buf) != ippStsNoErr)
+            goto FAILED;
+        
+        ipp::free(init_buf);
+
+        spec_buf_ = spec_buf;
+        work_buf_ = work_buf;
+        spec_ = spec;
+
+        return;
+
+    FAILED:
+        if(spec_buf)
+            ipp::free(spec_buf);
+        if(init_buf)
+            ipp::free(init_buf);
+        if(work_buf)
+            ipp::free(work_buf);
+    }
+
+    ~fft()
+    {
+        if(spec_buf_)
+            ipp::free(spec_buf_);
+        if(work_buf_)
+            ipp::free(work_buf_);
+    }
+
+    int order() const { return order_; }
+    int flag() const  { return flag_; }
+    IppHintAlgorithm hint() const { return hint_; }
 
 
+    IppStatus forward(const T *sre, const T *sim, T *dre, T *dim)
+    {
+        static_assert(!is_complex<T>::value && IsCplx,
+                "only support complex config and real value");
+
+        if(spec_)
+            return fft_forward<T, IsCplx>(
+                    sre, sim, dre, dim, spec_, work_buf_);
+        else
+            return ippStsMemAllocErr;
+    }
+
+    IppStatus forward(const T *src, T *dst)
+    {
+        static_assert(is_complex<T>::value || !IsCplx,
+                "only support complex type or real type");
+
+        if(spec_)
+            return fft_forward<T, IsCplx>(
+                    src, dst, spec_, work_buf_);
+        else
+            return ippStsMemAllocErr;
+    }
+
+    IppStatus inverse(const T *sre, const T *sim, T *dre, T *dim)
+    {
+        static_assert(!is_complex<T>::value && IsCplx,
+                "only support complex config and real value");
+
+        if(spec_)
+            return fft_inverse<T, IsCplx>(
+                    sre, sim, dre, dim, spec_, work_buf_);
+        else
+            return ippStsMemAllocErr;
+    }
+
+    IppStatus inverse(const T *src, T *dst)
+    {
+        static_assert(is_complex<T>::value || !IsCplx,
+                "only support complex type or real type");
+
+        if(spec_)
+            return fft_inverse<T, IsCplx>(
+                    src, dst, spec_, work_buf_);
+        else
+            return ippStsMemAllocErr;
+    }
+};
 
 
 
 
 /**@}*/
+
 
 }
 

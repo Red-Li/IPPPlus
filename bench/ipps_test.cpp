@@ -1683,7 +1683,86 @@ typedef testing::Types<
                        >ConvolveTestTypes;
 
 INSTANTIATE_TYPED_TEST_CASE_P(MTPConvolveTest, ConvolveTest, ConvolveTestTypes);
+
+
+
+///////FFT////
+template<typename T>
+class FFTTest : public testing::Test
+{
+};
+
+//
+TYPED_TEST_CASE_P(FFTTest);
+
+TYPED_TEST_P(FFTTest, SanitCheck)
+{
+    TypeParam *buf0 = (TypeParam*)ipp::malloc<TypeParam>(4096);
+    TypeParam *buf1 = (TypeParam*)ipp::malloc<TypeParam>(4096);
+    TypeParam *buf2 = (TypeParam*)ipp::malloc<TypeParam>(4096);
+    TypeParam *buf3 = (TypeParam*)ipp::malloc<TypeParam>(4096);
+    
+    ipp::fft<TypeParam, true> fft(12);
+
+    fft.forward(buf0, buf1, buf2, buf3);
+    fft.inverse(buf0, buf1, buf2, buf3);
+    fft.forward(buf0, buf1, buf0, buf1); //in-place
+    fft.inverse(buf0, buf1, buf0, buf1);
+
+    ipp::free(buf0);
+    ipp::free(buf1);
+    ipp::free(buf2);
+    ipp::free(buf3);
 }
 
 
+REGISTER_TYPED_TEST_CASE_P(FFTTest, 
+        SanitCheck);
+typedef testing::Types<
+                       float,
+                       double
+                       >FFTTestTypes;
 
+INSTANTIATE_TYPED_TEST_CASE_P(MTPFFTTest, FFTTest, FFTTestTypes);
+
+
+template<typename T>
+class FFT2Test : public testing::Test
+{
+};
+
+//
+TYPED_TEST_CASE_P(FFT2Test);
+
+TYPED_TEST_P(FFT2Test, SanitCheck)
+{
+    TypeParam *buf0 = (TypeParam*)ipp::malloc<TypeParam>(4096);
+    TypeParam *buf1 = (TypeParam*)ipp::malloc<TypeParam>(4096);
+    
+    ipp::fft<TypeParam, ipp::is_complex<TypeParam>::value > fft(12);
+
+    fft.forward(buf0, buf1);
+    fft.inverse(buf0, buf1);
+    fft.forward(buf0, buf0); //in-place
+    fft.inverse(buf0, buf0);
+
+    ipp::free(buf0);
+    ipp::free(buf1);
+}
+
+
+REGISTER_TYPED_TEST_CASE_P(FFT2Test, 
+        SanitCheck);
+typedef testing::Types<
+                       float,
+                       double,
+                       std::complex<float>,
+                       std::complex<double>
+                       >FFT2TestTypes;
+
+INSTANTIATE_TYPED_TEST_CASE_P(MTPFFT2Test, FFT2Test, FFT2TestTypes);
+
+
+
+
+}
