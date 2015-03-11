@@ -1871,7 +1871,7 @@ static inline IppStatus fft_init(
 }
 
 
-template<typename T, bool IsCplx = true>
+template<typename T, bool IsCplx>
 static inline IppStatus fft_forward(
         const T *sre, const T* sim, T *dre, T* dim, void *spec, uint8_t *buf)
 {
@@ -1910,7 +1910,7 @@ static inline IppStatus fft_forward(
 }
 
 
-template<typename T, bool IsCplx = true>
+template<typename T, bool IsCplx>
 static inline IppStatus fft_inverse(
         const T *sre, const T* sim, T *dre, T* dim, void *spec, uint8_t *buf)
 {

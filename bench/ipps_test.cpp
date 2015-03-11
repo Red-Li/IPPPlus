@@ -43,6 +43,31 @@ std::complex<int> from_int<std::complex<int> >(int v)
 }
 
 
+template<typename T>
+T _sqrt(T v)
+{
+	return sqrt(v);
+}
+
+template<>
+unsigned char _sqrt(unsigned char v)
+{
+	return (unsigned char)sqrt(float(v));
+}
+
+template<>
+short _sqrt(short v)
+{
+	return (short)sqrt(float(v));
+}
+
+template<>
+unsigned short _sqrt(unsigned short v)
+{
+	return (unsigned short)sqrt(float(v));
+}
+
+
 //////////// COPY /////////////////
 template<typename T>
 class CopyTest : public testing::Test
@@ -1439,12 +1464,12 @@ TYPED_TEST_P(SqrtTest, SanitCheck)
             typename ipp::value_type<TypeParam>::type>::value){
         ipp::sqrt(buf0, buf1, 4096, 0);  
         ipp::sqrt(buf0, buf0,  4096, 0);
-        r = (TypeParam)sqrt(from_int<TypeParam>(4));
+        r = (TypeParam)_sqrt(from_int<TypeParam>(4));
     }
     else{
         ipp::sqrt(buf0, buf1, 4096);  
         ipp::sqrt(buf0, buf0, 4096);  
-        r = (TypeParam)sqrt(from_int<TypeParam>(4));
+        r = (TypeParam)_sqrt(from_int<TypeParam>(4));
     }
 
     size_t ec0 = 0, ec1 = 0;
@@ -1498,12 +1523,12 @@ TYPED_TEST_P(LnTest, SanitCheck)
             typename ipp::value_type<TypeParam>::type>::value){
         ipp::ln(buf0, buf1, 4096, 1);  
         ipp::ln(buf0, buf0,  4096, 1);
-        r = (TypeParam)log(10) / 2;
+        r = (TypeParam)log(10.) / 2;
     }
     else{
         ipp::ln(buf0, buf1, 4096);  
         ipp::ln(buf0, buf0, 4096);  
-        r = (TypeParam)log(10);
+        r = (TypeParam)log(10.);
     }
 
     size_t ec0 = 0, ec1 = 0;
