@@ -3252,6 +3252,153 @@ FFT_FORWARD_2_ASM(64f, R, Perm, false);
 #undef FFT_FORWARD_2_ASM
 
 
+// fir sr ///
+template<typename T>
+void fir_sr_get_size(int tap_len, int *spec_size, int *buf_size);
+
+template<>
+void fir_sr_get_size<Ipp32f>(int tap_len, int *spec_size, int *buf_size)
+{
+    ippsFIRSRGetSize(tap_len, ipp32f, spec_size, buf_size);
+}
+
+template<>
+void fir_sr_get_size<Ipp64f>(int tap_len, int *spec_size, int *buf_size)
+{
+    ippsFIRSRGetSize(tap_len, ipp64f, spec_size, buf_size);
+}
+
+
+template<typename T>
+int fir_sr_init(const T*, int, IppAlgType, void*);
+
+template<>
+int fir_sr_init<Ipp32f>(const Ipp32f *taps, int tap_len, IppAlgType alg, void *spec)
+{
+    return ippsFIRSRInit_32f(taps, tap_len, alg, (IppsFIRSpec_32f*)spec);
+}
+
+template<>
+int fir_sr_init<Ipp64f>(const Ipp64f *taps, int tap_len, IppAlgType alg, void *spec)
+{
+    return ippsFIRSRInit_64f(taps, tap_len, alg, (IppsFIRSpec_64f*)spec);
+}
+
+
+template<typename T>
+IppStatus fir_sr_filter(const T*, T*, int, void *, const T*, T*, Ipp8u*);
+
+template<>
+IppStatus fir_sr_filter<Ipp32f>(
+        const Ipp32f *src, Ipp32f *dst, int n, void *spec, 
+        const Ipp32f *sdly, Ipp32f *ddly, Ipp8u *buf)
+{
+    return ippsFIRSR_32f(src, dst, n, (IppsFIRSpec_32f*)spec, sdly, ddly, buf);
+}
+
+template<>
+IppStatus fir_sr_filter<Ipp64f>(
+        const Ipp64f *src, Ipp64f *dst, int n, void *spec, 
+        const Ipp64f *sdly, Ipp64f *ddly, Ipp8u *buf)
+{
+    return ippsFIRSR_64f(src, dst, n, (IppsFIRSpec_64f*)spec, sdly, ddly, buf);
+}
+
+
+//fir, fir_mr
+template<typename T>
+void fir_get_state_size(int tap_len, int *buf_size);
+
+template<typename T>
+IppStatus fir_init(void **, const T*, int, const T*, Ipp8u*);
+
+
+template<typename T>
+void fir_mr_get_state_size(int tap_len, int up_factor, int down_factor, int *buf_size);
+
+template<typename T>
+IppStatus fir_mr_init(void ** state, const T* taps, int tap_len, 
+        int up_factor, int up_phase, int down_factor, int down_phase, 
+        const T* dly, Ipp8u *work_buf);
+
+
+template<typename T>
+IppStatus fir_filter(const T*, T*, int n, void *);
+
+#define FIR_GET_STATE_SIZE_ASM(Suffix)\
+template<>\
+void fir_get_state_size<Ipp##Suffix>(int tap_len, int *buf_size)\
+{\
+    ippsFIRGetStateSize_##Suffix(tap_len, buf_size);\
+}
+
+
+#define FIR_INIT_ASM(Suffix)\
+template<>\
+IppStatus fir_init<Ipp##Suffix>(void **state, const Ipp##Suffix *taps, int tap_len, \
+        const Ipp##Suffix *dly, Ipp8u *work_buf)\
+{\
+    return ippsFIRInit_##Suffix((IppsFIRState_##Suffix**)state, taps, tap_len, \
+            dly, work_buf);\
+}
+
+
+#define FIR_MR_GET_STATE_SIZE_ASM(Suffix)\
+template<>\
+void fir_mr_get_state_size<Ipp##Suffix>(\
+        int tap_len, int up_factor, int down_factor, int *buf_size)\
+{\
+    ippsFIRMRGetStateSize_##Suffix(tap_len, up_factor, down_factor, buf_size);\
+}
+
+#define FIR_MR_INIT_ASM(Suffix)\
+template<>\
+IppStatus fir_mr_init<Ipp##Suffix>(void ** state, const Ipp##Suffix* taps, int tap_len, \
+        int up_factor, int up_phase, int down_factor, int down_phase, \
+        const Ipp##Suffix* dly, Ipp8u *work_buf)\
+{\
+    return ippsFIRMRInit_##Suffix((IppsFIRState_##Suffix**)state,\
+            taps, tap_len, up_factor, up_phase, down_factor, down_phase, dly, work_buf);\
+}
+
+
+#define FIR_FILTER_ASM(Suffix)\
+template<>\
+IppStatus fir_filter<Ipp##Suffix>(const Ipp##Suffix *src, Ipp##Suffix *dst, int n, \
+        void *state)\
+{\
+    return src != dst ? ippsFIR_##Suffix(src, dst, n, (IppsFIRState_##Suffix*)state)\
+                      : ippsFIR_##Suffix##_I(dst, n, (IppsFIRState_##Suffix*)state);\
+}
+
+
+FIR_GET_STATE_SIZE_ASM(32f)
+FIR_GET_STATE_SIZE_ASM(32fc)
+FIR_GET_STATE_SIZE_ASM(64f)
+FIR_GET_STATE_SIZE_ASM(64fc)
+
+FIR_INIT_ASM(32f)
+FIR_INIT_ASM(32fc)
+FIR_INIT_ASM(64f)
+FIR_INIT_ASM(64fc)
+
+FIR_MR_GET_STATE_SIZE_ASM(32f)
+FIR_MR_GET_STATE_SIZE_ASM(32fc)
+FIR_MR_GET_STATE_SIZE_ASM(64f)
+FIR_MR_GET_STATE_SIZE_ASM(64fc)
+
+FIR_MR_INIT_ASM(32f)
+FIR_MR_INIT_ASM(32fc)
+FIR_MR_INIT_ASM(64f)
+FIR_MR_INIT_ASM(64fc)
+
+FIR_FILTER_ASM(32f)
+FIR_FILTER_ASM(32fc)
+FIR_FILTER_ASM(64f)
+FIR_FILTER_ASM(64fc)
+
+
+
 }}
 
 #endif

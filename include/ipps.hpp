@@ -2082,6 +2082,198 @@ public:
 
 
 
+template<typename T>
+class fir_sr
+{
+public:
+    typedef typename get<T>::type itype;
+
+private:
+    void *spec_;
+    itype *dly_[2]; //
+    int sdly_idx_;
+    uint8_t *work_buf_;
+
+    fir_sr();
+    fir_sr(const fir_sr&);
+public:
+    fir_sr(const itype *taps, int tap_len, IppAlgType alg = ippAlgAuto)
+    {
+        spec_ = 0;
+        work_buf_ = 0;
+        dly_[0] = dly_[1] = 0;
+        sdly_idx_ = 0;
+
+        int spec_size = 0, buf_size = 0;
+        detail::fir_sr_get_size<itype>(tap_len, &spec_size, &buf_size);
+
+        dly_[0] = ipp::malloc<T>(tap_len - 1);
+        dly_[1] = ipp::malloc<T>(tap_len - 1);
+        
+        if(dly_[0])
+            memset(dly_[0], 0, sizeof(T) * (tap_len - 1));
+
+        
+        spec_ = ipp::malloc<uint8_t>(spec_size);
+        work_buf_ = ipp::malloc<uint8_t>(buf_size);
+        
+        if(!spec_ || !work_buf_ || !dly_[0] || !dly_[1])
+            goto FAILED;
+
+
+        int ret = detail::fir_sr_init<T>(taps, tap_len, alg, spec_);
+        if(ret == ippStsNoErr)
+            return;
+
+FAILED:
+        if(spec_){
+            ipp::free(spec_);
+            spec_ = 0;
+        }
+        //other buf will free alter
+    }
+    ~fir_sr()
+    {
+        if(spec_)
+            ipp::free(spec_);
+        if(work_buf_)
+            ipp::free(work_buf_);
+        if(dly_[0])
+            ipp::free(dly_[0]);
+        if(dly_[1])
+            ipp::free(dly_[1]);
+    }
+
+    IppStatus filter(const T *src, T *dst, int ni, bool use_dly = true)
+    {
+        if(spec_ && use_dly){
+            itype *sdly = dly_[sdly_idx_++],
+                  *ddly = dly_[sdly_idx_ % 2];
+            sdly_idx_ %= 2;
+
+            return detail::fir_sr_filter<itype>(
+                    (const itype*)src, (itype*)dst, ni, spec_, sdly, ddly, work_buf_);
+        }
+        else if(spec_){
+            return detail::fir_sr_filter<itype>(
+                    (const itype*)src, (itype*)dst, ni, spec_, 0, 0, work_buf_);
+        }
+        else{
+            return ippStsMemAllocErr;
+        }
+    }
+};
+
+//only support float
+template<typename T>
+class fir
+{
+public:
+    typedef typename get<T>::type itype;
+private:
+    void *state_;
+    uint8_t *work_buf_;
+
+public:
+    fir(const itype *taps, int tap_len,
+        const itype *dly = 0)
+    {
+        state_ = 0; 
+        work_buf_ = 0;
+        
+        int buf_size = 0;
+        detail::fir_get_state_size<itype>(tap_len, &buf_size); 
+        
+        work_buf_ = ipp::malloc<uint8_t>(buf_size);
+        
+        if(!work_buf_)
+            return;
+        
+        IppStatus r = detail::fir_init<itype>(
+                &state_, taps, tap_len, dly, work_buf_);
+        if(r != ippStsNoErr){
+            ipp::free(work_buf_);
+            work_buf_ = 0;
+            state_ = 0;
+        }
+    }
+
+    ~fir()
+    {
+        if(work_buf_)
+            ipp::free(work_buf_);
+    }
+
+    IppStatus filter(const T *src, T *dst, int ni)
+    {
+        if(state_){
+            return detail::fir_filter(
+                    (const itype*)src, (itype*)dst, ni, state_);
+        }
+        else{
+            return ippStsMemAllocErr;
+        }
+    }
+};
+
+//only support float
+template<typename T>
+class fir_mr
+{
+public:
+    typedef typename get<T>::type itype;
+private:
+    void *state_;
+    uint8_t *work_buf_;
+
+public:
+    fir_mr(const itype *taps, int tap_len,
+        int up_factor, int up_phase, int down_factor, int down_phase,
+        const itype *dly = 0)
+    {
+        state_ = 0; 
+        work_buf_ = 0;
+        
+        int buf_size = 0;
+        detail::fir_mr_get_state_size<itype>(
+                tap_len, up_factor, down_factor, &buf_size); 
+        
+        work_buf_ = ipp::malloc<uint8_t>(buf_size);
+        
+        if(!work_buf_)
+            return;
+        
+        IppStatus r = detail::fir_mr_init<itype>(
+                &state_, taps, tap_len, 
+                up_factor, up_phase, down_factor, down_phase,
+                dly, work_buf_);
+        if(r != ippStsNoErr){
+            ipp::free(work_buf_);
+            work_buf_ = 0;
+            state_ = 0;
+        }
+    }
+
+    ~fir_mr()
+    {
+        if(work_buf_)
+            ipp::free(work_buf_);
+    }
+
+    IppStatus filter(const T *src, T *dst, int ni)
+    {
+        if(state_){
+            return detail::fir_filter(
+                    (const itype*)src, (itype*)dst, ni, state_);
+        }
+        else{
+            return ippStsMemAllocErr;
+        }
+    }
+};
+
+
+
 
 /**@}*/
 

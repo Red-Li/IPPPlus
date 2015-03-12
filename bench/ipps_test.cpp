@@ -1789,5 +1789,159 @@ INSTANTIATE_TYPED_TEST_CASE_P(MTPFFT2Test, FFT2Test, FFT2TestTypes);
 
 
 
+///////FIR SR////
+template<typename T>
+class FIRSRTest : public testing::Test
+{
+};
+
+//
+TYPED_TEST_CASE_P(FIRSRTest);
+
+TYPED_TEST_P(FIRSRTest, SanitCheck)
+{
+    TypeParam *buf0 = (TypeParam*)ipp::malloc<TypeParam>(4);
+    TypeParam *buf1 = (TypeParam*)ipp::malloc<TypeParam>(4);
+    TypeParam *buf2 = (TypeParam*)ipp::malloc<TypeParam>(4);
+    TypeParam *buf3 = (TypeParam*)ipp::malloc<TypeParam>(4);
+    
+    TypeParam taps[3] = {1., 2., 3.};
+    for(int i = 0; i < 4; ++i){
+        buf0[i] = 1;
+        buf1[i] = 1;
+        buf2[i] = 1;
+        buf3[i] = 1;
+    }
+
+    ipp::fir_sr<TypeParam> sr(taps, 3, ippAlgFFT);
+
+    sr.filter(buf0, buf2, 4);
+    sr.filter(buf1, buf3, 4);
+
+    EXPECT_EQ(buf2[0], 1);
+    EXPECT_EQ(buf2[1], 3);
+    EXPECT_EQ(buf2[2], 6);
+    EXPECT_EQ(buf3[0], 6);
+    EXPECT_EQ(buf3[1], 6);
+
+    ipp::free(buf0);
+    ipp::free(buf1);
+    ipp::free(buf2);
+    ipp::free(buf3);
+}
+
+
+REGISTER_TYPED_TEST_CASE_P(FIRSRTest, 
+        SanitCheck);
+typedef testing::Types<
+                       float,
+                       double
+                       >FIRSRTestTypes;
+
+INSTANTIATE_TYPED_TEST_CASE_P(MTPFIRSRTest, FIRSRTest, FIRSRTestTypes);
+
+///////FIR////
+template<typename T>
+class FIRTest : public testing::Test
+{
+};
+
+//
+TYPED_TEST_CASE_P(FIRTest);
+
+TYPED_TEST_P(FIRTest, SanitCheck)
+{
+    TypeParam *buf0 = (TypeParam*)ipp::malloc<TypeParam>(4);
+    TypeParam *buf1 = (TypeParam*)ipp::malloc<TypeParam>(4);
+    TypeParam *buf2 = (TypeParam*)ipp::malloc<TypeParam>(4);
+    TypeParam *buf3 = (TypeParam*)ipp::malloc<TypeParam>(4);
+    
+    TypeParam taps[3] = {1., 2., 3.};
+    for(int i = 0; i < 4; ++i){
+        buf0[i] = 1;
+        buf1[i] = 1;
+        buf2[i] = 1;
+        buf3[i] = 1;
+    }
+
+    ipp::fir<TypeParam> sr(taps, 3);
+
+    sr.filter(buf0, buf2, 4);
+    sr.filter(buf1, buf3, 4);
+
+    EXPECT_EQ(buf2[0], 1);
+    EXPECT_EQ(buf2[1], 3);
+    EXPECT_EQ(buf2[2], 6);
+    EXPECT_EQ(buf3[0], 6);
+    EXPECT_EQ(buf3[1], 6);
+
+    ipp::free(buf0);
+    ipp::free(buf1);
+    ipp::free(buf2);
+    ipp::free(buf3);
+}
+
+
+REGISTER_TYPED_TEST_CASE_P(FIRTest, 
+        SanitCheck);
+typedef testing::Types<
+                       float,
+                       double
+                       >FIRTestTypes;
+
+INSTANTIATE_TYPED_TEST_CASE_P(MTPFIRTest, FIRTest, FIRTestTypes);
+
+
+
+///////FIRMR////
+template<typename T>
+class FIRMRTest : public testing::Test
+{
+};
+
+//
+TYPED_TEST_CASE_P(FIRMRTest);
+
+TYPED_TEST_P(FIRMRTest, SanitCheck)
+{
+    TypeParam *buf0 = (TypeParam*)ipp::malloc<TypeParam>(9);
+    TypeParam *buf1 = (TypeParam*)ipp::malloc<TypeParam>(9);
+    TypeParam *buf2 = (TypeParam*)ipp::malloc<TypeParam>(9);
+    TypeParam *buf3 = (TypeParam*)ipp::malloc<TypeParam>(9);
+    
+    TypeParam taps[5] = {1., 2., 3., 4., 5.};
+    for(int i = 0; i < 9; ++i){
+        buf0[i] = 1;
+        buf1[i] = 1;
+        buf2[i] = 1;
+        buf3[i] = 1;
+    }
+
+    ipp::fir_mr<TypeParam> sr(taps, 5, 2, 0, 3, 0);
+
+    sr.filter(buf0, buf2, 3); //fetch 3, output 2 each iteration
+    sr.filter(buf1, buf3, 3);
+
+    EXPECT_EQ(buf2[0], 1);
+    EXPECT_EQ(buf2[1], 6);
+    EXPECT_EQ(buf2[2], 9);
+    EXPECT_EQ(buf3[0], 9);
+    EXPECT_EQ(buf3[1], 6);
+
+    ipp::free(buf0);
+    ipp::free(buf1);
+    ipp::free(buf2);
+    ipp::free(buf3);
+}
+
+
+REGISTER_TYPED_TEST_CASE_P(FIRMRTest, 
+        SanitCheck);
+typedef testing::Types<
+                       float,
+                       double
+                       >FIRMRTestTypes;
+
+INSTANTIATE_TYPED_TEST_CASE_P(MTPFIRMRTest, FIRMRTest, FIRMRTestTypes);
 
 }
