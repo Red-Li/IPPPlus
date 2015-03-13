@@ -3314,12 +3314,12 @@ IppStatus fir_init(void **, const T*, int, const T*, Ipp8u*);
 
 
 template<typename T>
-void fir_mr_get_state_size(int tap_len, int up_factor, int down_factor, int *buf_size);
+void fir_mr_get_state_size(int, int, int, int *);
 
 template<typename T>
-IppStatus fir_mr_init(void ** state, const T* taps, int tap_len, 
-        int up_factor, int up_phase, int down_factor, int down_phase, 
-        const T* dly, Ipp8u *work_buf);
+IppStatus fir_mr_init(void **, const T* , int, 
+        int, int, int, int, 
+        const T* , Ipp8u *);
 
 
 template<typename T>
@@ -3396,6 +3396,141 @@ FIR_FILTER_ASM(32f)
 FIR_FILTER_ASM(32fc)
 FIR_FILTER_ASM(64f)
 FIR_FILTER_ASM(64fc)
+
+
+//polyphase resampling
+template<typename T>
+void resample_polyphase_get_size(
+        Ipp32f, int, int *, IppHintAlgorithm);
+
+template<>
+void resample_polyphase_get_size<Ipp16s>(
+        Ipp32f win, int nstep, int *psize, IppHintAlgorithm hint)
+{
+    ippsResamplePolyphaseGetSize_16s(win, nstep, psize, hint);
+}
+
+template<>
+void resample_polyphase_get_size<Ipp32f>(
+        Ipp32f win, int nstep, int *psize, IppHintAlgorithm hint)
+{
+    ippsResamplePolyphaseGetSize_32f(win, nstep, psize, hint);
+}
+
+template<typename T>
+IppStatus resample_polyphase_init(
+        Ipp32f, int, Ipp32f, Ipp32f, void*, IppHintAlgorithm);
+
+template<>
+IppStatus resample_polyphase_init<Ipp16s>(
+        Ipp32f win, int nstep, Ipp32f rollf, 
+        Ipp32f alpha, void* spec, IppHintAlgorithm hint)
+{
+    return ippsResamplePolyphaseInit_16s(win, nstep, rollf, alpha, 
+            (IppsResamplingPolyphase_16s*)spec, hint);
+}
+
+template<>
+IppStatus resample_polyphase_init<Ipp32f>(
+        Ipp32f win, int nstep, Ipp32f rollf, 
+        Ipp32f alpha, void* spec, IppHintAlgorithm hint)
+{
+    return ippsResamplePolyphaseInit_32f(win, nstep, rollf, alpha, 
+            (IppsResamplingPolyphase_32f*)spec, hint);
+}
+
+
+template<typename T>
+IppStatus resample_polyphase(const T*, int, T*, Ipp64f, Ipp32f, 
+        Ipp64f*, int *, const void*);
+
+template<>
+IppStatus resample_polyphase<Ipp16s>(const Ipp16s* src, int ilen,
+        Ipp16s *dst, Ipp64f factor, Ipp32f norm, 
+        Ipp64f* time, int *olen, const void* spec)
+{
+    return ippsResamplePolyphase_16s(src, ilen, dst, factor, norm, 
+            time, olen, (const IppsResamplingPolyphase_16s*)spec);
+}
+
+template<>
+IppStatus resample_polyphase<Ipp32f>(const Ipp32f* src, int ilen,
+        Ipp32f *dst, Ipp64f factor, Ipp32f norm, 
+        Ipp64f* time, int *olen, const void* spec)
+{
+    return ippsResamplePolyphase_32f(src, ilen, dst, factor, norm, 
+            time, olen, (const IppsResamplingPolyphase_32f*)spec);
+}
+
+
+
+//polyphase resampling fixed
+template<typename T>
+void resample_polyphase_fixed_get_size(
+        int, int, int, int*, int*, int*, IppHintAlgorithm);
+
+template<>
+void resample_polyphase_fixed_get_size<Ipp16s>(
+        int in_rate, int out_rate, int len, 
+        int* psize, int* plen, int *pheight, IppHintAlgorithm hint)
+{
+    ippsResamplePolyphaseFixedGetSize_16s(
+            in_rate, out_rate, len, psize, plen, pheight, hint);
+}
+
+template<>
+void resample_polyphase_fixed_get_size<Ipp32f>(
+        int in_rate, int out_rate, int len, 
+        int* psize, int* plen, int *pheight, IppHintAlgorithm hint)
+{
+    ippsResamplePolyphaseFixedGetSize_32f(
+            in_rate, out_rate, len, psize, plen, pheight, hint);
+}
+
+template<typename T>
+IppStatus resample_polyphase_fixed_init(
+        int, int, int, Ipp32f, Ipp32f, void*, IppHintAlgorithm);
+
+template<>
+IppStatus resample_polyphase_fixed_init<Ipp16s>(
+        int in_rate, int out_rate, int len, 
+        Ipp32f rollf, Ipp32f alpha, void* spec, IppHintAlgorithm hint)
+{
+    return ippsResamplePolyphaseFixedInit_16s(in_rate, out_rate, len,
+            rollf, alpha, (IppsResamplingPolyphaseFixed_16s*)spec, hint);
+}
+
+template<>
+IppStatus resample_polyphase_fixed_init<Ipp32f>(
+        int in_rate, int out_rate, int len, 
+        Ipp32f rollf, Ipp32f alpha, void* spec, IppHintAlgorithm hint)
+{
+    return ippsResamplePolyphaseFixedInit_32f(in_rate, out_rate, len,
+            rollf, alpha, (IppsResamplingPolyphaseFixed_32f*)spec, hint);
+}
+
+
+template<typename T>
+IppStatus resample_polyphase_fixed(const T*, int, T*, Ipp32f, 
+        Ipp64f*, int *, const void*);
+
+template<>
+IppStatus resample_polyphase_fixed<Ipp16s>(const Ipp16s* src, int ilen,
+        Ipp16s *dst, Ipp32f norm, 
+        Ipp64f* time, int *olen, const void* spec)
+{
+    return ippsResamplePolyphaseFixed_16s(src, ilen, dst, norm, 
+            time, olen, (const IppsResamplingPolyphaseFixed_16s*)spec);
+}
+
+template<>
+IppStatus resample_polyphase_fixed<Ipp32f>(const Ipp32f* src, int ilen,
+        Ipp32f *dst, Ipp32f norm, 
+        Ipp64f* time, int *olen, const void* spec)
+{
+    return ippsResamplePolyphaseFixed_32f(src, ilen, dst, norm, 
+            time, olen, (const IppsResamplingPolyphaseFixed_32f*)spec);
+}
 
 
 

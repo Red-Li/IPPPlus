@@ -2275,6 +2275,134 @@ public:
 
 
 
+/* --------------------------------------------------------------------------*/
+/**
+ * @brief 
+ *  x[n]---> up-L ---> H ---> down-M --- y[m]
+ *  fi  -  freq in
+ *  fo  -  freq out
+ *  H   - low pass filter, length is N, and stop freq is wc
+ *
+ *
+ *  fi / fo = L / M = a
+ *  rollf               -- all pass filter stop freq, ie. 0.95
+ *  wc = rollf / a      -- idear H low pass stop freq 
+ *  win = N / nstep
+ *  nstep = int(max(1 / a, a))   
+ *  alpha -- Kaiser window parameter 
+ *
+ * @tparam T
+ */
+/* ----------------------------------------------------------------------------*/
+template<typename T>
+class polyphase_resampling
+{
+    void *spec_;
+
+public:
+    typedef typename get<T>::type itype;
+
+    polyphase_resampling(
+            float win, int nstep, float rollf, float alpha,
+            IppHintAlgorithm hint = ippAlgHintFast)
+    {
+        spec_ = 0;
+
+        int psize = 0;
+        detail::resample_polyphase_get_size<itype>(
+                (Ipp32f)win, nstep, &psize, hint); 
+        
+        spec_ = ipp::malloc<uint8_t>(psize);
+
+        if(!spec_)
+            return;
+        
+        IppStatus r = detail::resample_polyphase_init<itype>(
+                (Ipp32f)win, nstep, (Ipp32f)rollf, (Ipp32f)alpha, spec_,  hint);
+        if(r != ippStsNoErr){
+            ipp::free(spec_);
+            spec_ = 0;
+        }
+    }
+
+    ~polyphase_resampling()
+    {
+        if(spec_)
+            ipp::free(spec_);
+    }
+
+    IppStatus resample(
+            const T *src, int ilen, T *dst, int *olen, double *time,
+            double factor, float norm)
+    {
+        if(spec_){
+            return detail::resample_polyphase(
+                    (const itype*)src, ilen, (itype*)dst, (Ipp64f)factor, 
+                    (Ipp32f)norm, (Ipp64f*)time, olen, spec_); 
+        }
+        else{
+            return ippStsMemAllocErr;
+        }
+    }
+};
+
+template<typename T>
+class polyphase_resampling_fixed
+{
+    void *spec_;
+
+public:
+    typedef typename get<T>::type itype;
+
+    polyphase_resampling_fixed(
+            int in_rate, int out_rate, int len, 
+            float rollf, float alpha,
+            IppHintAlgorithm hint = ippAlgHintFast)
+    {
+        spec_ = 0;
+
+        int psize = 0, plen = 0, pheight = 0;
+        detail::resample_polyphase_fixed_get_size<itype>(
+                in_rate, out_rate, len,
+                &psize, &plen, &pheight, hint);
+        
+        spec_ = ipp::malloc<uint8_t>(psize);
+
+        if(!spec_)
+            return;
+        
+        IppStatus r = detail::resample_polyphase_fixed_init<itype>(
+                in_rate, out_rate, len, (Ipp32f)rollf, (Ipp32f)alpha, spec_, hint); 
+        if(r != ippStsNoErr){
+            ipp::free(spec_);
+            spec_ = 0;
+        }
+    }
+
+    ~polyphase_resampling_fixed()
+    {
+        if(spec_)
+            ipp::free(spec_);
+    }
+
+    IppStatus resample(
+            const T *src, int ilen, T *dst, int *olen, double *time,
+            float norm)
+    {
+        if(spec_){
+            return detail::resample_polyphase_fixed(
+                    (const itype*)src, ilen, (itype*)dst,
+                    (Ipp32f)norm, (Ipp64f*)time, olen, spec_); 
+        }
+        else{
+            return ippStsMemAllocErr;
+        }
+    }
+};
+
+
+
+
 /**@}*/
 
 

@@ -1944,4 +1944,77 @@ typedef testing::Types<
 
 INSTANTIATE_TYPED_TEST_CASE_P(MTPFIRMRTest, FIRMRTest, FIRMRTestTypes);
 
+
+
+///////PolyphaseResample////
+template<typename T>
+class PolyphaseResampleTest : public testing::Test
+{
+};
+
+//
+TYPED_TEST_CASE_P(PolyphaseResampleTest);
+
+TYPED_TEST_P(PolyphaseResampleTest, SanitCheck)
+{
+    TypeParam *buf0 = (TypeParam*)ipp::malloc<TypeParam>(65536);
+    TypeParam *buf1 = (TypeParam*)ipp::malloc<TypeParam>(65536);
+    TypeParam *buf2 = (TypeParam*)ipp::malloc<TypeParam>(65536);
+    TypeParam *buf3 = (TypeParam*)ipp::malloc<TypeParam>(65536);
+    TypeParam *buf4 = (TypeParam*)ipp::malloc<TypeParam>(65536);
+
+	for (int i = 0; i < 65536; ++i){
+		//buf0[i] = i > 3 ? TypeParam(i) : 0;
+		buf0[i] = TypeParam((i / 2) % 32);
+		buf1[i] = TypeParam((i / 2) % 32);
+		buf2[i] = 0;
+		buf3[i] = 0;
+		buf4[i] = 0;
+	}
+
+	//buf0[14] = 1000;
+
+    float inRate = 17.f;
+    float outRate = 3.f;
+    float a = inRate / outRate;
+	int nstep = a > 1 / a ? int(a) : int(1 / a) ;
+    //float alpha = 9.f;
+    float alpha = 3.3953f;
+    float rollf = 0.8f;
+    float As = 40.f;
+    int N = int((As - 8) / (2.285 * (1 - rollf) / nstep * 3.1415926) + 0.5);
+	float win = N / float(nstep);
+
+	int history1 = (int)(64.0f*0.5*IPP_MAX(1.0, 1.0 / (double)outRate / (double)inRate)) + 1;
+	int history = N;
+
+    ipp::polyphase_resampling<TypeParam> pr(win, nstep, rollf, alpha);
+    ipp::polyphase_resampling_fixed<TypeParam> prf((int)inRate, (int)outRate, N, rollf, alpha);
+
+	int olen = 0, olenf = 0;
+	double ti = history, tif = history;
+	pr.resample (buf0, 30, buf2, &olen, &ti, 1. / a, 1.f);
+	prf.resample(buf1, 30, buf3, &olenf, &tif, 1.f);
+
+	ipp::sub(buf2, buf3, buf4, 200);
+
+    ipp::free(buf0);
+    ipp::free(buf1);
+    ipp::free(buf2);
+    ipp::free(buf3);
+}
+
+
+REGISTER_TYPED_TEST_CASE_P(PolyphaseResampleTest, 
+        SanitCheck);
+typedef testing::Types<
+                       float
+                       >PolyphaseResampleTestTypes;
+
+INSTANTIATE_TYPED_TEST_CASE_P(MTPPolyphaseResampleTest, PolyphaseResampleTest, PolyphaseResampleTestTypes);
+
+
+
+
+
 }
