@@ -2014,7 +2014,27 @@ typedef testing::Types<
 INSTANTIATE_TYPED_TEST_CASE_P(MTPPolyphaseResampleTest, PolyphaseResampleTest, PolyphaseResampleTestTypes);
 
 
+class FIRTapEstimateTest : public testing::Test
+{
+};
 
+//
+TEST_F(FIRTapEstimateTest, SanitCheck)
+{
+    EXPECT_EQ(
+            ipp::fir_tap_estimate(1.0471975512, 1.15191730632, 0.0114469, 0.01778279, ipp::FIR_HERMANN), 106); 
+
+    EXPECT_EQ(
+            ipp::fir_tap_estimate(1.0471975512, 1.15191730632, 0.01778279, 0.0114469, ipp::FIR_HERMANN), 105); 
+
+    EXPECT_EQ(
+            ipp::fir_tap_estimate(1.0471975512, 1.15191730632, 0.01778279, 0.0114469, ipp::FIR_KAISER), 99); 
+
+    EXPECT_EQ(
+            ipp::fir_tap_estimate(1.0471975512, 1.15191730632, 0.01778279, 0.0114469, ipp::FIR_BELLANGER), 107); 
+
+
+}
 
 
 }

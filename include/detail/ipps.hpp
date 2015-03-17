@@ -3254,42 +3254,42 @@ FFT_FORWARD_2_ASM(64f, R, Perm, false);
 
 // fir sr ///
 template<typename T>
-void fir_sr_get_size(int tap_len, int *spec_size, int *buf_size);
+static void fir_sr_get_size(int tap_len, int *spec_size, int *buf_size);
 
 template<>
-void fir_sr_get_size<Ipp32f>(int tap_len, int *spec_size, int *buf_size)
+static void fir_sr_get_size<Ipp32f>(int tap_len, int *spec_size, int *buf_size)
 {
     ippsFIRSRGetSize(tap_len, ipp32f, spec_size, buf_size);
 }
 
 template<>
-void fir_sr_get_size<Ipp64f>(int tap_len, int *spec_size, int *buf_size)
+static void fir_sr_get_size<Ipp64f>(int tap_len, int *spec_size, int *buf_size)
 {
     ippsFIRSRGetSize(tap_len, ipp64f, spec_size, buf_size);
 }
 
 
 template<typename T>
-int fir_sr_init(const T*, int, IppAlgType, void*);
+static int fir_sr_init(const T*, int, IppAlgType, void*);
 
 template<>
-int fir_sr_init<Ipp32f>(const Ipp32f *taps, int tap_len, IppAlgType alg, void *spec)
+static int fir_sr_init<Ipp32f>(const Ipp32f *taps, int tap_len, IppAlgType alg, void *spec)
 {
     return ippsFIRSRInit_32f(taps, tap_len, alg, (IppsFIRSpec_32f*)spec);
 }
 
 template<>
-int fir_sr_init<Ipp64f>(const Ipp64f *taps, int tap_len, IppAlgType alg, void *spec)
+static int fir_sr_init<Ipp64f>(const Ipp64f *taps, int tap_len, IppAlgType alg, void *spec)
 {
     return ippsFIRSRInit_64f(taps, tap_len, alg, (IppsFIRSpec_64f*)spec);
 }
 
 
 template<typename T>
-IppStatus fir_sr_filter(const T*, T*, int, void *, const T*, T*, Ipp8u*);
+static IppStatus fir_sr_filter(const T*, T*, int, void *, const T*, T*, Ipp8u*);
 
 template<>
-IppStatus fir_sr_filter<Ipp32f>(
+static IppStatus fir_sr_filter<Ipp32f>(
         const Ipp32f *src, Ipp32f *dst, int n, void *spec, 
         const Ipp32f *sdly, Ipp32f *ddly, Ipp8u *buf)
 {
@@ -3297,7 +3297,7 @@ IppStatus fir_sr_filter<Ipp32f>(
 }
 
 template<>
-IppStatus fir_sr_filter<Ipp64f>(
+static IppStatus fir_sr_filter<Ipp64f>(
         const Ipp64f *src, Ipp64f *dst, int n, void *spec, 
         const Ipp64f *sdly, Ipp64f *ddly, Ipp8u *buf)
 {
@@ -3307,27 +3307,27 @@ IppStatus fir_sr_filter<Ipp64f>(
 
 //fir, fir_mr
 template<typename T>
-void fir_get_state_size(int tap_len, int *buf_size);
+static void fir_get_state_size(int tap_len, int *buf_size);
 
 template<typename T>
-IppStatus fir_init(void **, const T*, int, const T*, Ipp8u*);
+static IppStatus fir_init(void **, const T*, int, const T*, Ipp8u*);
 
 
 template<typename T>
-void fir_mr_get_state_size(int, int, int, int *);
+static void fir_mr_get_state_size(int, int, int, int *);
 
 template<typename T>
-IppStatus fir_mr_init(void **, const T* , int, 
+static IppStatus fir_mr_init(void **, const T* , int, 
         int, int, int, int, 
         const T* , Ipp8u *);
 
 
 template<typename T>
-IppStatus fir_filter(const T*, T*, int n, void *);
+static IppStatus fir_filter(const T*, T*, int n, void *);
 
 #define FIR_GET_STATE_SIZE_ASM(Suffix)\
 template<>\
-void fir_get_state_size<Ipp##Suffix>(int tap_len, int *buf_size)\
+static void fir_get_state_size<Ipp##Suffix>(int tap_len, int *buf_size)\
 {\
     ippsFIRGetStateSize_##Suffix(tap_len, buf_size);\
 }
@@ -3335,7 +3335,7 @@ void fir_get_state_size<Ipp##Suffix>(int tap_len, int *buf_size)\
 
 #define FIR_INIT_ASM(Suffix)\
 template<>\
-IppStatus fir_init<Ipp##Suffix>(void **state, const Ipp##Suffix *taps, int tap_len, \
+static IppStatus fir_init<Ipp##Suffix>(void **state, const Ipp##Suffix *taps, int tap_len, \
         const Ipp##Suffix *dly, Ipp8u *work_buf)\
 {\
     return ippsFIRInit_##Suffix((IppsFIRState_##Suffix**)state, taps, tap_len, \
@@ -3345,7 +3345,7 @@ IppStatus fir_init<Ipp##Suffix>(void **state, const Ipp##Suffix *taps, int tap_l
 
 #define FIR_MR_GET_STATE_SIZE_ASM(Suffix)\
 template<>\
-void fir_mr_get_state_size<Ipp##Suffix>(\
+static void fir_mr_get_state_size<Ipp##Suffix>(\
         int tap_len, int up_factor, int down_factor, int *buf_size)\
 {\
     ippsFIRMRGetStateSize_##Suffix(tap_len, up_factor, down_factor, buf_size);\
@@ -3353,7 +3353,7 @@ void fir_mr_get_state_size<Ipp##Suffix>(\
 
 #define FIR_MR_INIT_ASM(Suffix)\
 template<>\
-IppStatus fir_mr_init<Ipp##Suffix>(void ** state, const Ipp##Suffix* taps, int tap_len, \
+static IppStatus fir_mr_init<Ipp##Suffix>(void ** state, const Ipp##Suffix* taps, int tap_len, \
         int up_factor, int up_phase, int down_factor, int down_phase, \
         const Ipp##Suffix* dly, Ipp8u *work_buf)\
 {\
@@ -3364,7 +3364,7 @@ IppStatus fir_mr_init<Ipp##Suffix>(void ** state, const Ipp##Suffix* taps, int t
 
 #define FIR_FILTER_ASM(Suffix)\
 template<>\
-IppStatus fir_filter<Ipp##Suffix>(const Ipp##Suffix *src, Ipp##Suffix *dst, int n, \
+static IppStatus fir_filter<Ipp##Suffix>(const Ipp##Suffix *src, Ipp##Suffix *dst, int n, \
         void *state)\
 {\
     return src != dst ? ippsFIR_##Suffix(src, dst, n, (IppsFIRState_##Suffix*)state)\
@@ -3400,29 +3400,29 @@ FIR_FILTER_ASM(64fc)
 
 //polyphase resampling
 template<typename T>
-void resample_polyphase_get_size(
+static void resample_polyphase_get_size(
         Ipp32f, int, int *, IppHintAlgorithm);
 
 template<>
-void resample_polyphase_get_size<Ipp16s>(
+static void resample_polyphase_get_size<Ipp16s>(
         Ipp32f win, int nstep, int *psize, IppHintAlgorithm hint)
 {
     ippsResamplePolyphaseGetSize_16s(win, nstep, psize, hint);
 }
 
 template<>
-void resample_polyphase_get_size<Ipp32f>(
+static void resample_polyphase_get_size<Ipp32f>(
         Ipp32f win, int nstep, int *psize, IppHintAlgorithm hint)
 {
     ippsResamplePolyphaseGetSize_32f(win, nstep, psize, hint);
 }
 
 template<typename T>
-IppStatus resample_polyphase_init(
+static IppStatus resample_polyphase_init(
         Ipp32f, int, Ipp32f, Ipp32f, void*, IppHintAlgorithm);
 
 template<>
-IppStatus resample_polyphase_init<Ipp16s>(
+static IppStatus resample_polyphase_init<Ipp16s>(
         Ipp32f win, int nstep, Ipp32f rollf, 
         Ipp32f alpha, void* spec, IppHintAlgorithm hint)
 {
@@ -3431,7 +3431,7 @@ IppStatus resample_polyphase_init<Ipp16s>(
 }
 
 template<>
-IppStatus resample_polyphase_init<Ipp32f>(
+static IppStatus resample_polyphase_init<Ipp32f>(
         Ipp32f win, int nstep, Ipp32f rollf, 
         Ipp32f alpha, void* spec, IppHintAlgorithm hint)
 {
@@ -3441,11 +3441,11 @@ IppStatus resample_polyphase_init<Ipp32f>(
 
 
 template<typename T>
-IppStatus resample_polyphase(const T*, int, T*, Ipp64f, Ipp32f, 
+static IppStatus resample_polyphase(const T*, int, T*, Ipp64f, Ipp32f, 
         Ipp64f*, int *, const void*);
 
 template<>
-IppStatus resample_polyphase<Ipp16s>(const Ipp16s* src, int ilen,
+static IppStatus resample_polyphase<Ipp16s>(const Ipp16s* src, int ilen,
         Ipp16s *dst, Ipp64f factor, Ipp32f norm, 
         Ipp64f* time, int *olen, const void* spec)
 {
@@ -3454,7 +3454,7 @@ IppStatus resample_polyphase<Ipp16s>(const Ipp16s* src, int ilen,
 }
 
 template<>
-IppStatus resample_polyphase<Ipp32f>(const Ipp32f* src, int ilen,
+static IppStatus resample_polyphase<Ipp32f>(const Ipp32f* src, int ilen,
         Ipp32f *dst, Ipp64f factor, Ipp32f norm, 
         Ipp64f* time, int *olen, const void* spec)
 {
@@ -3466,11 +3466,11 @@ IppStatus resample_polyphase<Ipp32f>(const Ipp32f* src, int ilen,
 
 //polyphase resampling fixed
 template<typename T>
-void resample_polyphase_fixed_get_size(
+static void resample_polyphase_fixed_get_size(
         int, int, int, int*, int*, int*, IppHintAlgorithm);
 
 template<>
-void resample_polyphase_fixed_get_size<Ipp16s>(
+static void resample_polyphase_fixed_get_size<Ipp16s>(
         int in_rate, int out_rate, int len, 
         int* psize, int* plen, int *pheight, IppHintAlgorithm hint)
 {
@@ -3479,7 +3479,7 @@ void resample_polyphase_fixed_get_size<Ipp16s>(
 }
 
 template<>
-void resample_polyphase_fixed_get_size<Ipp32f>(
+static void resample_polyphase_fixed_get_size<Ipp32f>(
         int in_rate, int out_rate, int len, 
         int* psize, int* plen, int *pheight, IppHintAlgorithm hint)
 {
@@ -3488,11 +3488,11 @@ void resample_polyphase_fixed_get_size<Ipp32f>(
 }
 
 template<typename T>
-IppStatus resample_polyphase_fixed_init(
+static IppStatus resample_polyphase_fixed_init(
         int, int, int, Ipp32f, Ipp32f, void*, IppHintAlgorithm);
 
 template<>
-IppStatus resample_polyphase_fixed_init<Ipp16s>(
+static IppStatus resample_polyphase_fixed_init<Ipp16s>(
         int in_rate, int out_rate, int len, 
         Ipp32f rollf, Ipp32f alpha, void* spec, IppHintAlgorithm hint)
 {
@@ -3501,7 +3501,7 @@ IppStatus resample_polyphase_fixed_init<Ipp16s>(
 }
 
 template<>
-IppStatus resample_polyphase_fixed_init<Ipp32f>(
+static IppStatus resample_polyphase_fixed_init<Ipp32f>(
         int in_rate, int out_rate, int len, 
         Ipp32f rollf, Ipp32f alpha, void* spec, IppHintAlgorithm hint)
 {
@@ -3511,11 +3511,11 @@ IppStatus resample_polyphase_fixed_init<Ipp32f>(
 
 
 template<typename T>
-IppStatus resample_polyphase_fixed(const T*, int, T*, Ipp32f, 
+static IppStatus resample_polyphase_fixed(const T*, int, T*, Ipp32f, 
         Ipp64f*, int *, const void*);
 
 template<>
-IppStatus resample_polyphase_fixed<Ipp16s>(const Ipp16s* src, int ilen,
+static IppStatus resample_polyphase_fixed<Ipp16s>(const Ipp16s* src, int ilen,
         Ipp16s *dst, Ipp32f norm, 
         Ipp64f* time, int *olen, const void* spec)
 {
@@ -3524,7 +3524,7 @@ IppStatus resample_polyphase_fixed<Ipp16s>(const Ipp16s* src, int ilen,
 }
 
 template<>
-IppStatus resample_polyphase_fixed<Ipp32f>(const Ipp32f* src, int ilen,
+static IppStatus resample_polyphase_fixed<Ipp32f>(const Ipp32f* src, int ilen,
         Ipp32f *dst, Ipp32f norm, 
         Ipp64f* time, int *olen, const void* spec)
 {
@@ -3534,11 +3534,11 @@ IppStatus resample_polyphase_fixed<Ipp32f>(const Ipp32f* src, int ilen,
 
 
 template<typename T>
-IppStatus resample_polyphase_fixed_filter(
+static IppStatus resample_polyphase_fixed_filter(
         T*, int, int, void *);
 
 template<>
-IppStatus resample_polyphase_fixed_filter<Ipp32f>(
+static IppStatus resample_polyphase_fixed_filter<Ipp32f>(
         Ipp32f* src, int step, int height, void *spec)
 {
     return ippsResamplePolyphaseGetFixedFilter_32f(
@@ -3546,7 +3546,7 @@ IppStatus resample_polyphase_fixed_filter<Ipp32f>(
 }
 
 template<>
-IppStatus resample_polyphase_fixed_filter<Ipp16s>(
+static IppStatus resample_polyphase_fixed_filter<Ipp16s>(
         Ipp16s* src, int step, int height, void *spec)
 {
     return ippsResamplePolyphaseGetFixedFilter_16s(

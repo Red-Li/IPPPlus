@@ -10,8 +10,15 @@
 #include <vector>
 #include <stdio.h>
 #include <windows.h>
+#ifdef max
+#undef max
+#endif
+#ifdef min
+#undef min
+#endif
 
 #include <gtest/gtest.h>
+#include "ipp.hpp"
 
 namespace testing{
 
@@ -85,8 +92,18 @@ class BenchmarkPrinter : public EmptyTestEventListener
 
             auto ms = result->elapsed_time();
             double v = benchCount * 1000. / (ms ? ms : 1);
-            printf("[ RESULT   ] %s %.3lf %s/s\n", ti.name(), v, benchCountUnitStr); 
+            fprintf(stdout, "[ RESULT   ] %s %.3lf %s/s\n", ti.name(), v, benchCountUnitStr); 
         }
+		else{
+			fprintf(stdout, "[ RESULT   ] FAILED\n");
+		}
+    }
+
+    virtual void OnTestPartResult(const TestPartResult& tr)
+    {
+		if (tr.file_name())
+			fprintf(stdout, "[ FAIL     ] %s:%d\n", tr.file_name(), tr.line_number()); 
+        fprintf(stdout, "[ FAIL     ] %s\n", tr.summary()); 
     }
 };
 
@@ -97,6 +114,8 @@ class BenchmarkPrinter : public EmptyTestEventListener
 
 int main(int argc, char *argv[])
 {
+    ipp::init();
+
     testing::InitGoogleTest(&argc, argv);
     
     auto &listeners = ::testing::UnitTest::GetInstance()->listeners();

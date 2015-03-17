@@ -14,61 +14,6 @@
 
 namespace ipps{
 
-template<typename T>
-T from_int(int v)
-{
-    return T(v);
-}
-
-template<>
-std::complex<float> from_int<std::complex<float> >(int v)
-{
-    return std::complex<float>((float)v, (float)v);
-}
-
-template<>
-std::complex<double> from_int<std::complex<double> >(int v)
-{
-    return std::complex<double>(v, v);
-}
-
-template<>
-std::complex<short> from_int<std::complex<short> >(int v)
-{
-    return std::complex<short>((short)v, (short)v);
-}
-
-template<>
-std::complex<int> from_int<std::complex<int> >(int v)
-{
-    return std::complex<int>(v, v);
-}
-
-
-template<typename T>
-T _sqrt(T v)
-{
-	return sqrt(v);
-}
-
-template<>
-unsigned char _sqrt(unsigned char v)
-{
-	return (unsigned char)sqrt(float(v));
-}
-
-template<>
-short _sqrt(short v)
-{
-	return (short)sqrt(float(v));
-}
-
-template<>
-unsigned short _sqrt(unsigned short v)
-{
-	return (unsigned short)sqrt(float(v));
-}
-
 
 ///////PolyphaseResample////
 typedef std::pair<int, int> ResamplePair;
@@ -147,6 +92,64 @@ long polyphaseResampleFixed(int inFreq,
         counter += nread;
     }
 
+    ipp::free(bufIn);
+    ipp::free(bufOut);
+
+    return outCounter;
+}
+
+
+template<typename T>
+long polyphaseResample(int inFreq,
+                       int outFreq,
+                       long inSize,
+                       int psize,
+                       float rollf = 0.9f,
+                       float As = 80.f //Db
+                        )
+{
+    float alpha = kaiserBeta(As);
+    float delta = (1.f - rollf) * M_PI;
+    float a = inFreq / float(outFreq);
+	int nstep = a > 1 / a ? int(a) : int(1 / a) ;
+
+    int N = kaiserTapsEstimate(delta / nstep, As);
+    float win = N / float(nstep);
+    int history = N;
+
+    ipp::polyphase_resampling<T> pf(win, nstep, rollf, alpha);
+
+
+    T *bufIn = ipp::malloc<T>(psize + history + 2);
+    T *bufOut = ipp::malloc<T>(int((psize - history) * outFreq / float(inFreq)) + 2);
+
+    for(int i = 0; i < psize + history + 2; ++i)
+        bufIn[i] = T(i % 10);
+
+    long counter = 0;
+    long outCounter = 0;
+    double time = history;
+    int lastread = history;
+
+    while(counter < inSize){
+		int nread = psize - lastread;
+        int nout = 0;
+        lastread += nread;
+
+        pf.resample(bufIn, lastread - history - (int)time,
+                    bufOut, &nout, &time, 1. / a, 1.f); 
+
+        ipp::move<T>(bufIn + (int)time - history, bufIn, lastread - (int)time + history);
+        lastread -= (int)time - history;
+        time -= (int)time - history;
+
+        outCounter += nout;
+        counter += nread;
+    }
+
+    ipp::free(bufIn);
+    ipp::free(bufOut);
+
     return outCounter;
 }
 
@@ -166,6 +169,24 @@ TEST_P(PolyphaseResample, ResampleFixed)
     int psize = 1 << 14;
 
     polyphaseResampleFixed<float>(
+            pair.first,
+            pair.second,
+            insize, 
+            psize);
+
+
+    RecordProperty("BenchCount", insize);
+    RecordProperty("BenchCountUnit", "B");
+}
+
+
+TEST_P(PolyphaseResample, Resample)
+{
+    auto pair = GetParam();
+    int insize = 1 << 23;
+    int psize = 1 << 14;
+
+    polyphaseResample<float>(
             pair.first,
             pair.second,
             insize, 
