@@ -3533,6 +3533,26 @@ IppStatus resample_polyphase_fixed<Ipp32f>(const Ipp32f* src, int ilen,
 }
 
 
+template<typename T>
+IppStatus resample_polyphase_fixed_filter(
+        T*, int, int, void *);
+
+template<>
+IppStatus resample_polyphase_fixed_filter<Ipp32f>(
+        Ipp32f* src, int step, int height, void *spec)
+{
+    return ippsResamplePolyphaseGetFixedFilter_32f(
+            src, step, height, (IppsResamplingPolyphaseFixed_32f*)spec); 
+}
+
+template<>
+IppStatus resample_polyphase_fixed_filter<Ipp16s>(
+        Ipp16s* src, int step, int height, void *spec)
+{
+    return ippsResamplePolyphaseGetFixedFilter_16s(
+            src, step, height, (IppsResamplingPolyphaseFixed_16s*)spec); 
+}
+
 
 }}
 

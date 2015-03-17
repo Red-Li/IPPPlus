@@ -2350,6 +2350,7 @@ template<typename T>
 class polyphase_resampling_fixed
 {
     void *spec_;
+    int flen_, fheight_;
 
 public:
     typedef typename get<T>::type itype;
@@ -2361,10 +2362,10 @@ public:
     {
         spec_ = 0;
 
-        int psize = 0, plen = 0, pheight = 0;
+        int psize = 0;
         detail::resample_polyphase_fixed_get_size<itype>(
                 in_rate, out_rate, len,
-                &psize, &plen, &pheight, hint);
+                &psize, &flen_, &fheight_, hint);
         
         spec_ = ipp::malloc<uint8_t>(psize);
 
@@ -2398,6 +2399,34 @@ public:
             return ippStsMemAllocErr;
         }
     }
+
+
+    /* --------------------------------------------------------------------------*/
+    /**
+     * @brief the output filter is in inverse order, 
+     * ie. in_rate / out_rate = 1 / 5, and polyphase filter is Q0, Q1, Q2, Q3, Q4
+     * The output should be : Q0, Q4, Q3, Q2, Q1
+     *
+     * @param buf
+     *
+     * @returns   
+     */
+    /* ----------------------------------------------------------------------------*/
+    int get_filter(T *buf)
+    {
+        if(spec_){
+            detail::resample_polyphase_fixed_filter<itype>(
+                    buf, flen_, fheight_, spec_);
+            return flen_ * fheight_;
+        }
+        else{
+            return 0;
+        }
+    }
+
+    int filter_length() const { return flen_; }
+    int filter_height() const { return fheight_; }
+
 };
 
 
