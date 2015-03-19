@@ -227,7 +227,6 @@ long integerResampleBench(int N,
 
     int ntaps = ipp::fir_tap_estimate(wp, ws, 1., 50.);
 
-
     ipp::integer_sample_down<T> is(N, idx, ntaps, 0, 0.5f * rollf + 0.5f);
 
     std::cout << "NTaps: " << is.ntaps() << std::endl;
@@ -238,7 +237,7 @@ long integerResampleBench(int N,
     T *sbuf = ipp::malloc<T>(CACHE);
     T *dbuf = ipp::malloc<T>(CACHE);
 
-#if 0
+#if 1
     //sample rate
     float srate = 1.f;
     float dt = 1.f / srate;
@@ -267,14 +266,12 @@ long integerResampleBench(int N,
         counter += psize;
     }
     
-#if 0
+#if 1
     FILE *fp = fopen("integer_resample.bin", "wb");
-    T header[3] = { T(counter), T(ocounter), T(is.ntaps())};
+    T header[5] = { T(N), T(idx), T(counter), T(ocounter), T(is.ntaps())};
     
-    fwrite(header, sizeof(T), 3, fp);
+    fwrite(header, sizeof(T), 5, fp);
     fwrite(sbuf, sizeof(T), counter, fp);
-
-	ipp::mul_const(dbuf, T(N), dbuf, ocounter);
     fwrite(dbuf, sizeof(T), ocounter, fp);
     
     is.get_taps(dbuf);
@@ -303,12 +300,12 @@ public:
 TEST_P(IntegerResample, ResampleFixed)
 {
     auto N = GetParam();
-    int insize = 1 << 27;
-    int psize = 1 << 16;
+    int insize = 1 << 16;
+    int psize = 1 << 10;
 
     integerResampleBench<float>(
             N,
-            0,
+            1,
             0.9f,
             insize, 
             psize);
@@ -318,7 +315,7 @@ TEST_P(IntegerResample, ResampleFixed)
 }
 
 
-#if 1
+#if 0
 INSTANTIATE_TEST_CASE_P(IntegerResample, IntegerResample,
 	::testing::Values(
         2,
@@ -337,7 +334,7 @@ INSTANTIATE_TEST_CASE_P(IntegerResample, IntegerResample,
 #else
 INSTANTIATE_TEST_CASE_P(IntegerResample, IntegerResample,
 	::testing::Values(
-        10
+		10
 	));
 #endif
 

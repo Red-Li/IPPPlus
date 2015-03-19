@@ -108,16 +108,20 @@ public:
         }
     }
 
+	//ilen < ntaps - 1
     IppStatus resample(const T* src, int ilen, T *dst, int *olen)
     {
         if(!taps_)
             return ippStsMemAllocErr;
 
+		if(ilen < ntaps_ - 1)
+			return ippStsSizeErr;
+
         int i = time_;
         int di = 0;
         while(i < ilen && i < ntaps_ - 1){
             int dl = ntaps_ - i - 1;
-            ipp::mul<T>(dly_, taps_, wbuf_, dl);
+            ipp::mul<T>(dly_ + i, taps_, wbuf_, dl);
             ipp::mul<T>(src, taps_ + dl, wbuf_ + dl, i + 1); 
             
             ipp::sum<T>(wbuf_, ntaps_, dst + di);
@@ -127,7 +131,7 @@ public:
         }
 
         while(i < ilen){
-            int idx = i + 1 - ntaps_;
+            int idx = i - ntaps_ + 1;
             ipp::mul<T>(src + idx, taps_, wbuf_, ntaps_);
             ipp::sum<T>(wbuf_, ntaps_, dst + di);
 
@@ -137,7 +141,7 @@ public:
 
         
         time_ = i % ilen;
-        ipp::copy(src + ilen - ntaps_, dly_, ntaps_);
+        ipp::copy(src + ilen - ntaps_ + 1, dly_, ntaps_ - 1);
 
 		*olen = di;
 
