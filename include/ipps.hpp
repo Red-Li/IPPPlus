@@ -10,6 +10,7 @@
 #define IPPPLUS_IPPS_HPP
 
 #include <ipps.h>
+#include <ippvm.h>
 
 #include "ippcore.h"
 #include "ipptype.hpp"
@@ -1284,10 +1285,10 @@ public:
  **/
 
 template<typename T>
-static inline IppStatus sum(const T *src, int len, T *sum_, IppHintAlgorithm hint)
+static inline IppStatus sum(const T *src, int len, T *sum_, IppHintAlgorithm hint =  ippAlgHintFast)
 {
     typedef get<T>::type itype;
-    return detail::sum(
+    return detail::sum<itype>(
             (const itype*)src, len, (itype*)sum_, hint);
 }
 
@@ -1296,7 +1297,7 @@ static inline IppStatus sum(const T1 *src, int len, T2 *sum_, int scale = 0)
 {
     typedef get<T1>::type itype1;
     typedef get<T2>::type itype2;
-    return detail::sum(
+    return detail::sum<itype1, itype2>(
             (const itype1*)src, len, (itype2*)sum_, scale);
 }
 
@@ -2093,9 +2094,12 @@ enum{
 
 
 static int fir_tap_estimate(
-        double wp, double ws, double dp, double ds, int model = FIR_BELLANGER)
+        double wp, double ws, double Ap, double As, int model = FIR_BELLANGER)
 {
     //
+    double dp = 1 - pow(10., - Ap / 20.);
+    double ds = pow(10., -As / 20.);
+
     double N = 0;
     if(model == FIR_KAISER){
         N = (-20 * log10(pow(dp * ds, 0.5)) - 13) / ((ws - wp) * 14.6 / M_PI_2);

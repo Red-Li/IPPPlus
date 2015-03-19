@@ -11,6 +11,7 @@
 #include <cmath>
 
 #include "ipps.hpp"
+#include "ipps_extension.hpp"
 
 namespace ipps{
 
@@ -154,7 +155,6 @@ long polyphaseResample(int inFreq,
 }
 
 
-
 class PolyphaseResample : public testing::TestWithParam<ResamplePair>
 {
 public:
@@ -207,5 +207,147 @@ INSTANTIATE_TEST_CASE_P(PolyphaseResample, PolyphaseResample,
 			ResamplePair(6, 10),
 			ResamplePair(7, 10)
 	));
+
+
+
+
+
+
+template<typename T>
+long integerResampleBench(int N,
+                     int idx,
+                     float rollf,
+                     long inSize,
+                     int psize
+                     )
+{
+    double dw = M_PI / N;
+    double wp = dw / 2. * rollf;
+    double ws = dw / 2.;
+
+    int ntaps = ipp::fir_tap_estimate(wp, ws, 1., 50.);
+
+
+    ipp::integer_sample_down<T> is(N, idx, ntaps, 0, 0.5f * rollf + 0.5f);
+
+    std::cout << "NTaps: " << is.ntaps() << std::endl;
+
+    int CACHE = 16 << 20;
+    int nbuf = CACHE / psize - 1;
+
+    T *sbuf = ipp::malloc<T>(CACHE);
+    T *dbuf = ipp::malloc<T>(CACHE);
+
+#if 0
+    //sample rate
+    float srate = 1.f;
+    float dt = 1.f / srate;
+    ipp::vector_slope<T>(sbuf, CACHE, 0.f, dt); 
+    ipp::copy<T>(sbuf, dbuf, CACHE);
+    ipp::mul<T>(sbuf, sbuf, sbuf, CACHE);
+    ipp::mul_const<T>(sbuf, T(M_PI_2) * 0.6f / inSize / 2.5f, sbuf, CACHE);
+    ippsSin_32f_A24(sbuf, sbuf, CACHE);
+#else
+    ipp::rand_uniform<T> ru(0., 1., 0);
+
+    ru.generate(sbuf, CACHE);
+
+#endif
+
+    int counter = 0;
+    int ocounter = 0;
+    while(counter < inSize){
+        T *src = sbuf + (counter % CACHE);
+        T *dst = dbuf + (ocounter % CACHE);
+
+        int olen = 0;
+        is.resample(src, psize, dst, &olen);
+
+        ocounter += olen;
+        counter += psize;
+    }
+    
+#if 0
+    FILE *fp = fopen("integer_resample.bin", "wb");
+    T header[3] = { T(counter), T(ocounter), T(is.ntaps())};
+    
+    fwrite(header, sizeof(T), 3, fp);
+    fwrite(sbuf, sizeof(T), counter, fp);
+
+	ipp::mul_const(dbuf, T(N), dbuf, ocounter);
+    fwrite(dbuf, sizeof(T), ocounter, fp);
+    
+    is.get_taps(dbuf);
+    fwrite(dbuf, sizeof(T), is.ntaps(), fp);
+
+    fclose(fp);
+
+#endif
+
+
+    ipp::free(sbuf);
+    ipp::free(dbuf);
+
+    return ocounter;
+}
+
+
+
+class IntegerResample : public testing::TestWithParam<int>
+{
+public:
+
+};
+
+//
+TEST_P(IntegerResample, ResampleFixed)
+{
+    auto N = GetParam();
+    int insize = 1 << 27;
+    int psize = 1 << 16;
+
+    integerResampleBench<float>(
+            N,
+            0,
+            0.9f,
+            insize, 
+            psize);
+
+    RecordProperty("BenchCount", insize / 1000000);
+    RecordProperty("BenchCountUnit", "MB");
+}
+
+
+#if 1
+INSTANTIATE_TEST_CASE_P(IntegerResample, IntegerResample,
+	::testing::Values(
+        2,
+        3, 
+        4,
+        6,
+        10,
+        15,
+        30,
+        40,
+        50,
+        100,
+        200
+	));
+
+#else
+INSTANTIATE_TEST_CASE_P(IntegerResample, IntegerResample,
+	::testing::Values(
+        10
+	));
+#endif
+
+
+
+
+
+
+
+
+
 
 }
