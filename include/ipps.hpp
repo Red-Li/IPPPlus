@@ -15,6 +15,7 @@
 #include "ippcore.h"
 #include "ipptype.hpp"
 #include "ippcore.hpp"
+#include "ipps_extension.hpp"
 #include "detail/ipps.hpp"
 
 #ifndef M_PI_2
@@ -1922,7 +1923,7 @@ static inline IppStatus fft_inverse(
     static_assert(IsCplx, "Only support complex type config");
     typedef get<T>::type itype;
     typedef detail::fft_spec<itype, IsCplx>::type spec_type;
-    return detail::fft_forward<itype, spec_type, IsCplx>(
+    return detail::fft_inverse<itype, spec_type, IsCplx>(
             (const itype*)sre, (const itype*)sim, (itype*)dre, (itype*)dim, 
             (spec_type*)spec, (Ipp8u*)buf);
 }
@@ -1948,7 +1949,7 @@ static inline IppStatus fft_inverse(
 {
     typedef get<T>::type itype;
     typedef detail::fft_spec<itype, IsCplx>::type spec_type;
-    return detail::fft_forward<itype, spec_type, IsCplx>(
+    return detail::fft_inverse<itype, spec_type, IsCplx>(
             (const itype*)src, (itype*)dst, 
             (spec_type*)spec, (Ipp8u*)buf);
 }
@@ -2083,6 +2084,12 @@ public:
         else
             return ippStsMemAllocErr;
     }
+
+    operator bool() const
+    {
+        return spec_ != 0;
+    }
+
 };
 
 
@@ -2425,9 +2432,11 @@ public:
 
         if(!spec_)
             return;
+
+		zero((uint8_t*)spec_, psize);
         
         IppStatus r = detail::resample_polyphase_fixed_init<itype>(
-                in_rate, out_rate, len, (Ipp32f)rollf, (Ipp32f)alpha, spec_, hint); 
+                in_rate, out_rate, flen_, (Ipp32f)rollf, (Ipp32f)alpha, spec_, hint); 
         if(r != ippStsNoErr){
             ipp::free(spec_);
             spec_ = 0;
@@ -2480,6 +2489,11 @@ public:
 
     int filter_length() const { return flen_; }
     int filter_height() const { return fheight_; }
+
+    operator bool() const
+    {
+        return spec_ != 0;
+    }
 
 };
 

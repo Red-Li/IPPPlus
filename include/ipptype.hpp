@@ -213,6 +213,12 @@ struct type_value
 };
 
 
+typedef enum{
+    LOW,
+    MEDIUN,
+    HIGH
+}PerciseType;
+
 
 }
 

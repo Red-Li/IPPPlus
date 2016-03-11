@@ -9,4 +9,5 @@
 
 #include "ipptype.hpp"
 #include "ippcore.hpp"
+#include "ippvm.hpp"
 #include "ipps.hpp"

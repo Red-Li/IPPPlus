@@ -14,6 +14,15 @@
 
 namespace ipp{
 
+template<typename T>
+void transpose(const T *src, T *dst, int nrows, int ncols)
+{
+    for(int i = 0; i < nrows; ++i)
+        for(int j = 0; j < ncols; ++j)
+            dst[j*nrows+i] = src[i*ncols+j];
+}
+
+
 //only support float
 template<typename T>
 class integer_sample_down
@@ -22,10 +31,17 @@ class integer_sample_down
     int idx_;
     int time_;
     int ntaps_;
+    
+    T flip_; //-1 if idx_ is odd
+    T flip_status_;
 
     T *taps_;
     T *wbuf_; //work buf
     T *dly_;
+    
+
+    integer_sample_down();
+    integer_sample_down(const integer_sample_down&);
 
 public:
     integer_sample_down(
@@ -39,7 +55,9 @@ public:
           ntaps_(ntaps | 0x1), //always be odd
           wbuf_(0),
           dly_(0),
-          time_(0)
+          time_(0),
+          flip_((idx & 0x1) ? -1.f : 1.f),
+          flip_status_(1.f)
     {
         if(N < 2 || idx >= N || ntaps_ < 5)
             return;
@@ -126,6 +144,9 @@ public:
             
             ipp::sum<T>(wbuf_, ntaps_, dst + di);
 
+            dst[di] *= flip_status_;
+            flip_status_ *= flip_;
+
             ++di;
             i += N_;
         }
@@ -134,6 +155,9 @@ public:
             int idx = i - ntaps_ + 1;
             ipp::mul<T>(src + idx, taps_, wbuf_, ntaps_);
             ipp::sum<T>(wbuf_, ntaps_, dst + di);
+
+            dst[di] *= flip_status_;
+            flip_status_ *= flip_;
 
             ++di;
             i += N_;
@@ -166,6 +190,11 @@ public:
     int ntaps() const
     {
         return ntaps_;
+    }
+
+    bool is_valid() const
+    {
+        return taps_ != 0;
     }
 
     IppStatus get_taps(T *taps)

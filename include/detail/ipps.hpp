@@ -3214,6 +3214,44 @@ FFT_INIT_ASM(64fc, C);
 
 
 template<typename T, typename Spec, bool IsCplx>
+static inline IppStatus fft_inverse(
+        const T *, const T*, T*, T*, Spec *, Ipp8u*);
+
+template<typename T, typename Spec, bool IsCplx>
+static inline IppStatus fft_inverse(
+        const T *, T*, Spec *, Ipp8u*);
+
+
+#define FFT_INVERSE_ASM(Suffix, F, T, IsCplx)\
+template<>\
+static inline IppStatus fft_inverse<Ipp##Suffix, IppsFFTSpec_##F##_##Suffix, IsCplx>(\
+    const Ipp##Suffix *sre, const Ipp##Suffix *sim, Ipp##Suffix *dre, Ipp##Suffix *dim, \
+    IppsFFTSpec_##F##_##Suffix *spec, Ipp8u *buf)\
+{ return (sre == dre && sim == dim) ? ippsFFTInv_##F##To##T##_##Suffix##_I(dre, dim, spec, buf)\
+                                    : ippsFFTInv_##F##To##T##_##Suffix(sre, sim, dre, dim, spec, buf); }
+
+#define FFT_INVERSE_2_ASM(Suffix, F, T, IsCplx)\
+template<>\
+static inline IppStatus fft_inverse<Ipp##Suffix, IppsFFTSpec_##T##_##Suffix, IsCplx>(\
+    const Ipp##Suffix *src, Ipp##Suffix *dst, \
+    IppsFFTSpec_##T##_##Suffix *spec, Ipp8u *buf)\
+{ return (src == dst) ? ippsFFTInv_##F##To##T##_##Suffix##_I(dst, spec, buf)\
+                      : ippsFFTInv_##F##To##T##_##Suffix(src, dst, spec, buf); }
+
+
+FFT_INVERSE_ASM(32f, C, C, true);
+FFT_INVERSE_ASM(64f, C, C, true);
+
+FFT_INVERSE_2_ASM(32fc, C, C, true);
+FFT_INVERSE_2_ASM(64fc, C, C, true);
+
+FFT_INVERSE_2_ASM(32f, Perm, R, false);
+FFT_INVERSE_2_ASM(64f, Perm, R, false);
+
+#undef FFT_INVERSE_ASM
+#undef FFT_INVERSE_2_ASM
+
+template<typename T, typename Spec, bool IsCplx>
 static inline IppStatus fft_forward(
         const T *, const T*, T*, T*, Spec *, Ipp8u*);
 
@@ -3227,16 +3265,16 @@ template<>\
 static inline IppStatus fft_forward<Ipp##Suffix, IppsFFTSpec_##F##_##Suffix, IsCplx>(\
     const Ipp##Suffix *sre, const Ipp##Suffix *sim, Ipp##Suffix *dre, Ipp##Suffix *dim, \
     IppsFFTSpec_##F##_##Suffix *spec, Ipp8u *buf)\
-{ return (sre == dre && sim == dim) ? ippsFFTFwd_##F##To##T##_##Suffix(sre, sim, dre, dim, spec, buf)\
-                                    : ippsFFTFwd_##F##To##T##_##Suffix##_I(dre, dim, spec, buf); }
+{ return (sre == dre && sim == dim) ? ippsFFTFwd_##F##To##T##_##Suffix##_I(dre, dim, spec, buf)\
+                                    : ippsFFTFwd_##F##To##T##_##Suffix(sre, sim, dre, dim, spec, buf); }
 
 #define FFT_FORWARD_2_ASM(Suffix, F, T, IsCplx)\
 template<>\
 static inline IppStatus fft_forward<Ipp##Suffix, IppsFFTSpec_##F##_##Suffix, IsCplx>(\
     const Ipp##Suffix *src, Ipp##Suffix *dst, \
     IppsFFTSpec_##F##_##Suffix *spec, Ipp8u *buf)\
-{ return (src == dst) ? ippsFFTFwd_##F##To##T##_##Suffix(src, dst, spec, buf)\
-                      : ippsFFTFwd_##F##To##T##_##Suffix##_I(dst, spec, buf); }
+{ return (src == dst) ? ippsFFTFwd_##F##To##T##_##Suffix##_I(dst, spec, buf)\
+                      : ippsFFTFwd_##F##To##T##_##Suffix(src, dst, spec, buf); }
 
 
 FFT_FORWARD_ASM(32f, C, C, true);
