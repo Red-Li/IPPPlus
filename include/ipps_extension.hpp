@@ -11,15 +11,21 @@
 #define IPPPLUS_IPPS_EXTENSION_HPP
 
 #include "ipps.hpp"
+#include "detail/ipps_extension.hpp"
 
 namespace ipp{
 
 template<typename T>
 void transpose(const T *src, T *dst, int nrows, int ncols)
 {
-    for(int i = 0; i < nrows; ++i)
-        for(int j = 0; j < ncols; ++j)
-            dst[j*nrows+i] = src[i*ncols+j];
+    detail::transpose(src, dst, nrows, ncols);
+}
+
+template<typename T>
+void prefix_sum(const T *src, T *dst, int size)
+{
+    src==dst ? detail::prefix_sum<T, true>(src, dst, size)
+             : detail::prefix_sum<T, false>(src, dst, size);
 }
 
 
