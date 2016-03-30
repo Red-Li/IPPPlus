@@ -2053,7 +2053,7 @@ template<>\
 static inline IppStatus real_to_cplx<Ipp##Suffix1, Ipp##Suffix2>(\
         const Ipp##Suffix1 *re, const Ipp##Suffix1 *im,\
         Ipp##Suffix2 *dst, int len)\
-{ return ippsRealToCplx_##Suffix1(im, re, dst, len); }
+{ return ippsRealToCplx_##Suffix1(re, im, dst, len); }
 
 
 CPLX2REAL_ASM(16sc, 16s);

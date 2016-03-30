@@ -2428,7 +2428,7 @@ public:
                 in_rate, out_rate, len,
                 &psize, &flen_, &fheight_, hint);
         
-        spec_ = ipp::malloc<uint8_t>(psize);
+        spec_ = ipp::malloc<uint8_t>(2*psize); //[FIXME] workaround to remove heap corrupt issue
 
         if(!spec_)
             return;
