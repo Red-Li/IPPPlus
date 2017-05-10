@@ -1575,7 +1575,7 @@ static inline IppStatus max_every(const T* src, T *srcdst, int len)
     typedef get<T>::type itype;
 
     return detail::max_every(
-            (const itype*)src, (itype*)srcdst, len);
+            (const itype*)src, (const itype*)srcdst, (itype*)srcdst, len);
 }
 
 
@@ -1614,7 +1614,7 @@ static inline IppStatus min_every(const T* src, T *srcdst, int len)
     typedef get<T>::type itype;
 
     return detail::min_every(
-            (const itype*)src, (itype*)srcdst, len);
+            (const itype*)src, (const itype*)srcdst, (itype*)srcdst, len);
 }
 
 
