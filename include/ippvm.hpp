@@ -35,5 +35,16 @@ static inline IppStatus cos(const T* src, T* dst, int len)
     return detail::cos<itype, P>(src, dst, len);
 }
 
+
+template<typename T, PerciseType P>
+static inline IppStatus log10(const T* src, T* dst, int len)
+{
+    typedef get<T>::type itype;
+    return detail::log10<itype, P>(src, dst, len);
+}
+
+
+
+
 }
 #endif

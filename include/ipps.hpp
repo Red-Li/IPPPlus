@@ -2109,19 +2109,19 @@ static int fir_tap_estimate(
 
     double N = 0;
     if(model == FIR_KAISER){
-        N = (-20 * log10(pow(dp * ds, 0.5)) - 13) / ((ws - wp) * 14.6 / M_PI_2);
+		N = (-20 * std::log10(pow(dp * ds, 0.5)) - 13) / ((ws - wp) * 14.6 / M_PI_2);
     }
     else if(model == FIR_BELLANGER){
-        N = -(2 * log10(10 * dp * ds) / (3. * (ws - wp) / M_PI_2)) - 1;
+		N = -(2 * std::log10(10 * dp * ds) / (3. * (ws - wp) / M_PI_2)) - 1;
     }
     else{ //FIR_BELLANGER
         double a[] = {0.005309, 0.07114, -0.4761, 0.00266, 0.5941, 0.4278};
         double b[] = {11.01217, 0.51244};
 
-#define D(dp, ds) ((a[0] * pow(log10(dp), 2.) + a[1] * log10(dp) + a[2]) * log10(ds)\
-        - (a[3] * pow(log10(dp), 2.) + a[4] * log10(dp) + a[5]))
+#define D(dp, ds) ((a[0] * pow(std::log10(dp), 2.) + a[1] * std::log10(dp) + a[2]) * std::log10(ds)\
+        - (a[3] * pow(std::log10(dp), 2.) + a[4] * std::log10(dp) + a[5]))
 
-#define F(dp, ds) (b[0] + b[1] * (log10(dp) - log10(ds)))
+#define F(dp, ds) (b[0] + b[1] * (std::log10(dp) - std::log10(ds)))
 
         N = (D(dp, ds) - F(dp, ds) * pow((ws - wp) / M_PI_2, 2.)) / ((ws - wp) / M_PI_2);
     }

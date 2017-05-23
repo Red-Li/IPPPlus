@@ -62,6 +62,8 @@ SIN_INST(Ipp64fc, 64fc, HIGH, A53)
 
 #undef SIN_INST
 
+//
+
 template<typename T, PerciseType P>
 static inline IppStatus cos(const T*, T*, int);
 
@@ -87,6 +89,36 @@ COS_INST(Ipp64fc, 64fc, MEDIUN, A50)
 COS_INST(Ipp64fc, 64fc, HIGH, A53)
 
 #undef COS_INST
+
+
+//
+template<typename T, PerciseType P>
+static inline IppStatus log10(const T*, T*, int);
+
+#define LOG10_INST(T, TF, P, SF)\
+template<>\
+static inline IppStatus log10<T, P>(const T *src, T *dst, int len)\
+{\
+    return ippsLog10_##TF##_##SF(src, dst, len);\
+}
+
+
+LOG10_INST(Ipp32f, 32f, LOW, A11)
+LOG10_INST(Ipp32f, 32f, MEDIUN, A21)
+LOG10_INST(Ipp32f, 32f, HIGH, A24)
+LOG10_INST(Ipp32fc, 32fc, LOW, A11)
+LOG10_INST(Ipp32fc, 32fc, MEDIUN, A21)
+LOG10_INST(Ipp32fc, 32fc, HIGH, A24)
+LOG10_INST(Ipp64f, 64f, LOW, A26)
+LOG10_INST(Ipp64f, 64f, MEDIUN, A50)
+LOG10_INST(Ipp64f, 64f, HIGH, A53)
+LOG10_INST(Ipp64fc, 64fc, LOW, A26)
+LOG10_INST(Ipp64fc, 64fc, MEDIUN, A50)
+LOG10_INST(Ipp64fc, 64fc, HIGH, A53)
+
+#undef LOG10_INST
+
+
 
 }}
 
